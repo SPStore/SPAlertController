@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1421" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="334" height="216"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="dHV-wP-KWI">
+                    <rect key="frame" x="31" y="60" width="137.5" height="31"/>
+                </slider>
+                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="PEe-lc-oGY">
+                    <rect key="frame" x="33" y="143" width="121" height="29"/>
+                    <segments>
+                        <segment title="First"/>
+                        <segment title="Second"/>
+                    </segments>
+                </segmentedControl>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hkx-dj-5LU">
+                    <rect key="frame" x="224" y="34" width="51" height="31"/>
+                </switch>
+                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="tdf-wL-rAL">
+                    <rect key="frame" x="238" y="143" width="20" height="20"/>
+                </activityIndicatorView>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="dHV-wP-KWI" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="60" id="4D4-1j-ePY"/>
+                <constraint firstAttribute="trailing" secondItem="Hkx-dj-5LU" secondAttribute="trailing" constant="61" id="7qN-Ke-YpC"/>
+                <constraint firstItem="dHV-wP-KWI" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.4" id="DJX-37-XqQ"/>
+                <constraint firstItem="tdf-wL-rAL" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Hkx-dj-5LU" secondAttribute="bottom" constant="10" id="ETY-fC-a3l"/>
+                <constraint firstItem="Hkx-dj-5LU" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="34" id="JEe-t3-5kP"/>
+                <constraint firstItem="PEe-lc-oGY" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="33" id="Ofp-H5-Xxv"/>
+                <constraint firstAttribute="bottom" secondItem="PEe-lc-oGY" secondAttribute="bottom" constant="45" id="UJG-HX-VDl"/>
+                <constraint firstItem="dHV-wP-KWI" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="33" id="aMq-jv-QCg"/>
+                <constraint firstAttribute="bottom" secondItem="tdf-wL-rAL" secondAttribute="bottom" constant="53" id="bPO-eg-Oev"/>
+                <constraint firstItem="PEe-lc-oGY" firstAttribute="top" relation="greaterThanOrEqual" secondItem="dHV-wP-KWI" secondAttribute="bottom" constant="10" id="cfB-nX-Qmt"/>
+                <constraint firstItem="tdf-wL-rAL" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="PEe-lc-oGY" secondAttribute="trailing" constant="10" id="mUV-Xr-EgF"/>
+                <constraint firstItem="Hkx-dj-5LU" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="dHV-wP-KWI" secondAttribute="trailing" constant="10" id="qmn-SG-KPw"/>
+                <constraint firstAttribute="trailing" secondItem="tdf-wL-rAL" secondAttribute="trailing" constant="76" id="xWI-1X-1EL"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="13" y="227"/>
+        </view>
+    </objects>
+</document>
