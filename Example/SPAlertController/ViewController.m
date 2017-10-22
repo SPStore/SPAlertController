@@ -398,9 +398,10 @@
 // 示例10:alert样式只有1个按钮
 - (void)alertTest10 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeShrink];
-    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第1个");
+    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了OK");
     }];
+    action1.titleColor = [UIColor blueColor];
     [alertController addAction:action1];
     [self presentViewController:alertController animated:YES completion:nil];
 }
