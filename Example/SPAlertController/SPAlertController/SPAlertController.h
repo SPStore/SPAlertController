@@ -30,74 +30,110 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
     SPAlertAnimationTypeShrink       // 收缩动画，一般用于alert
 };
 
-// ---------------------------- action类 ------------------------------
+// ================================ action类 ================================
 
 @interface SPAlertAction : NSObject <NSCopying>
-
+/**
+ *  创建一个action
+ *
+ *  @param title    标题
+ *  @param style    action样式
+ *  @param handler  点中后的boloc回调
+ */
 + (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
 
-// action的标题
+/* action的标题 */
 @property (nullable, nonatomic, readonly) NSString *title;
-// 样式
+/* 样式 */
 @property (nonatomic, readonly) SPAlertActionStyle style;
-// 是否能点击,默认为YES,当为NO时，action的文字颜色为浅灰色，字体17号，且无法修改
+/* 是否能点击,默认为YES,当为NO时，action的文字颜色为浅灰色，字体17号，且无法修改 */
 @property (nonatomic, getter=isEnabled) BOOL enabled;
-// action的标题颜色
+/* action的标题颜色 */
 @property (nonatomic, strong) UIColor *titleColor;
-// action的标题字体
+/* action的标题字体 */
 @property (nonatomic, strong) UIFont *titleFont;
 
 @end
 
-// ---------------------------- 控制器类 ------------------------------
+// ================================ 控制器类 ================================
 
 @interface SPAlertController : UIViewController
 
+/**
+ *  创建控制器
+ *
+ *  @param title    大标题
+ *  @param message  副标题
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ */
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 
-// 如果customView传nil，就跟上面的方法等价,customView只有高度有效
+/**
+ *  创建控制器
+ *
+ *  @param title    大标题
+ *  @param message  副标题
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ *  @param customView      自定义的view，如果customView传nil，就跟上面的方法一致
+ */
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
 
+/**
+ *  添加action
+ */
 - (void)addAction:(SPAlertAction *)action;
+
+/** action数组 */
 @property (nonatomic, readonly) NSArray<SPAlertAction *> *actions;
 
-// configurationHandler只会回调一次，可以在block块里面自由定制textFiled，如设置textField的属性，设置代理，添加addTarget，监听通知等
+/**
+ *  添加文本输入框
+ *
+ *  @param configurationHandler  一旦添加后就会回调一次(仅回调一次,因此可以在这个block块里面自由定制textFiled，如设置textField的属性，设置代理，添加addTarget，监听通知等)
+ */
 - (void)addTextFieldWithConfigurationHandler:(void (^ __nullable)(UITextField *textField))configurationHandler;
+
+/** textField的数组 */
 @property (nullable, nonatomic, readonly) NSArray<UITextField *> *textFields;
 
+/** 样式 */
 @property (nonatomic, readonly) SPAlertControllerStyle preferredStyle;
+/** 动画类型 */
 @property (nonatomic, readonly) SPAlertAnimationType animationType;
 
+/** 提醒对话框 */
 @property (nonatomic, strong, readonly) UIView *alertView;
 
-// 大标题
+/** 大标题 */
 @property (nullable, nonatomic, copy) NSString *title;
-// 副标题
+/** 副标题 */
 @property (nullable, nonatomic, copy) NSString *message;
-// 大标题颜色
+/** 大标题颜色 */
 @property (nonatomic, strong) UIColor *titleColor;
-// 副标题颜色
+/** 副标题颜色 */
 @property (nonatomic, strong) UIColor *messageColor;
-// 大标题字体
+/** 大标题字体 */
 @property (nonatomic, strong) UIFont *titleFont;
-// 副标题字体
+/** 副标题字体 */
 @property (nonatomic, strong) UIFont *messageFont;
 
-// 是否需要毛玻璃效果,默认为YES
+/** 是否需要毛玻璃效果,默认为YES */
 @property (nonatomic, assign) BOOL needBlur;
 
-// actionSheet样式下,最大的顶部间距,默认为0
+/** actionSheet样式下,最大的顶部间距,默认为0 */
 @property (nonatomic, assign) CGFloat maxTopMarginForActionSheet;
 
-// alert样式下,四周的最大间距,默认为20
+/** alert样式下,四周的最大间距,默认为20 */
 @property (nonatomic, assign) CGFloat maxMarginForAlert;
 
-// alert样式下，弹窗的中心y值，为正向上偏移，为负向下偏移
+/** alert样式下，弹窗的中心y值，为正向上偏移，为负向下偏移 */
 @property (nonatomic, assign) CGFloat offsetY;
 
 @end
 
-// ---------------------------- 动画类 ------------------------------
+// ================================ 动画类 ================================
 
 @interface SPAlertAnimation : NSObject <UIViewControllerAnimatedTransitioning>
 
