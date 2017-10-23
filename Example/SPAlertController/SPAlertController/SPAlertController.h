@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *
  *  @param title    标题
  *  @param style    action样式
- *  @param handler  点中后的boloc回调
+ *  @param handler  点中后的bolok回调
  */
 + (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
 
@@ -127,6 +127,9 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 
 /** alert样式下,四周的最大间距,默认为20 */
 @property (nonatomic, assign) CGFloat maxMarginForAlert;
+
+/** alert样式下，圆角半径 */
+@property (nonatomic, assign) CGFloat alertCornerRadius;
 
 /** alert样式下，弹窗的中心y值，为正向上偏移，为负向下偏移 */
 @property (nonatomic, assign) CGFloat offsetY;

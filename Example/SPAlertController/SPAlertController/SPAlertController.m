@@ -323,9 +323,6 @@
     self.textFields = array;
     
     UITextField *firstTextField = array.firstObject;
-    if (textField != firstTextField) {
-        [textField resignFirstResponder];
-    }
     // 成为第一响应者，这样一旦present出来后，键盘就会弹出
     [firstTextField becomeFirstResponder];
     
@@ -1046,6 +1043,11 @@
     } else {
         [self layoutViewConstraints];
     }
+}
+
+- (void)setAlertCornerRadius:(CGFloat)alertCornerRadius {
+    _alertCornerRadius = alertCornerRadius;
+    self.alertView.layer.cornerRadius = alertCornerRadius;
 }
 
 - (void)setOffsetY:(CGFloat)offsetY {
