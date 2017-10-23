@@ -479,6 +479,8 @@
 ###### 6.
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-58b49fe452c435c8.jpg)
 ###### 7.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-3974cfeac8a9016b.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/6D8ADCBCD9BA9CD455B48711CCBB88E6.jpg)
 ###### 8.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-3974cfeac8a9016b.jpg)
+###### 9.
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-d77afa589120fca6.jpg)
