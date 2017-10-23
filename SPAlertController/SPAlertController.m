@@ -1050,11 +1050,8 @@
 
 - (void)setOffsetY:(CGFloat)offsetY {
     _offsetY = offsetY;
-    if (self.customView) {
-        [self layoutCustomView];
-    } else {
-        [self layoutViewConstraints];
-    }}
+    _alertConstraintCenterY.constant = -offsetY;
+}
 
 - (void)setCustomView:(UIView *)customView {
     _customView = customView;
@@ -1095,8 +1092,7 @@
         
         CGFloat diff = fabs((self.view.center.y-keyboardEndY*0.5));
         // 改变alertView的中心y值，以至于不被键盘遮挡
-        //self.offsetY = diff;
-        _alertConstraintCenterY.constant = -diff;
+        self.offsetY = diff;
     }
     self.keyboardShow = YES;
 }
