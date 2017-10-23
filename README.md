@@ -1,3 +1,4 @@
+![image]{(SPAlertController/PreImages/1B7F5689700861D3D6E3A8511A02E443.jpg)}
 ## 18种示例
 ```
 // 示例1:actionSheet的默认样式
