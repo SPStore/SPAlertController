@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="335" height="65"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="335" height="64"/>
+                <rect key="frame" x="0.0" y="0.0" width="335" height="64.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Q5l-1A-InA">
@@ -76,15 +76,15 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000000000000004" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gVC-Vw-YNT">
-                        <rect key="frame" x="15" y="0.0" width="146" height="65"/>
+                        <rect key="frame" x="15" y="0.0" width="136" height="65"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" alpha="0.80000000000000004" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="K10-ah-pxf">
-                        <rect key="frame" x="171" y="0.0" width="50" height="65"/>
+                        <rect key="frame" x="161" y="0.0" width="60" height="65"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="50" id="ske-P8-epn"/>
+                            <constraint firstAttribute="width" constant="60" id="ske-P8-epn"/>
                         </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="textColor"/>

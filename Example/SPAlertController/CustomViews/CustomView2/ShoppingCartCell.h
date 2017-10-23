@@ -13,3 +13,4 @@
 @interface ShoppingCartCell : UITableViewCell
 @property (nonatomic, strong) ShoppingCartItem *item;
 @end
+

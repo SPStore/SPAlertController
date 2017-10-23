@@ -58,30 +58,33 @@
     // Configure the view for the selected state
 }
 
-// 最终的价格，这个方法的功能：如果价格有小数，先保留2位小数，如果小数部分全是0，直接取整，如果小数第1位非0第2位是0，则保留1位小数，如果小数的2位都非0，则保留2位小数
+// 最终的价格
 - (NSString *)finallyFoodPrice:(float)price {
-    // 新价格保留2为小数转成字符串
-    NSString *priceString = [NSString stringWithFormat:@"%.2f",price];
+
+    // 新价格保留maxDecimalPlaces为位小数转成字符串
+    NSString *priceString = [NSString stringWithFormat:@"%.5f",price];
     // 通过小数点进行分割,然后取小数部分
     NSArray *parts = [priceString componentsSeparatedByString:@"."];
     if (parts.count > 1) {
         // 取小数部分
         NSString *dot = parts[1];
-        // 小数部分转成数字
-        NSInteger dotInteget = [dot integerValue];
-        if (dotInteget == 0) { // 说明小数部分全为0,此时保留0位小数(取整)
+        
+        if ([dot hasSuffix:@"00000"]) {
             return [NSString stringWithFormat:@"¥%.0f",price];
+        } else if ([dot hasSuffix:@"0000"]) {
+            return [NSString stringWithFormat:@"¥%.1f",price];
+        } else if ([dot hasSuffix:@"000"]) {
+            return [NSString stringWithFormat:@"¥%.2f",price];
+        } else if ([dot hasSuffix:@"00"]) {
+            return [NSString stringWithFormat:@"¥%.3f",price];
+        } else if ([dot hasSuffix:@"0"]) {
+            return [NSString stringWithFormat:@"¥%.4f",price];
         } else {
-            // 对10求余
-            NSInteger remainder = dotInteget % 10;
-            if (remainder == 0) { // 说明dotInteget的末尾(第2位)是0,此时保留1为小数
-                return [NSString stringWithFormat:@"¥%.1f",price];
-            } else { // 说明dotInteget的末尾不是0,此时保留2为小数
-                return priceString;
-            }
+            return priceString;
         }
     }
     return nil;
 }
+
 
 @end
