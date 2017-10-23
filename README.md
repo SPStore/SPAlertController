@@ -1,4 +1,6 @@
-![image]（https://github.com/SPStore/SPAlertController/blob/master/PreImages/1B7F5689700861D3D6E3A8511A02E443.jpg）
+
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1B7F5689700861D3D6E3A8511A02E443.jpg)
+
 ## 18种示例
 ```
 // 示例1:actionSheet的默认样式
