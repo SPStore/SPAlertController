@@ -24,159 +24,6 @@
 
 @implementation ViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    // 设置毛玻璃
-    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-    UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
-    self.tableView.separatorEffect = vibrancyEffect;
-    
-    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
-    self.tableView.sectionFooterHeight = CGFLOAT_MIN;
-    
-    self.cellTitleArray1 = @[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"];
-    self.cellTitleArray2 = @[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"];
-    self.cellTitleArray3 = @[@"自定义1",@"自定义2",@"自定义3"];
-    self.cellTitleArray4 = @[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"];
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 4;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return self.cellTitleArray1.count;
-    } else if(section == 1) {
-        return self.cellTitleArray2.count;
-    } else if(section == 2) {
-        return self.cellTitleArray3.count;
-    } else {
-        return self.cellTitleArray4.count;
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
-    cell.textLabel.font = [UIFont systemFontOfSize:15];
-    cell.backgroundColor = [UIColor clearColor];
-    cell.contentView.backgroundColor = [UIColor whiteColor];
-    if (indexPath.section == 0) {
-        cell.textLabel.text = self.cellTitleArray1[indexPath.row];
-    } else if (indexPath.section == 1) {
-        cell.textLabel.text = self.cellTitleArray2[indexPath.row];
-    } else if (indexPath.section == 2){
-        cell.textLabel.text = self.cellTitleArray3[indexPath.row];
-    } else {
-        cell.textLabel.text = self.cellTitleArray4[indexPath.row];
-    }
-    return cell;
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
-    label.textAlignment = NSTextAlignmentCenter;
-    label.font = [UIFont boldSystemFontOfSize:18];
-    if (section == 0) {
-        label.text = @"ActionSheet样式";
-    } else if(section == 1) {
-        label.text = @"Alert样式";
-    } else if(section == 2){
-        label.text = @"自定义视图";
-    } else {
-        label.text = @"特殊情况";
-    }
-    return label;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 50;
-}
-
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
-        switch (indexPath.row) {
-            case 0:
-                [self actionSheetTest1];
-                break;
-            case 1:
-                [self actionSheetTest2];
-                break;
-            case 2:
-                [self actionSheetTest3];
-                break;
-            case 3:
-                [self actionSheetTest4];
-                break;
-            default:
-                break;
-        }
-    } else if (indexPath.section == 1) {
-        switch (indexPath.row) {
-            case 0:
-                [self alertTest5];
-                break;
-            case 1:
-                [self alertTest6];
-                break;
-            case 2:
-                [self alertTest7];
-                break;
-            case 3:
-                [self alertTest8];
-                break;
-            case 4:
-                [self alertTest9];
-                break;
-            case 5:
-                [self alertTest10];
-                break;
-            case 6:
-                [self alertTest11];
-                break;
-            case 7:
-                [self alertTest12];
-                break;
-            default:
-                break;
-        }
-    } else if (indexPath.section == 2) {
-        switch (indexPath.row) {
-            case 0:
-                [self customTest13];
-                break;
-            case 1:
-                [self customTest14];
-                break;
-            case 2:
-                [self customTest15];
-            default:
-                break;
-        }
-    } else {
-        switch (indexPath.row) {
-            case 0:
-                [self test16];
-                break;
-            case 1:
-                [self test17];
-                break;
-            case 2:
-                [self test18];
-                break;
-            default:
-                break;
-        }
-    }
-
-}
-
 #pragma mark ---------------------------- 示例方法 -------------------------------
 
 // 示例1:actionSheet的默认样式
@@ -636,5 +483,159 @@
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    // 设置毛玻璃
+    UIBlurEffect *blurEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    UIVibrancyEffect *vibrancyEffect = [UIVibrancyEffect effectForBlurEffect:blurEffect];
+    self.tableView.separatorEffect = vibrancyEffect;
+    
+    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
+    self.tableView.sectionFooterHeight = CGFLOAT_MIN;
+    
+    self.cellTitleArray1 = @[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"];
+    self.cellTitleArray2 = @[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"];
+    self.cellTitleArray3 = @[@"自定义1",@"自定义2",@"自定义3"];
+    self.cellTitleArray4 = @[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 4;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (section == 0) {
+        return self.cellTitleArray1.count;
+    } else if(section == 1) {
+        return self.cellTitleArray2.count;
+    } else if(section == 2) {
+        return self.cellTitleArray3.count;
+    } else {
+        return self.cellTitleArray4.count;
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
+    cell.textLabel.font = [UIFont systemFontOfSize:15];
+    cell.backgroundColor = [UIColor clearColor];
+    cell.contentView.backgroundColor = [UIColor whiteColor];
+    if (indexPath.section == 0) {
+        cell.textLabel.text = self.cellTitleArray1[indexPath.row];
+    } else if (indexPath.section == 1) {
+        cell.textLabel.text = self.cellTitleArray2[indexPath.row];
+    } else if (indexPath.section == 2){
+        cell.textLabel.text = self.cellTitleArray3[indexPath.row];
+    } else {
+        cell.textLabel.text = self.cellTitleArray4[indexPath.row];
+    }
+    return cell;
+}
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont boldSystemFontOfSize:18];
+    if (section == 0) {
+        label.text = @"ActionSheet样式";
+    } else if(section == 1) {
+        label.text = @"Alert样式";
+    } else if(section == 2){
+        label.text = @"自定义视图";
+    } else {
+        label.text = @"特殊情况";
+    }
+    return label;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 50;
+}
+
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.section == 0) {
+        switch (indexPath.row) {
+            case 0:
+                [self actionSheetTest1];
+                break;
+            case 1:
+                [self actionSheetTest2];
+                break;
+            case 2:
+                [self actionSheetTest3];
+                break;
+            case 3:
+                [self actionSheetTest4];
+                break;
+            default:
+                break;
+        }
+    } else if (indexPath.section == 1) {
+        switch (indexPath.row) {
+            case 0:
+                [self alertTest5];
+                break;
+            case 1:
+                [self alertTest6];
+                break;
+            case 2:
+                [self alertTest7];
+                break;
+            case 3:
+                [self alertTest8];
+                break;
+            case 4:
+                [self alertTest9];
+                break;
+            case 5:
+                [self alertTest10];
+                break;
+            case 6:
+                [self alertTest11];
+                break;
+            case 7:
+                [self alertTest12];
+                break;
+            default:
+                break;
+        }
+    } else if (indexPath.section == 2) {
+        switch (indexPath.row) {
+            case 0:
+                [self customTest13];
+                break;
+            case 1:
+                [self customTest14];
+                break;
+            case 2:
+                [self customTest15];
+            default:
+                break;
+        }
+    } else {
+        switch (indexPath.row) {
+            case 0:
+                [self test16];
+                break;
+            case 1:
+                [self test17];
+                break;
+            case 2:
+                [self test18];
+                break;
+            default:
+                break;
+        }
+    }
+    
+}
+
 
 @end
