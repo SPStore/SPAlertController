@@ -203,6 +203,7 @@
 @property (nonatomic, assign) SPAlertAnimationType animationType;
 
 @property (nonatomic, assign) BOOL keyboardShow;
+@property (nonatomic, assign) NSLayoutConstraint *alertConstraintCenterY;
 @end
 
 @implementation SPAlertController
@@ -702,7 +703,8 @@
         [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[alertView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
         [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxMarginForAlert)-[alertView]-(>=maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
         [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:-_offsetY]];
+        _alertConstraintCenterY = [NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:0];
+        [alertViewConstraints addObject:_alertConstraintCenterY];
     }
     [self.view addConstraints:alertViewConstraints];
     
@@ -1093,7 +1095,8 @@
         
         CGFloat diff = fabs((self.view.center.y-keyboardEndY*0.5));
         // 改变alertView的中心y值，以至于不被键盘遮挡
-        self.offsetY = diff;
+        //self.offsetY = diff;
+        _alertConstraintCenterY.constant = -diff;
     }
     self.keyboardShow = YES;
 }

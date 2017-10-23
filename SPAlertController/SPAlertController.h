@@ -17,8 +17,8 @@ typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
 };
 
 typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
-    SPAlertControllerStyleActionSheet = 0,
-    SPAlertControllerStyleAlert,
+    SPAlertControllerStyleActionSheet = 0, // 从底部或顶部弹出
+    SPAlertControllerStyleAlert,           // 从中间弹出
 };
 
 typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
