@@ -460,12 +460,20 @@
 }
 ```
 
-##效果图
-1.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-565e263954a40e50.jpg)
-2.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-6986ab0f6619715d.jpg)
-3.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-9f2f51972e69c502.jpg)
-4.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-67e8ea700d3711ad.jpg)
-5.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-dc96f2f9e50f6ba8.jpg)
-6.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-58b49fe452c435c8.jpg)
-7.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-3974cfeac8a9016b.jpg)
-8.![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-d77afa589120fca6.jpg)
+## 效果图
+###### 1.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-565e263954a40e50.jpg)
+###### 2.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-6986ab0f6619715d.jpg)
+###### 3.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-9f2f51972e69c502.jpg)
+###### 4.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-67e8ea700d3711ad.jpg)
+###### 5.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-dc96f2f9e50f6ba8.jpg)
+###### 6.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-58b49fe452c435c8.jpg)
+###### 7.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-3974cfeac8a9016b.jpg)
+###### 8.
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-d77afa589120fca6.jpg)
