@@ -9,7 +9,8 @@
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Gif/SPAlertController.gif)
 
 ## 安装
-        platform :ios, '8.0'     
+##### 版本1.0.0
+        platform :ios, '8.0'     
         target 'TargetName' do 
         pod 'SPAlertController', '~> 1.0.0'
         end 
