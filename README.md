@@ -4,7 +4,7 @@
 * [18种示例](#18种示例)  
 * [效果图](#效果图)
 
-# Gif演示图
+## Gif演示图
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Gif/SPAlertController.gif)
 
 ## 18种示例
@@ -468,7 +468,7 @@
 }
 ```
 
-# 效果图
+## 效果图
 ###### 1.
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-565e263954a40e50.jpg)
 ###### 2.
