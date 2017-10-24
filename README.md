@@ -9,14 +9,19 @@
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Gif/SPAlertController.gif)
 
 ## 安装
+```
+支持iOS8及iOS8以上版本
+platform:ios,'8.0'
+```
 ##### 版本1.0
+
 ```
 target 'MyApp' do
   pod 'SPAlertController', '~> 1.0'
 end
+然后在终端输入命令:pod install 
 ```
-<br>然后在终端输入命令:
-<br>pod install 
+
 ## 18种示例
 ```
 // 示例1:actionSheet的默认样式
