@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SPAlertController"
-  s.version      = "0.0.1"
-  s.summary      = “提醒对话框.”
+  s.version      = "1.0.0"
+  s.summary      = "提醒对话框."
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -53,7 +53,7 @@ Pod::Spec.new do |s|
   #  profile URL.
   #
 
-  s.author             = { "SPStore" => “lesp163@163.com” }
+  s.author             = { "SPStore" => "lesp163@163.com" }
   # Or just: s.author    = "SPStore"
   # s.authors            = { "SPStore" => "" }
   # s.social_media_url   = "http://twitter.com/SPStore"
@@ -65,10 +65,10 @@ Pod::Spec.new do |s|
   #
 
   # s.platform     = :ios
-  # s.platform     = :ios, “8.0”
+  # s.platform     = :ios, "8.0"
 
   #  When using multiple platforms
-  s.ios.deployment_target = “8.0”
+  s.ios.deployment_target = "8.0"
   # s.osx.deployment_target = "10.7"
   # s.watchos.deployment_target = "2.0"
   # s.tvos.deployment_target = "9.0"
