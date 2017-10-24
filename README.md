@@ -3,7 +3,7 @@
 * [如何导入](#如何导入)
 * [Gif演示图](#gif演示图)  
 * [效果图](#效果图)
-* [如何使用](#18种示例)
+* [如何使用](#如何使用)
 
 ## 如何导入
 ##### 版本1.0
@@ -38,8 +38,7 @@ end
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-d77afa589120fca6.jpg)
 
 ## 如何使用
-如果你想提醒对话框从底部或顶部弹出，请选用SPAlertControllerStyleActionSheet样式
-<br>如:
+* 如果你想提醒对话框从底部或顶部弹出，请选用SPAlertControllerStyleActionSheet样式，如:
 ```
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -62,8 +61,7 @@ end
     
     [self presentViewController:alertController animated:YES completion:nil];
 ```
-<br>如果你想提醒对话框从屏幕中间弹出，请选用SPAlertControllerStyleAlert样式
-<br>如:
+<br>* 如果你想提醒对话框从屏幕中间弹出，请选用SPAlertControllerStyleAlert样式，如:
 ```
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
 
@@ -82,5 +80,11 @@ end
     [alertController addAction:action1];
     [alertController addAction:action2];
     [self presentViewController:alertController animated:YES completion:nil];
+```
+* 添加文本输入框
+```
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        // 这个block只会回调一次，因此可以在这里自由定制textFiled，如设置textField的相关属性，设置代理，添加addTarget，监听通知等
+    }];
 ```
         
