@@ -971,7 +971,7 @@
 }
 
 - (CGFloat)minActionHeight:(CGFloat)footerTopMargin {
-    CGFloat minActionHeight;
+    CGFloat minActionHeight = 0;
     if (self.cancelAction) {
         if (self.actions.count > 3) { // 有一个取消按钮且其余按钮在3个或3个以上
             minActionHeight = 3.5*actionHeight+footerTopMargin;
