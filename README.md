@@ -9,10 +9,10 @@
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Gif/SPAlertController.gif)
 
 ## 安装
-##### 版本1.0.0  
+##### 版本1.0.1  
 platform :ios, '8.0'     
 <br>target 'TargetName' do
-<br>pod 'SPAlertController', '~> 1.0.0'
+<br>pod 'SPAlertController', '~> 1.0.1'
 <br>end
 <br>然后，终端输入命令:
 <br>$ pod install
