@@ -1,8 +1,11 @@
 
 # 目录
-
+* [Gif演示图](#Gif演示图)
 * [18种示例](#18种示例)  
 * [效果图](#效果图)
+
+# Gif演示图
+![image](https://github.com/SPStore/SPAlertController/tree/master/Gif)
 
 # 18种示例
 ```
