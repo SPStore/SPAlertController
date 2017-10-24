@@ -61,7 +61,7 @@ end
     
     [self presentViewController:alertController animated:YES completion:nil];
 ```
-<br>* 如果你想提醒对话框从屏幕中间弹出，请选用SPAlertControllerStyleAlert样式，如:
+* 如果你想提醒对话框从屏幕中间弹出，请选用SPAlertControllerStyleAlert样式，如:
 ```
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
 
@@ -86,5 +86,19 @@ end
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         // 这个block只会回调一次，因此可以在这里自由定制textFiled，如设置textField的相关属性，设置代理，添加addTarget，监听通知等
     }];
+```
+* 如果你想自定义，在提醒对话框中有不一样的布局，那么你可以使用下面这个方法
+```
+// customView就是你的自定义view
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
+
+```
+如:
+```
+    MyView *myView = [MyView shareMyView];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha customView:myView];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 ```
         
