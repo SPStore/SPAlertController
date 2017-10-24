@@ -6,7 +6,7 @@
 * [效果图](#效果图)
 
 ## Gif演示图
-![image](https://github.com/SPStore/SPAlertController/blob/master/Gif/SPAlertController.gif)
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/SPAlertController.gif)
 
 ## 安装
 ##### 版本1.0
