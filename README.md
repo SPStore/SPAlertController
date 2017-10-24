@@ -1,11 +1,21 @@
 
 # 目录
 * [Gif演示图](#gif演示图)
+* [用cocopods安装](#安装)
 * [18种示例](#18种示例)  
 * [效果图](#效果图)
 
 ## Gif演示图
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Gif/SPAlertController.gif)
+
+## 安装
+platform :ios, '8.0'
+
+target 'TargetName' do
+pod 'SPAlertController', '~> 1.0.0'
+end
+然后，终端输入命令:
+$ pod install
 
 ## 18种示例
 ```
