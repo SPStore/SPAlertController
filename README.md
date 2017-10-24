@@ -10,11 +10,11 @@
 
 ## 安装
 platform :ios, '8.0'<br>      
-target 'TargetName' do \<br>  
-pod 'SPAlertController', '~> 1.0.0'\<br>      
-end\<br>  
+target 'TargetName' do 
+pod 'SPAlertController', '~> 1.0.0'
+end 
 然后，终端输入命令:  
-$ pod install
+$ pod install\<br> 
 
 ## 18种示例
 ```
