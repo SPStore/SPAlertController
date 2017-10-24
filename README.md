@@ -11,9 +11,9 @@
 ## 安装
 ##### 版本1.0
 <br>target 'MyApp' do
-    <br>pod 'SPAlertController', '~> 1.0'
+    <br>  pod 'SPAlertController', '~> 1.0'
 <br>end
-然后在终端输入命令:
+<br>然后在终端输入命令:
 <br>pod install 
 ## 18种示例
 ```
