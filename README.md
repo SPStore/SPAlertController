@@ -15,7 +15,8 @@ end
 然后在终端输入命令:pod install 
 ```
 ## Gif演示图
-*（友情提示：如果您的网络较慢，gif图可能会延迟加载，您可以先把宝贵的时间浏览其它信息）*
+（友情提示：如果您的网络较慢，gif图可能会延迟加载，您可以先把宝贵的时间浏览其它信息）
+
 <br>![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/SPAlertController.gif)
 ## 效果图
 ###### 1.
