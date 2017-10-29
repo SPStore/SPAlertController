@@ -14,11 +14,8 @@
 
 @interface ViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, strong) NSArray *cellTitleArray1;
-@property (nonatomic, strong) NSArray *cellTitleArray2;
-@property (nonatomic, strong) NSArray *cellTitleArray3;
-@property (nonatomic, strong) NSArray *cellTitleArray4;
-
+@property (nonatomic, strong) NSArray *titles;
+@property (nonatomic, strong) NSArray *dataSource;
 @property (nonatomic, strong) SPAlertAction *sureAction;
 @end
 
@@ -79,7 +76,7 @@
 // 示例3:actionSheet“从天而降”
 - (void)actionSheetTest3 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:nil message:nil preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDropDown];
-
+    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -108,7 +105,7 @@
     alertController.messageColor = [UIColor blueColor];
     // 设置小标题字体
     alertController.messageFont = [UIFont systemFontOfSize:13];
-
+    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -144,7 +141,7 @@
     [alertController addAction:action4];
     
     action1.titleFont = [UIFont systemFontOfSize:11];
-
+    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -152,7 +149,7 @@
 - (void)alertTest5 {
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
-
+    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -167,7 +164,7 @@
     action2.titleColor = [UIColor redColor];
     [alertController addAction:action1];
     [alertController addAction:action2];
-
+    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -307,7 +304,7 @@
 }
 
 - (void)textFieldDidChanged:(UITextField *)textField {
-
+    
     if (textField.text.length) {
         self.sureAction.enabled = YES;
     } else {
@@ -350,7 +347,7 @@
 - (void)test16 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     alertController.maxTopMarginForActionSheet = 100;
-
+    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -413,7 +410,7 @@
     [alertController addAction:action13];
     [alertController addAction:action14];
     [alertController addAction:action15];
-
+    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -440,11 +437,11 @@
     SPAlertAction *action5 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了取消");
     }];
-
+    
     SPAlertAction *action6 = [SPAlertAction actionWithTitle:@"第6个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第6个");
     }];
-
+    
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
@@ -498,26 +495,16 @@
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
-    self.cellTitleArray1 = @[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"];
-    self.cellTitleArray2 = @[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"];
-    self.cellTitleArray3 = @[@"自定义1",@"自定义2",@"自定义3"];
-    self.cellTitleArray4 = @[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"];
+    self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况"];
+    self.dataSource = @[@[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"],@[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"],@[@"自定义1",@"自定义2",@"自定义3"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 4;
+    return self.dataSource.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return self.cellTitleArray1.count;
-    } else if(section == 1) {
-        return self.cellTitleArray2.count;
-    } else if(section == 2) {
-        return self.cellTitleArray3.count;
-    } else {
-        return self.cellTitleArray4.count;
-    }
+    return [self.dataSource[section] count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -525,15 +512,7 @@
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     cell.backgroundColor = [UIColor clearColor];
     cell.contentView.backgroundColor = [UIColor whiteColor];
-    if (indexPath.section == 0) {
-        cell.textLabel.text = self.cellTitleArray1[indexPath.row];
-    } else if (indexPath.section == 1) {
-        cell.textLabel.text = self.cellTitleArray2[indexPath.row];
-    } else if (indexPath.section == 2){
-        cell.textLabel.text = self.cellTitleArray3[indexPath.row];
-    } else {
-        cell.textLabel.text = self.cellTitleArray4[indexPath.row];
-    }
+    cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
     return cell;
 }
 
@@ -541,15 +520,7 @@
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont boldSystemFontOfSize:18];
-    if (section == 0) {
-        label.text = @"ActionSheet样式";
-    } else if(section == 1) {
-        label.text = @"Alert样式";
-    } else if(section == 2){
-        label.text = @"自定义视图";
-    } else {
-        label.text = @"特殊情况";
-    }
+    label.text = self.titles[section];
     return label;
 }
 
