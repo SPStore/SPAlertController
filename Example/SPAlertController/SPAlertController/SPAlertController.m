@@ -802,11 +802,9 @@
     NSLayoutConstraint *actionBezelViewHeightContraint = [NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionBezelHeight];
     // 设置优先级，要比上面headerBezelViewContraintHeight的优先级低
     actionBezelViewHeightContraint.priority = 997.0f;
-    
     if (self.actions.count) {
         // 计算最小高度
         CGFloat minActionHeight = [self minActionHeight:footerTopMargin];
-        
         [actionBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:minActionHeight]];
     }
     [actionBezelViewConstraints addObject:actionBezelViewHeightContraint];
@@ -814,7 +812,6 @@
     [alertView addConstraints:actionBezelViewConstraints];
     
     [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
-    
     [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionTableView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView,footerView)]];
     [actionBezelView addConstraints:actionTableViewConstraints];
     
@@ -837,7 +834,6 @@
             // 第一个footerActionView的左间距
             if (idx == 0) {
                 [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:footerView attribute:NSLayoutAttributeLeft multiplier:1.f constant:0]];
-                
             }
             // 最后一个itemView的右间距
             if (idx == footerActionViews.count-1) {
@@ -995,6 +991,15 @@
 }
 
 #pragma mark - setter
+- (void)setTitle:(NSString *)title {
+    _title = [title copy];
+    self.titleLabel.text = title;
+}
+
+- (void)setMessage:(NSString *)message {
+    _message = message;
+    self.detailTitleLabel.text = message;
+}
 
 - (void)setTitleColor:(UIColor *)titleColor {
     _titleColor = titleColor;

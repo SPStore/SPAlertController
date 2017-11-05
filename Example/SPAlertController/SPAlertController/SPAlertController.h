@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *  @param message  副标题
  *  @param preferredStyle  样式
  *  @param animationType   动画类型
- *  @param customView      自定义的view，如果customView传nil，就跟上面的方法一致
+ *  @param customView      自定义的view，如果customView传nil，就跟上面的方法等效
  */
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
 
