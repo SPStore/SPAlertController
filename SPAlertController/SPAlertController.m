@@ -158,8 +158,8 @@
 @property (nonatomic, weak) UIScrollView *headerScrollView;
 @property (nonatomic, weak) UIView *headerScrollContentView; // autoLayout中需要在scrollView上再加一个view
 @property (nonatomic, weak) UIView *titleView;
-@property (nonatomic, weak) UILabel *titleLabel;
-@property (nonatomic, weak) UILabel *detailTitleLabel;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *detailTitleLabel;
 @property (nonatomic, weak) UIView *textFieldView;
 
 // ---------------- 头部控件的约束数组 -----------------
@@ -175,11 +175,13 @@
 
 // ---------------- action控件 --------------
 @property (nonatomic, weak) UIView *actionBezelView;
+@property (nonatomic, weak) UIView *actionBezelContentView;
 @property (nonatomic, weak) UITableView *actionTableView;
 @property (nonatomic, weak) UIView *footerView;
 
 // ---------------- action控件的约束数组 -------------------
 @property (nonatomic, strong) NSMutableArray *actionBezelViewConstraints;
+@property (nonatomic, strong) NSMutableArray *actionBezelContentViewConstraints;
 @property (nonatomic, strong) NSMutableArray *actionTableViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerActionViewConstraints;
@@ -187,6 +189,8 @@
 
 // ---------------- 自定义view --------------
 @property (nonatomic, strong) UIView *customView;
+@property (nonatomic, strong) UIView *customTitleView;
+@property (nonatomic, strong) UIView *customCenterView;
 // ---------------- action控件的约束数组 -------------------
 @property (nonatomic, strong) NSMutableArray *customViewConstraints;
 
@@ -230,7 +234,19 @@
 
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(UIView *)customView {
     // 创建控制器
-    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:customView];
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:customView customTitleView:nil customCenterView:nil];
+    return alertController;
+}
+
++ (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customTitleView:(nullable UIView *)customTitleView {
+    // 创建控制器
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:nil message:nil preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:customTitleView customCenterView:nil];
+    return alertController;
+}
+
++ (instancetype)alertControllerWithTitle:(NSString *)title message:(NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(UIView *)customCenterView {
+    // 创建控制器
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:nil customCenterView:customCenterView];
     return alertController;
 }
 
@@ -323,9 +339,6 @@
     self.textFields = array;
     
     UITextField *firstTextField = array.firstObject;
-    if (textField != firstTextField) {
-        [textField resignFirstResponder];
-    }
     // 成为第一响应者，这样一旦present出来后，键盘就会弹出
     [firstTextField becomeFirstResponder];
     
@@ -383,8 +396,8 @@
 }
 
 #pragma mark - Private
-
-- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(UIView *)customView {
+- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView {
+    
     if (self = [super init]) {
         
         // 是否视图控制器定义它呈现视图控制器的过渡风格（默认为NO）
@@ -393,8 +406,8 @@
         self.modalPresentationStyle = UIModalPresentationCustom;
         self.transitioningDelegate = self;
         
-        self.title = title;
-        self.message = message;
+        _title = title;
+        _message = message;
         self.preferredStyle = preferredStyle;
         // 如果是默认动画，preferredStyle为alert时动画默认为fade，preferredStyle为actionShee时动画默认为raiseUp
         if (animationType == SPAlertAnimationTypeDefault) {
@@ -409,7 +422,7 @@
         self.animationType = animationType;
         
         // 添加子控件
-        [self setupViews:customView];
+        [self setupViewsWithCustomView:customView customTitleView:customTitleView customCenterView:customCenterView];
         
         self.needBlur = YES;
         self.maxTopMarginForActionSheet = 0.0;
@@ -417,12 +430,12 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
-
+        
     }
     return self;
 }
 
-- (void)setupViews:(UIView *)customView {
+- (void)setupViewsWithCustomView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView {
     UIView *backgroundView = [[UIView alloc] init];
     backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     backgroundView.backgroundColor = [UIColor blackColor];
@@ -468,73 +481,59 @@
         headerScrollContentView.backgroundColor = actionColor;
         [headerScrollView addSubview:headerScrollContentView];
         _headerScrollContentView = headerScrollContentView;
-        
-        UIView *titleView = [[UIView alloc] init];
-        titleView.translatesAutoresizingMaskIntoConstraints = NO;
-        [headerScrollContentView addSubview:titleView];
-        _titleView = titleView;
-        
-        UIView *textFieldView = [[UIView alloc] init];
-        textFieldView.translatesAutoresizingMaskIntoConstraints = NO;
-        [headerScrollContentView addSubview:textFieldView];
-        _textFieldView.backgroundColor = [UIColor redColor];
-        _textFieldView = textFieldView;
-        
-        if (self.title.length) {
-            UILabel *titleLabel = [[UILabel alloc] init];
-            titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-            titleLabel.textAlignment = NSTextAlignmentCenter;
-            titleLabel.numberOfLines = 0;
-            titleLabel.text = self.title;
-            titleLabel.font = [UIFont boldSystemFontOfSize:17];
-            // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
-            [titleLabel setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
-            [titleLabel sizeToFit];
-            [titleView addSubview:titleLabel];
-            _titleLabel = titleLabel;
-        }
-        
-        if (self.message.length) {
-            UILabel *detailTitlLabel = [[UILabel alloc] init];
-            detailTitlLabel.translatesAutoresizingMaskIntoConstraints = NO;
-            detailTitlLabel.textAlignment = NSTextAlignmentCenter;
-            detailTitlLabel.numberOfLines = 0;
-            detailTitlLabel.text = self.message;
-            if (_titleLabel.text.length) {
-                detailTitlLabel.font = [UIFont systemFontOfSize:14];
-                detailTitlLabel.alpha = 0.5;
-            } else {
-                detailTitlLabel.font = [UIFont systemFontOfSize:17];
-                detailTitlLabel.alpha = 1.0;
+        if (!customTitleView) {
+            UIView *titleView = [[UIView alloc] init];
+            titleView.translatesAutoresizingMaskIntoConstraints = NO;
+            [headerScrollContentView addSubview:titleView];
+            _titleView = titleView;
+            
+            UIView *textFieldView = [[UIView alloc] init];
+            textFieldView.translatesAutoresizingMaskIntoConstraints = NO;
+            [headerScrollContentView addSubview:textFieldView];
+            _textFieldView.backgroundColor = [UIColor redColor];
+            _textFieldView = textFieldView;
+            
+            if (self.title.length) {
+                self.titleLabel.text = self.title;
             }
-            // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
-            [detailTitlLabel setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
-            [detailTitlLabel sizeToFit];
-            [titleView addSubview:detailTitlLabel];
-            _detailTitleLabel = detailTitlLabel;
+            if (self.message.length) {
+                self.detailTitleLabel.text = self.message;
+            }
+        } else {
+            self.customTitleView = customTitleView;
         }
-        
+
         UIView *actionBezelView = [[UIView alloc] init];
         // 如果布局使用的是autolayout，一定要将对应的控件设置translatesAutoresizingMaskIntoConstraints为NO
         actionBezelView.translatesAutoresizingMaskIntoConstraints = NO;
         [alertView addSubview:actionBezelView];
         _actionBezelView = actionBezelView;
         
-        UITableView *actionTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-        actionTableView.translatesAutoresizingMaskIntoConstraints = NO;
-        actionTableView.showsHorizontalScrollIndicator = NO;
-        actionTableView.alwaysBounceVertical = NO; // tableView内容没有超出contentSize时，禁止滑动
-        actionTableView.backgroundColor = [UIColor clearColor];
-        actionTableView.separatorColor = [UIColor clearColor];
-        actionTableView.dataSource = self;
-        actionTableView.delegate = self;
-        [actionTableView registerClass:[SPAlertControllerActionCell class] forCellReuseIdentifier:NSStringFromClass([SPAlertControllerActionCell class])];
-        [actionBezelView addSubview:actionTableView];
-        _actionTableView = actionTableView;
+        if (!customCenterView) {
+
+            UIView *actionBezelContentView = [[UIView alloc] init];
+            actionBezelContentView.translatesAutoresizingMaskIntoConstraints = NO;
+            [actionBezelView addSubview:actionBezelContentView];
+            _actionBezelContentView = actionBezelContentView;
+            
+            UITableView *actionTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+            actionTableView.translatesAutoresizingMaskIntoConstraints = NO;
+            actionTableView.showsHorizontalScrollIndicator = NO;
+            actionTableView.alwaysBounceVertical = NO; // tableView内容没有超出contentSize时，禁止滑动
+            actionTableView.backgroundColor = [UIColor clearColor];
+            actionTableView.separatorColor = [UIColor clearColor];
+            actionTableView.dataSource = self;
+            actionTableView.delegate = self;
+            [actionTableView registerClass:[SPAlertControllerActionCell class] forCellReuseIdentifier:NSStringFromClass([SPAlertControllerActionCell class])];
+            [actionBezelContentView addSubview:actionTableView];
+            _actionTableView = actionTableView;
+        } else {
+            self.customCenterView = customCenterView;
+        }
         
         UIView *footerView = [[UIView alloc] init];
         footerView.translatesAutoresizingMaskIntoConstraints = NO;
-        [actionBezelView addSubview:footerView];
+        [_actionBezelView addSubview:footerView];
         _footerView = footerView;
         
         [self layoutViewConstraints];
@@ -595,9 +594,10 @@
     UIView *headerBezelView = self.headerBezelView;
     UIScrollView *headerScrollView = self.headerScrollView;
     UIView *headerScrollContentView = self.headerScrollContentView;
-    UIView *titleView = self.titleView;
+    UIView *titleView = self.customTitleView ? self.customTitleView : self.titleView;
     UIView *textFieldView = self.textFieldView;
     UIView *actionBezelView = self.actionBezelView;
+    UIView *actionBezelContentView = self.customCenterView ? self.customCenterView : self.actionBezelContentView;
     UIScrollView *actionTableView = self.actionTableView;
     UIView *footerView = self.footerView;
     
@@ -613,6 +613,7 @@
     NSMutableArray *texFieldViewConstraints = [NSMutableArray array];
     NSMutableArray *textFieldConstraints = [NSMutableArray array];
     NSMutableArray *actionBezelViewConstraints = [NSMutableArray array];
+    NSMutableArray *actionBezelContentViewConstraints = [NSMutableArray array];
     NSMutableArray *actionTableViewConstraints = [NSMutableArray array];
     NSMutableArray *footerViewConstraints = [NSMutableArray array];
     NSMutableArray *footerActionViewConstraints = [NSMutableArray array];
@@ -661,6 +662,10 @@
     if (self.actionBezelViewConstraints) {
         [alertView removeConstraints:self.actionBezelViewConstraints];
         self.actionBezelViewConstraints = nil;
+    }
+    if (self.actionBezelContentViewConstraints) {
+        [actionBezelView removeConstraints:self.actionBezelContentViewConstraints];
+        self.actionBezelContentViewConstraints = nil;
     }
     if (self.actionTableViewConstraints) {
         [actionBezelView removeConstraints:self.actionTableViewConstraints];
@@ -737,65 +742,78 @@
     }
     [headerScrollView addConstraints:headerScrollContentViewConstraints];
     
-    [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[titleView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView)]];
-    [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView,textFieldView)]];
-    [headerScrollContentView addConstraints:titleViewConstraints];
-    
-    NSArray *labels = titleView.subviews;
-    [labels enumerateObjectsUsingBlock:^(UILabel *label, NSUInteger idx, BOOL * _Nonnull stop) {
-        // 左右间距
-        [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(==margin)-[label]-(==margin)-|"] options:0 metrics:@{@"margin":@(margin)} views:NSDictionaryOfVariableBindings(label)]];
-        // 第一个子控件顶部间距
-        if (idx == 0) {
-            [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeTop multiplier:1.f constant:margin]];
+    if (!self.customTitleView) {
+        [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[titleView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView)]];
+        [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView,textFieldView)]];
+        [headerScrollContentView addConstraints:titleViewConstraints];
+        
+        NSArray *labels = titleView.subviews;
+        [labels enumerateObjectsUsingBlock:^(UILabel *label, NSUInteger idx, BOOL * _Nonnull stop) {
+            // 左右间距
+            [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(==margin)-[label]-(==margin)-|"] options:0 metrics:@{@"margin":@(margin)} views:NSDictionaryOfVariableBindings(label)]];
+            // 第一个子控件顶部间距
+            if (idx == 0) {
+                [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeTop multiplier:1.f constant:margin]];
+            }
+            // 最后一个子控件底部间距
+            if (idx == labels.count - 1) {
+                [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeBottom multiplier:1.f constant:-margin]];
+            }
+            // 子控件之间的垂直间距
+            if (idx > 0) {
+                NSLayoutConstraint *paddingConstraint = [NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:labels[idx - 1] attribute:NSLayoutAttributeBottom multiplier:1.f constant:margin*0.5];
+                [titleLabelConstraints addObject:paddingConstraint];
+            }
+        }];
+        [titleView addConstraints:titleLabelConstraints];
+        
+        CGFloat textFieldViewHeight = 0;
+        CGFloat textFieldMargin = 15;
+        CGFloat textFiledHeight = 26;
+        if (self.textFields.count) {
+            textFieldViewHeight = self.textFields.count * textFiledHeight + textFieldMargin + 0.5 * textFieldMargin;
         }
-        // 最后一个子控件底部间距
-        if (idx == labels.count - 1) {
-            [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeBottom multiplier:1.f constant:-margin]];
-        }
-        // 子控件之间的垂直间距
-        if (idx > 0) {
-            NSLayoutConstraint *paddingConstraint = [NSLayoutConstraint constraintWithItem:label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:labels[idx - 1] attribute:NSLayoutAttributeBottom multiplier:1.f constant:margin*0.5];
-            [titleLabelConstraints addObject:paddingConstraint];
-        }
-    }];
-    [titleView addConstraints:titleLabelConstraints];
-    
-    CGFloat textFieldViewHeight = 0;
-    CGFloat textFieldMargin = 15;
-    CGFloat textFiledHeight = 26;
-    if (self.textFields.count) {
-        textFieldViewHeight = self.textFields.count * textFiledHeight + textFieldMargin + 0.5 * textFieldMargin;
+        [texFieldViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(textFieldView)]];
+        [texFieldViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView,textFieldView)]];
+        [texFieldViewConstraints addObject:[NSLayoutConstraint constraintWithItem:textFieldView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:textFieldViewHeight]];
+        [headerScrollContentView addConstraints:texFieldViewConstraints];
+        NSArray *textFields = textFieldView.subviews;
+        [textFields enumerateObjectsUsingBlock:^(UITextField *textField, NSUInteger idx, BOOL * _Nonnull stop) {
+            // 左右间距
+            [textFieldConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(==textFieldMargin)-[textField]-(==textFieldMargin)-|"] options:0 metrics:@{@"textFieldMargin":@(textFieldMargin)} views:NSDictionaryOfVariableBindings(textField)]];
+            [textFieldConstraints addObject:[NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.f constant:textFiledHeight]];
+            // 第一个子控件顶部间距
+            if (idx == 0) {
+                [textFieldConstraints addObject:[NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:textFieldView attribute:NSLayoutAttributeTop multiplier:1.f constant:textFieldMargin*0.5]];
+            }
+            // 最后一个子控件底部间距
+            if (idx == textFields.count - 1) {
+                [textFieldConstraints addObject:[NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:textFieldView attribute:NSLayoutAttributeBottom multiplier:1.f constant:-textFieldMargin]];
+            }
+            // 子控件之间的垂直间距
+            if (idx > 0) {
+                NSLayoutConstraint *paddingConstraint = [NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:textFields[idx - 1] attribute:NSLayoutAttributeBottom multiplier:1.f constant:0];
+                [textFieldConstraints addObject:paddingConstraint];
+            }
+        }];
+        [textFieldView addConstraints:textFieldConstraints];
+    } else {
+        // 自定义titleView时，这里的titleView就是customTitleView
+        [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[titleView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView)]];
+        [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView)]];
+        [titleViewConstraints addObject:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:titleView.bounds.size.height]];
+        [headerScrollContentView addConstraints:titleViewConstraints];
     }
-    [texFieldViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(textFieldView)]];
-    [texFieldViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView,textFieldView)]];
-    [texFieldViewConstraints addObject:[NSLayoutConstraint constraintWithItem:textFieldView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:textFieldViewHeight]];
-    [headerScrollContentView addConstraints:texFieldViewConstraints];
-    NSArray *textFields = textFieldView.subviews;
-    [textFields enumerateObjectsUsingBlock:^(UITextField *textField, NSUInteger idx, BOOL * _Nonnull stop) {
-        // 左右间距
-        [textFieldConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(==textFieldMargin)-[textField]-(==textFieldMargin)-|"] options:0 metrics:@{@"textFieldMargin":@(textFieldMargin)} views:NSDictionaryOfVariableBindings(textField)]];
-        [textFieldConstraints addObject:[NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.f constant:textFiledHeight]];
-        // 第一个子控件顶部间距
-        if (idx == 0) {
-            [textFieldConstraints addObject:[NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:textFieldView attribute:NSLayoutAttributeTop multiplier:1.f constant:textFieldMargin*0.5]];
-        }
-        // 最后一个子控件底部间距
-        if (idx == textFields.count - 1) {
-            [textFieldConstraints addObject:[NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:textFieldView attribute:NSLayoutAttributeBottom multiplier:1.f constant:-textFieldMargin]];
-        }
-        // 子控件之间的垂直间距
-        if (idx > 0) {
-            NSLayoutConstraint *paddingConstraint = [NSLayoutConstraint constraintWithItem:textField attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:textFields[idx - 1] attribute:NSLayoutAttributeBottom multiplier:1.f constant:0];
-            [textFieldConstraints addObject:paddingConstraint];
-        }
-    }];
-    [textFieldView addConstraints:textFieldConstraints];
-    
+
     // 先强制布局一次，否则下面拿到的CGRectGetMaxY(titleView.frame)还没有值
     [headerBezelView layoutIfNeeded];
     // 设置headerBezelView的高度(这个高度同样可以通过计算titleLabel和detailTitleLabel的文字高度计算出来,但是那样计算出来的高度会有零点几的误差,只要差了一点,有可能scrollView即便内容没有超过contentSize,仍然能够滑动)
-    CGRect rect = self.textFields.count ? textFieldView.frame : titleView.frame;
+    CGRect rect;
+    if (!self.customTitleView) {
+        rect = self.textFields.count ? textFieldView.frame : titleView.frame;
+    } else {
+        rect = titleView.frame;
+    }
     headerBezelViewContsraintHeight.constant = CGRectGetMaxY(rect);
     
     // ----------------------------------------------------------------------------
@@ -805,24 +823,27 @@
     NSLayoutConstraint *actionBezelViewHeightContraint = [NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionBezelHeight];
     // 设置优先级，要比上面headerBezelViewContraintHeight的优先级低
     actionBezelViewHeightContraint.priority = 997.0f;
-    
     if (self.actions.count) {
         // 计算最小高度
         CGFloat minActionHeight = [self minActionHeight:footerTopMargin];
-        
         [actionBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:minActionHeight]];
     }
     [actionBezelViewConstraints addObject:actionBezelViewHeightContraint];
-    
     [alertView addConstraints:actionBezelViewConstraints];
     
-    [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
+    [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView)]];
+    [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView,footerView)]];
+    [actionBezelContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelContentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:self.customCenterView.bounds.size.height]];
+    [actionBezelView addConstraints:actionBezelContentViewConstraints];
     
-    [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionTableView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView,footerView)]];
-    [actionBezelView addConstraints:actionTableViewConstraints];
+    if (!self.customCenterView) {
+        [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
+        [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView,footerView)]];
+        [actionBezelContentView addConstraints:actionTableViewConstraints];
+    }
     
     [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[footerView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView)]];
-    [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionTableView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionTableView)]];
+    [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionBezelContentView)]];
     // 这个条件判断需不需要footerView，不满足条件footerView的高度就给0
     if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= 2) && self.actions.count)) {
         [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
@@ -840,7 +861,6 @@
             // 第一个footerActionView的左间距
             if (idx == 0) {
                 [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:footerView attribute:NSLayoutAttributeLeft multiplier:1.f constant:0]];
-                
             }
             // 最后一个itemView的右间距
             if (idx == footerActionViews.count-1) {
@@ -884,10 +904,10 @@
     self.textFieldViewConstraints = texFieldViewConstraints;
     self.textFieldConstraints = textFieldConstraints;
     self.actionBezelViewConstraints = actionBezelViewConstraints;
+    self.actionBezelContentViewConstraints = actionBezelContentViewConstraints;
     self.actionTableViewConstraints = actionTableViewConstraints;
     self.footerViewConstraints = footerViewConstraints;
     self.footerActionViewConstraints = footerActionViewConstraints;
-    
 }
 
 // 布局自定义的view
@@ -964,7 +984,11 @@
             }
         } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
             if (self.actions.count <= 2) {
-                actionBezelHeight = actionHeight;
+                if (!self.customCenterView) {
+                    actionBezelHeight = actionHeight;
+                } else { // 2个以下action且有自定义scrollView
+                    actionBezelHeight = self.customCenterView.bounds.size.height + actionHeight;
+                }
             } else {
                 actionBezelHeight = self.actions.count*actionHeight;
             }
@@ -974,7 +998,7 @@
 }
 
 - (CGFloat)minActionHeight:(CGFloat)footerTopMargin {
-    CGFloat minActionHeight;
+    CGFloat minActionHeight = 0;
     if (self.cancelAction) {
         if (self.actions.count > 3) { // 有一个取消按钮且其余按钮在3个或3个以上
             minActionHeight = 3.5*actionHeight+footerTopMargin;
@@ -998,6 +1022,17 @@
 }
 
 #pragma mark - setter
+- (void)setTitle:(NSString *)title {
+    _title = [title copy];
+    self.titleLabel.text = title;
+    [self.view setNeedsUpdateConstraints];
+}
+
+- (void)setMessage:(NSString *)message {
+    _message = [message copy];
+    self.detailTitleLabel.text = message;
+    [self.view setNeedsUpdateConstraints];
+}
 
 - (void)setTitleColor:(UIColor *)titleColor {
     _titleColor = titleColor;
@@ -1048,6 +1083,11 @@
     }
 }
 
+- (void)setAlertCornerRadius:(CGFloat)alertCornerRadius {
+    _alertCornerRadius = alertCornerRadius;
+    self.alertView.layer.cornerRadius = alertCornerRadius;
+}
+
 - (void)setOffsetY:(CGFloat)offsetY {
     _offsetY = offsetY;
     _alertConstraintCenterY.constant = -offsetY;
@@ -1055,12 +1095,62 @@
 
 - (void)setCustomView:(UIView *)customView {
     _customView = customView;
+    [customView layoutIfNeeded];
     customView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.alertView addSubview:customView];
     [self layoutCustomView];
 }
 
+- (void)setCustomTitleView:(UIView *)customTitleView {
+    _customTitleView = customTitleView;
+    [customTitleView layoutIfNeeded];
+    customTitleView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.headerScrollContentView addSubview:customTitleView];
+}
+
+- (void)setCustomCenterView:(UIView *)customCenterView {
+    _customCenterView = customCenterView;
+    [customCenterView layoutIfNeeded];
+    customCenterView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.actionBezelView addSubview:customCenterView];
+}
+
 #pragma mark - getter
+
+- (UILabel *)titleLabel {
+    if (!_titleLabel) {
+        _titleLabel = [[UILabel alloc] init];
+        _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _titleLabel.textAlignment = NSTextAlignmentCenter;
+        _titleLabel.numberOfLines = 0;
+        _titleLabel.font = [UIFont boldSystemFontOfSize:17];
+        // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
+        [_titleLabel setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
+        [_titleLabel sizeToFit];
+        if (_detailTitleLabel) {
+            [self.titleView insertSubview:_titleLabel belowSubview:_detailTitleLabel];
+        } else {
+            [self.titleView addSubview:_titleLabel];
+        }
+    }
+    return _titleLabel;
+}
+
+- (UILabel *)detailTitleLabel {
+    if (!_detailTitleLabel) {
+        _detailTitleLabel = [[UILabel alloc] init];
+        _detailTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _detailTitleLabel.textAlignment = NSTextAlignmentCenter;
+        _detailTitleLabel.numberOfLines = 0;
+        _detailTitleLabel.font = [UIFont systemFontOfSize:14];
+        _detailTitleLabel.alpha = 0.5;
+        // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
+        [_detailTitleLabel setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
+        [_detailTitleLabel sizeToFit];
+        [self.titleView addSubview:_detailTitleLabel];
+    }
+    return _detailTitleLabel;
+}
 
 - (NSArray<SPAlertAction *> *)actions {
     if (!_actions) {

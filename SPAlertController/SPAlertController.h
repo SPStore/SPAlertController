@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *
  *  @param title    标题
  *  @param style    action样式
- *  @param handler  点中后的boloc回调
+ *  @param handler  点中后的bolok回调
  */
 + (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
 
@@ -76,9 +76,29 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *  @param message  副标题
  *  @param preferredStyle  样式
  *  @param animationType   动画类型
- *  @param customView      自定义的view，如果customView传nil，就跟上面的方法一致
+ *  @param customView      自定义的view，如果customView传nil，就跟第一个方法等效
  */
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
+
+/**
+ *  创建控制器
+ *
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ *  @param customTitleView 自定义的titleView，如果customTitleView传nil，就跟第一个方法等效
+ */
++ (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customTitleView:(nullable UIView *)customTitleView;
+
+/**
+ *  创建控制器
+ *
+ *  @param title    大标题
+ *  @param message  副标题
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ *  @param customCenterView 自定义的centerView，如果customCenterView传nil，就跟第一个方法等效
+ */
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView;
 
 /**
  *  添加action
@@ -127,6 +147,9 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 
 /** alert样式下,四周的最大间距,默认为20 */
 @property (nonatomic, assign) CGFloat maxMarginForAlert;
+
+/** alert样式下，圆角半径 */
+@property (nonatomic, assign) CGFloat alertCornerRadius;
 
 /** alert样式下，弹窗的中心y值，为正向上偏移，为负向下偏移 */
 @property (nonatomic, assign) CGFloat offsetY;
