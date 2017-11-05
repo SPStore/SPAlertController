@@ -208,6 +208,8 @@
 
 @property (nonatomic, assign) BOOL keyboardShow;
 @property (nonatomic, assign) NSLayoutConstraint *alertConstraintCenterY;
+
+@property (nonatomic, assign) CGFloat customCenterViewH;
 @end
 
 @implementation SPAlertController
@@ -833,7 +835,6 @@
     
     [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView)]];
     [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView,footerView)]];
-    [actionBezelContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelContentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:self.customCenterView.bounds.size.height]];
     [actionBezelView addConstraints:actionBezelContentViewConstraints];
     
     if (!self.customCenterView) {
@@ -987,7 +988,7 @@
                 if (!self.customCenterView) {
                     actionBezelHeight = actionHeight;
                 } else { // 2个以下action且有自定义scrollView
-                    actionBezelHeight = self.customCenterView.bounds.size.height + actionHeight;
+                    actionBezelHeight = _customCenterViewH + actionHeight;
                 }
             } else {
                 actionBezelHeight = self.actions.count*actionHeight;
@@ -1111,6 +1112,7 @@
 - (void)setCustomCenterView:(UIView *)customCenterView {
     _customCenterView = customCenterView;
     [customCenterView layoutIfNeeded];
+    _customCenterViewH = _customCenterView.bounds.size.height;
     customCenterView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.actionBezelView addSubview:customCenterView];
 }
