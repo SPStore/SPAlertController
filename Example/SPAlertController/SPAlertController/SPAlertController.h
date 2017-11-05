@@ -76,9 +76,29 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *  @param message  副标题
  *  @param preferredStyle  样式
  *  @param animationType   动画类型
- *  @param customView      自定义的view，如果customView传nil，就跟上面的方法等效
+ *  @param customView      自定义的view，如果customView传nil，就跟第一个方法等效
  */
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
+
+/**
+ *  创建控制器
+ *
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ *  @param customTitleView 自定义的titleView，如果customTitleView传nil，就跟第一个方法等效
+ */
++ (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customTitleView:(nullable UIView *)customTitleView;
+
+/**
+ *  创建控制器
+ *
+ *  @param title    大标题
+ *  @param message  副标题
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ *  @param customCenterView 自定义的centerView，如果customCenterView传nil，就跟第一个方法等效
+ */
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView;
 
 /**
  *  添加action

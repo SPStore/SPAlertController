@@ -9,6 +9,8 @@
 #import "ViewController.h"
 #import "SPAlertController.h"
 #import "MyView.h"
+#import "MyTitleView.h"
+#import "MyCenterView.h"
 #import "ShoppingCartView.h"
 #import "CommodityListView.h"
 
@@ -26,7 +28,8 @@
 // 示例1:actionSheet的默认样式
 - (void)actionSheetTest1 {
     // actionSheet中，SPAlertAnimationTypeDefault 等价于 SPAlertAnimationTypeRaiseUp
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:nil message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
+    alertController.title = @"大大大大大大";
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -149,7 +152,7 @@
 - (void)alertTest5 {
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
-    
+
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -318,12 +321,56 @@
     MyView *myView = [MyView shareMyView];
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha customView:myView];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例13:自定义标题view
+- (void)customTest14 {
+    MyTitleView *myTitleView = [[MyTitleView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
+    SPAlertController *alertController = [SPAlertController alertControllerWithPreferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customTitleView:myTitleView];
+    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第1个");
+    }];
+    // 设置第1个action的颜色
+    action1.titleColor = [UIColor blueColor];
+    
+    // SPAlertActionStyleDestructive默认文字为红色(可修改)
+    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第2个");
+    }];
+    // 设置第2个action的颜色
+    action2.titleColor = [UIColor redColor];
+    [alertController addAction:action1];
+    [alertController addAction:action2];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例13:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于2,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
+- (void)customTest15 {
+    MyCenterView *centerView = [[MyCenterView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault customCenterView:centerView];
+    
+    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第1个");
+    }];
+    // 设置第1个action的颜色
+    action1.titleColor = [UIColor blueColor];
+    
+    // SPAlertActionStyleDestructive默认文字为红色(可修改)
+    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第2个");
+    }];
+    // 设置第2个action的颜色
+    action2.titleColor = [UIColor redColor];
+    [alertController addAction:action1];
+    [alertController addAction:action2];
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例14:自定义视图
-- (void)customTest14 {
+// 示例16:自定义视图
+- (void)customTest16 {
     
     ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, 0, 300)];
     shoppingCartView.backgroundColor = [UIColor whiteColor];
@@ -333,8 +380,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例15:自定义视图
-- (void)customTest15 {
+// 示例17:自定义视图
+- (void)customTest17 {
     CommodityListView *commodityListView = [[CommodityListView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
     commodityListView.backgroundColor = [UIColor whiteColor];
     
@@ -343,8 +390,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例16:当按钮过多时
-- (void)test16 {
+// 示例18:当按钮过多时
+- (void)test18 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     alertController.maxTopMarginForActionSheet = 100;
     
@@ -414,8 +461,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例17:当文字和按钮同时过多时，文字占据更多位置
-- (void)test17 {
+// 示例19:当文字和按钮同时过多时，文字占据更多位置
+- (void)test19 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -452,8 +499,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例18:含有文本输入框，且文字过多
-- (void)test18 {
+// 示例20:含有文本输入框，且文字过多
+- (void)test20 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -496,7 +543,7 @@
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
     self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况"];
-    self.dataSource = @[@[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"],@[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"],@[@"自定义1",@"自定义2",@"自定义3"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"]];
+    self.dataSource = @[@[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"],@[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"],@[@"自定义1",@"自定义2",@"自定义3",@"自定义4",@"自定义5"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -587,19 +634,26 @@
                 break;
             case 2:
                 [self customTest15];
+                break;
+            case 3:
+                [self customTest16];
+                break;
+            case 4:
+                [self customTest17];
+                break;
             default:
                 break;
         }
     } else {
         switch (indexPath.row) {
             case 0:
-                [self test16];
+                [self test18];
                 break;
             case 1:
-                [self test17];
+                [self test19];
                 break;
             case 2:
-                [self test18];
+                [self test20];
                 break;
             default:
                 break;
