@@ -53,7 +53,7 @@ block块:当点击action的时候回调
 ```
 [self presentViewController:alertController animated:YES completion:nil];
 ```
-#### 以上这就是最基本的四步操作，当然你可以中间再设置alertController的属性或者action的属性，至于具体哪些属性干什么,示例程序中有非常详细的注释.
+**以上这就是最基本的四步操作，当然你可以中间再设置alertController的属性或者action的属性，至于具体哪些属性干什么，示例程序中有非常详细的注释.**
 
 ### 还可以做什么?
 * 添加文本输入框
