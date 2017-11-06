@@ -6,14 +6,22 @@
 * [如何使用](#如何使用)
 
 ## 如何导入
-##### 版本1.0
+##### 版本1.0.1
 ```
 platform:ios,'8.0'
 target 'MyApp' do
-  pod 'SPAlertController', '~> 1.0'
+  pod 'SPAlertController', '~> 1.0.1'
 end
-然后在终端输入命令:pod install 
 ```
+##### 版本1.7.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 1.7.0'
+end
+```
+然后在终端输入命令:pod install 
+
 ## Gif演示图
 （友情提示：如果您的网络较慢，gif图可能会延迟加载，您可以先把宝贵的时间浏览其它信息）
 
