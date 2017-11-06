@@ -551,7 +551,7 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     cell.backgroundColor = [UIColor clearColor];
-    cell.contentView.backgroundColor = [UIColor clearColor];
+    cell.contentView.backgroundColor = [UIColor whiteColor];
     cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
     return cell;
 }
