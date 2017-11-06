@@ -323,7 +323,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例13:自定义标题view
+// 示例14:自定义标题view
 - (void)customTest14 {
     MyTitleView *myTitleView = [[MyTitleView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
     SPAlertController *alertController = [SPAlertController alertControllerWithPreferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customTitleView:myTitleView];
@@ -344,7 +344,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例13:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于2,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
+// 示例15:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于2,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
 - (void)customTest15 {
     MyCenterView *centerView = [[MyCenterView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
     
