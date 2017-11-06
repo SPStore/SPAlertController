@@ -47,59 +47,48 @@ end
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-d77afa589120fca6.jpg)
 
 ## 如何使用
-* 如果你想提醒对话框从底部或顶部弹出，请选用SPAlertControllerStyleActionSheet样式，如:
+* 第一步：创建SPAlertController
 ```
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
-    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第1个");
-    }];
-    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第2个");
-    }];
-    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第3个");
-    }];
-    SPAlertAction *action4 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第取消");
-    }];
-    
-    [alertController addAction:action1];
-    [alertController addAction:action4]; // 注意第4个按钮是第二次添加，但是最终会显示在最底部，因为第四个按钮是取消按钮，只要是取消按钮，一定会在最底端，其余按钮按照添加顺序依次排布
-    [alertController addAction:action2];
-    [alertController addAction:action3];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-```
-* 如果你想提醒对话框从屏幕中间弹出，请选用SPAlertControllerStyleAlert样式，如:
-```
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
+SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
 
-    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第1个");
-    }];
-    // 设置第1个action的颜色
-    action1.titleColor = [UIColor blueColor];
-    
-    // SPAlertActionStyleDestructive默认文字为红色(可修改)
-    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第2个");
-    }];
-    // 设置第2个action的颜色
-    action2.titleColor = [UIColor redColor];
-    [alertController addAction:action1];
-    [alertController addAction:action2];
-    [self presentViewController:alertController animated:YES completion:nil];
+preferredStyle是提醒对话框的弹出样式，SPAlertControllerStyleActionSheet是从底部或者顶部弹出（顶部还是底部取决于animationType），SPAlertControllerStyleAlert从中间弹出，animationType是动画类型，有从底部往上弹出动画，从顶部往下弹出动画，从中间渐变弹出动画，缩放弹出动画等
+
 ```
+* 第二步:创建action
+```
+SPAlertAction *actionOK = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        
+    }];
+    
+方法参数中的style是action的样式，这里跟系统的一致，共有SPAlertActionStyleDefault、SPAlertActionStyleCancel(取消)、SPAlertActionStyleDestructive(默认红色)这3种样式，跟系统不一样的是，SPAlertController可以自定义action的相关属性，如文本颜色、字体等;
+block块:当点击action的时候回调
+```
+* 第三步:添加action
+```
+    [alertController addAction:actionOK];
+
+```
+* 第四步:modal出alertController
+```
+    [self presentViewController:alertController animated:YES completion:nil];
+
+```
+#### 以上这就是最基本的四步操作，当然你可以中间再设置alertController的属性或者action的属性，至于具体哪些属性干什么,示例程序中有非常详细的注释.
+
+### 还可以做什么
 * 添加文本输入框
 ```
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         // 这个block只会回调一次，因此可以在这里自由定制textFiled，如设置textField的相关属性，设置代理，添加addTarget，监听通知等
     }];
 ```
-* 如果你想自定义，在提醒对话框中有不一样的布局，那么你可以使用下面这个方法
+* 自定义整个弹出视图
 ```
-// customView就是你的自定义view
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
+ MyView *myView = [MyView shareMyView];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha customView:myView];
+    [self presentViewController:alertController animated:YES completion:nil];
+自定义整个弹出视图时,添加action或textField没有任何作用，因为已经自定义了整个视图，自带的内部布局将不起作用
 
 ```
 如:
