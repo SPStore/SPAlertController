@@ -2,7 +2,6 @@
 # 目录
 * [如何导入](#如何导入)
 * [Gif演示图](#gif演示图)  
-* [效果图](#效果图)
 * [如何使用](#如何使用)
 
 ## 如何导入
@@ -26,25 +25,6 @@ end
 （友情提示：如果您的网络较慢，gif图可能会延迟加载，您可以先把宝贵的时间浏览其它信息）
 
 <br>![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/SPAlertController.gif)
-## 效果图
-###### 1.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-565e263954a40e50.jpg)
-###### 2.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-6986ab0f6619715d.jpg)
-###### 3.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-9f2f51972e69c502.jpg)
-###### 4.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-67e8ea700d3711ad.jpg)
-###### 5.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-dc96f2f9e50f6ba8.jpg)
-###### 6.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-58b49fe452c435c8.jpg)
-###### 7.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/6D8ADCBCD9BA9CD455B48711CCBB88E6.jpg)
-###### 8.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-3974cfeac8a9016b.jpg)
-###### 9.
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3006981-d77afa589120fca6.jpg)
 
 ## 如何使用
 * 第一步：创建SPAlertController
@@ -55,7 +35,7 @@ SPAlertController *alertController = [SPAlertController alertControllerWithTitle
 preferredStyle是提醒对话框的弹出样式，SPAlertControllerStyleActionSheet是从底部或者顶部弹出（顶部还是底部取决于animationType），SPAlertControllerStyleAlert从中间弹出，animationType是动画类型，有从底部往上弹出动画，从顶部往下弹出动画，从中间渐变弹出动画，缩放弹出动画等
 
 ```
-* 第二步:创建action
+* 第二步：创建action
 ```
 SPAlertAction *actionOK = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         
@@ -65,11 +45,11 @@ SPAlertAction *actionOK = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActi
 方法参数中的style是action的样式，这里跟系统的一致，共有SPAlertActionStyleDefault、SPAlertActionStyleCancel(取消)、SPAlertActionStyleDestructive(默认红色)这3种样式，跟系统不一样的是，SPAlertController可以自定义action的相关属性，如文本颜色、字体等;
 block块:当点击action的时候回调
 ```
-* 第三步:添加action
+* 第三步：添加action
 ```
 [alertController addAction:actionOK];
 ```
-* 第四步:modal出alertController
+* 第四步：modal出alertController
 ```
 [self presentViewController:alertController animated:YES completion:nil];
 ```
@@ -136,5 +116,5 @@ action2.titleColor = [UIColor redColor];
 有时看见过这样的对话框，顶部是一个title，最底部有2个action，中间是一个tableView；这里自定义centerView就是解决这个需求。
 当自定义centerView时，如果是SPAlertControllerStyleAlert样式，action的个数最多只能是2个，超过2个将不显示，只显示最前面2个添加的；如果是SPAlertControllerStyleActionSheet样式，只有取消（SPAlertActionStyleCancel）样式才会显示，其余样式的action均不会显示
 ```
-## 当你自定义view时，无论是customView、customTitleView还是customCenterView,这些自定义的view设置的x、y、宽均无效，只有高度有效,SPAlertController内部会自动修改x、y、宽,所以，当你自定义这些view时，这些view的自控件的布局尽量写在layoutSubViews里,或者用autoLayout,这样自空间才能适应SPAlertController所做的改变
+## 当你自定义view时，无论是customView、customTitleView还是customCenterView,外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的自控件的布局尽量写在layoutSubViews里,或者用autoLayout,这样自空间才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY,offsetY指的是垂直中心的偏移
 [回到顶部](#目录) 
