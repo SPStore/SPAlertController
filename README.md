@@ -51,6 +51,7 @@ end
 ```
 SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
 
+解释:
 preferredStyle是提醒对话框的弹出样式，SPAlertControllerStyleActionSheet是从底部或者顶部弹出（顶部还是底部取决于animationType），SPAlertControllerStyleAlert从中间弹出，animationType是动画类型，有从底部往上弹出动画，从顶部往下弹出动画，从中间渐变弹出动画，缩放弹出动画等
 
 ```
@@ -60,22 +61,21 @@ SPAlertAction *actionOK = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActi
         
     }];
     
+解释:
 方法参数中的style是action的样式，这里跟系统的一致，共有SPAlertActionStyleDefault、SPAlertActionStyleCancel(取消)、SPAlertActionStyleDestructive(默认红色)这3种样式，跟系统不一样的是，SPAlertController可以自定义action的相关属性，如文本颜色、字体等;
 block块:当点击action的时候回调
 ```
 * 第三步:添加action
 ```
     [alertController addAction:actionOK];
-
 ```
 * 第四步:modal出alertController
 ```
     [self presentViewController:alertController animated:YES completion:nil];
-
 ```
 #### 以上这就是最基本的四步操作，当然你可以中间再设置alertController的属性或者action的属性，至于具体哪些属性干什么,示例程序中有非常详细的注释.
 
-### 还可以做什么
+### 还可以做什么?
 * 添加文本输入框
 ```
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
@@ -88,6 +88,8 @@ block块:当点击action的时候回调
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha customView:myView];
     [self presentViewController:alertController animated:YES completion:nil];
+    
+    解释:
 自定义整个弹出视图时,添加action或textField没有任何作用，因为已经自定义了整个视图，自带的内部布局将不起作用
 
 ```
