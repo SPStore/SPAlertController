@@ -142,7 +142,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 /** 是否需要毛玻璃效果,默认为YES */
 @property (nonatomic, assign) BOOL needBlur;
 
-/** actionSheet样式下,最大的顶部间距,默认为0 */
+/** actionSheet样式下,最大的顶部间距,默认为0,iPhoneX下默认44 */
 @property (nonatomic, assign) CGFloat maxTopMarginForActionSheet;
 
 /** alert样式下,四周的最大间距,默认为20 */

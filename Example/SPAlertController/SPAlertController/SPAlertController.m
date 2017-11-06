@@ -12,6 +12,9 @@
 #define actionColor [UIColor colorWithWhite:1.0 alpha:0.8]
 #define alertColor [UIColor colorWithWhite:1.0 alpha:0.5]
 
+#define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812)
+#define alertBottomMargin isIPhoneX ? 34 : 0 // 适配iPhoneX
+
 @interface SPAlertAction()
 
 @property (nullable, nonatomic) NSString *title;
@@ -273,6 +276,13 @@
     self.actions = array;
     
     if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
+        if (self.customCenterView && action.style != SPAlertActionStyleCancel) {
+            NSLog(@"当自定义centerView时，SPAlertControllerStyleActionSheet下，除了取消样式的按钮之外，其余样式的按钮均不显示");
+            [array removeObject:action];
+            self.actions = array;
+            [self layoutViewConstraints];
+            return;
+        }
         if (action.style == SPAlertActionStyleCancel) {
             self.cancelAction = action;
             [self createFooterActionView:action];
@@ -284,6 +294,12 @@
             // 当只有2个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于2个action时又得加回来
             self.dataSource = nil;
         } else {
+            if (self.customCenterView) {
+                NSLog(@"当自定义centerView时，SPAlertControllerStyleAlert下，action的个数最多只能是2个，超过2个时只显示最前面2个");
+                [array removeObject:action];
+                self.actions = array;
+                return;
+            }
             self.dataSource = array.copy;
             for (NSInteger i = self.footerView.subviews.count-1; i >= 0; i--) {
                 UIView *footerActionView = self.footerView.subviews[i];
@@ -427,7 +443,7 @@
         [self setupViewsWithCustomView:customView customTitleView:customTitleView customCenterView:customCenterView];
         
         self.needBlur = YES;
-        self.maxTopMarginForActionSheet = 0.0;
+        self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 0;
         self.maxMarginForAlert = 20.0;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -475,6 +491,11 @@
         UIScrollView *headerScrollView = [[UIScrollView alloc] init];
         headerScrollView.translatesAutoresizingMaskIntoConstraints = NO;
         headerScrollView.showsHorizontalScrollIndicator = NO;
+        if (@available(iOS 11.0, *)) {
+            headerScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        } else {
+            // Fallback on earlier versions
+        }
         [headerBezelView addSubview:headerScrollView];
         _headerScrollView = headerScrollView;
         
@@ -497,9 +518,11 @@
             
             if (self.title.length) {
                 self.titleLabel.text = self.title;
+                [titleView addSubview:self.titleLabel];
             }
             if (self.message.length) {
                 self.detailTitleLabel.text = self.message;
+                [titleView addSubview:self.detailTitleLabel];
             }
         } else {
             self.customTitleView = customTitleView;
@@ -526,6 +549,11 @@
             actionTableView.separatorColor = [UIColor clearColor];
             actionTableView.dataSource = self;
             actionTableView.delegate = self;
+            if (@available(iOS 11.0, *)) {
+                actionTableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+            } else {
+                // Fallback on earlier versions
+            }
             [actionTableView registerClass:[SPAlertControllerActionCell class] forCellReuseIdentifier:NSStringFromClass([SPAlertControllerActionCell class])];
             [actionBezelContentView addSubview:actionTableView];
             _actionTableView = actionTableView;
@@ -588,7 +616,10 @@
         return;
     }
     CGFloat maxTopMarginForActionSheet = self.maxTopMarginForActionSheet;
+    NSLog(@"==== %f",maxTopMarginForActionSheet);
     CGFloat maxMarginForAlert = self.maxMarginForAlert;
+    CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
+    CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
     
     UIView *backgroundView = self.backgroundView;
     UIView *alertView = self.alertView;
@@ -705,10 +736,11 @@
     
     if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
         [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[alertView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[alertView]-0-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(alertView)]];
+        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[alertView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(alertView)]];
     } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
         [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[alertView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxMarginForAlert)-[alertView]-(>=maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
+        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
+        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
         [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
         _alertConstraintCenterY = [NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:0];
         [alertViewConstraints addObject:_alertConstraintCenterY];
@@ -738,9 +770,9 @@
     [headerScrollContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerScrollContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerScrollContentView)]];
     [headerScrollContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[headerScrollContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerScrollContentView)]];
     [headerScrollContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerScrollContentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:headerScrollView attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
-    if (self.titleLabel.text.length || self.detailTitleLabel.text.length) {
+    if (_titleLabel.text.length || _detailTitleLabel.text.length) {
         // 保证headerScrollContentView的高度最小为actionHeight
-        [titleViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerScrollContentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
+        [headerScrollContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerScrollContentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
     }
     [headerScrollView addConstraints:headerScrollContentViewConstraints];
     
@@ -839,7 +871,7 @@
     
     if (!self.customCenterView) {
         [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
-        [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView,footerView)]];
+        [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
         [actionBezelContentView addConstraints:actionTableViewConstraints];
     }
     
@@ -915,6 +947,8 @@
 - (void)layoutCustomView {
     
     CGFloat maxMarginForAlert = self.maxMarginForAlert;
+    CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
+    CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
     CGFloat maxTopMarginForActionSheet = self.maxTopMarginForActionSheet;
     
     UIView *backgroundView = self.backgroundView;
@@ -944,16 +978,17 @@
     
     CGRect customViewRect = customView.frame;
     CGFloat alertH = customViewRect.size.height;
-    if (alertH > (self.view.bounds.size.height-2*maxMarginForAlert)) {
-        alertH = (self.view.bounds.size.height-2*maxMarginForAlert);
+    if (alertH > (self.view.bounds.size.height-(topMarginForAlert+bottomMarginForAlert))) {
+        alertH = (self.view.bounds.size.height-(topMarginForAlert+bottomMarginForAlert));
     }
     if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
         [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[alertView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[alertView]-0-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(alertView)]];
+        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[alertView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(alertView)]];
         
     } else {
         [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[alertView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxMarginForAlert)-[alertView]-(>=maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
+        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
+        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
         [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     }
     [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertH]];
@@ -978,14 +1013,22 @@
                 if (self.actions.count > 1) {
                     actionBezelHeight = self.actions.count*actionHeight+footerTopMargin;
                 } else {
-                    actionBezelHeight = actionHeight+footerTopMargin;
+                    if (self.customCenterView) { // 当有自定义的customCenterView时，最多只会有1个action，在addAction:方法里做了处理
+                        actionBezelHeight = actionHeight+footerTopMargin+_customCenterViewH;
+                    } else {
+                        actionBezelHeight = actionHeight+footerTopMargin;
+                    }
                 }
             } else {
-                actionBezelHeight = self.actions.count*actionHeight;
+                if (self.customCenterView) {
+                    actionBezelHeight = _customCenterViewH;
+                } else {
+                    actionBezelHeight = self.actions.count*actionHeight;
+                }
             }
         } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
             if (self.actions.count <= 2) {
-                if (!self.customCenterView) {
+                if (!self.customCenterView) { // 当有自定义的customCenterView时，最多只会有2个action，在addAction:方法里做了处理
                     actionBezelHeight = actionHeight;
                 } else { // 2个以下action且有自定义scrollView
                     actionBezelHeight = _customCenterViewH + actionHeight;
@@ -993,6 +1036,10 @@
             } else {
                 actionBezelHeight = self.actions.count*actionHeight;
             }
+        }
+    } else {
+        if (self.customCenterView) {
+            actionBezelHeight = _customCenterViewH;
         }
     }
     return actionBezelHeight;
@@ -1026,12 +1073,22 @@
 - (void)setTitle:(NSString *)title {
     _title = [title copy];
     self.titleLabel.text = title;
+    if (!self.titleLabel.superview) {
+        if (_detailTitleLabel) {
+            [self.titleView insertSubview:_titleLabel belowSubview:_detailTitleLabel];
+        } else {
+            [self.titleView addSubview:_titleLabel];
+        }
+    }
     [self.view setNeedsUpdateConstraints];
 }
 
 - (void)setMessage:(NSString *)message {
     _message = [message copy];
     self.detailTitleLabel.text = message;
+    if (!self.detailTitleLabel.superview) {
+        [self.titleView addSubview:_detailTitleLabel];
+    }
     [self.view setNeedsUpdateConstraints];
 }
 
@@ -1129,11 +1186,7 @@
         // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
         [_titleLabel setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
         [_titleLabel sizeToFit];
-        if (_detailTitleLabel) {
-            [self.titleView insertSubview:_titleLabel belowSubview:_detailTitleLabel];
-        } else {
-            [self.titleView addSubview:_titleLabel];
-        }
+        
     }
     return _titleLabel;
 }
@@ -1149,7 +1202,6 @@
         // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
         [_detailTitleLabel setContentCompressionResistancePriority:998.f forAxis:UILayoutConstraintAxisVertical];
         [_detailTitleLabel sizeToFit];
-        [self.titleView addSubview:_detailTitleLabel];
     }
     return _detailTitleLabel;
 }
@@ -1352,7 +1404,7 @@
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         alertController.backgroundView.alpha = 0.5;
-        alertController.alertView.transform = CGAffineTransformMakeTranslation(0, -(screenHeight-alertViewHeight));
+        alertController.alertView.transform = CGAffineTransformMakeTranslation(0, -(screenHeight-alertViewHeight-(isIPhoneX?(44+34):0)));
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         

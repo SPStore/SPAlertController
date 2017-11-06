@@ -28,8 +28,7 @@
 // 示例1:actionSheet的默认样式
 - (void)actionSheetTest1 {
     // actionSheet中，SPAlertAnimationTypeDefault 等价于 SPAlertAnimationTypeRaiseUp
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:nil message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
-    alertController.title = @"大大大大大大";
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -92,7 +91,7 @@
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
-    
+    NSLog(@"--- %@",alertController.actions);
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -365,7 +364,6 @@
     action2.titleColor = [UIColor redColor];
     [alertController addAction:action1];
     [alertController addAction:action2];
-    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
