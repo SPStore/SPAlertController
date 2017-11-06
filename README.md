@@ -88,7 +88,7 @@ SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlert
 [self presentViewController:alertController animated:YES completion:nil];
 
 我想对你说:
-为什么要自定义titleView？有这样的的需求吗？答案是肯定，因为SPAlertController自带的titleView只能显示文本且居中，如果想往里面添加图片则自带的就不管用了，这是便可以在外界自定义好一个titlView，创建时当参数传进去，SPAlertController便会帮你显示在对话框的顶部
+为什么要自定义titleView？有这样的的需求吗？答案是肯定的，因为SPAlertController自带的titleView只能显示文本且居中，如果想往里面添加图片则自带的就不管用了，这时便可以在外界自定义好一个titlView，创建时当参数传进去，SPAlertController便会帮你显示在对话框的顶部
 ```
 * 自定义centerView
 ```
@@ -116,5 +116,5 @@ action2.titleColor = [UIColor redColor];
 有时看见过这样的对话框，顶部是一个title，最底部有2个action，中间是一个tableView；这里自定义centerView就是解决这个需求。
 当自定义centerView时，如果是SPAlertControllerStyleAlert样式，action的个数最多只能是2个，超过2个将不显示，只显示最前面2个添加的；如果是SPAlertControllerStyleActionSheet样式，只有取消（SPAlertActionStyleCancel）样式才会显示，其余样式的action均不会显示
 ```
-## 当你自定义view时，无论是customView、customTitleView还是customCenterView，外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的自控件的布局尽量写在layoutSubViews里，或者用autoLayout，这样自空间才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY，offsetY指的是垂直中心的偏移
+## 当你自定义view时，无论是customView、customTitleView还是customCenterView，外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的子控件的布局尽量写在layoutSubViews里，或者用autoLayout，这样子控件才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY，offsetY指的是垂直中心的偏移
 [回到顶部](#目录) 
