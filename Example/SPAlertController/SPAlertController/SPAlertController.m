@@ -466,7 +466,7 @@
     UIView *alertView = [[UIView alloc] init];
     alertView.translatesAutoresizingMaskIntoConstraints = NO;
     // 设置白色透明度，会让毛玻璃效果变淡一些
-    alertView.backgroundColor = alertColor;
+    alertView.backgroundColor = [UIColor clearColor];
     if (self.preferredStyle == SPAlertControllerStyleAlert) {
         alertView.layer.cornerRadius = 5;
         alertView.layer.masksToBounds = YES;
@@ -616,7 +616,6 @@
         return;
     }
     CGFloat maxTopMarginForActionSheet = self.maxTopMarginForActionSheet;
-    NSLog(@"==== %f",maxTopMarginForActionSheet);
     CGFloat maxMarginForAlert = self.maxMarginForAlert;
     CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
     CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
