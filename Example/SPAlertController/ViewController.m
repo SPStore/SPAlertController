@@ -14,6 +14,12 @@
 #import "ShoppingCartView.h"
 #import "CommodityListView.h"
 
+// RGB颜色
+#define ZCColorRGBA(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
+
+// 随机色
+#define ZCRandomColor ZCColorRGBA(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256),1)
+
 @interface ViewController () <UITableViewDelegate,UITableViewDataSource>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *titles;
@@ -162,17 +168,21 @@
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第2个");
     }];
+
     // 设置第2个action的颜色
     action2.titleColor = [UIColor redColor];
     [alertController addAction:action1];
     [alertController addAction:action2];
-    
+
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
 // 示例6:alert的alpha渐变动画，这也是默认样式
 - (void)alertTest6 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha];
+    
+    // 设置最大排列数为1，当actions的个数超过1时，就会垂直排列
+    alertController.maxNumberOfActionHorizontalArrangementForAlert = 1;
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
@@ -196,21 +206,28 @@
 - (void)alertTest7 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeExpand];
     
+    alertController.maxNumberOfActionHorizontalArrangementForAlert = 3;
+    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
     // 设置第1个action的颜色
-    action1.titleColor = [UIColor blueColor];
+    action1.titleColor = [UIColor redColor];
     
     // SPAlertActionStyleDestructive默认文字为红色(可修改)
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第2个");
     }];
+    action2.titleColor = [UIColor blueColor];
+    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第3个");
+    }];
     // 设置第2个action的颜色
-    action2.titleColor = [UIColor redColor];
+    action3.titleColor = [UIColor orangeColor];
     
     [alertController addAction:action1];
     [alertController addAction:action2];
+    [alertController addAction:action3];
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -218,6 +235,7 @@
 // 示例8:alert从小大变小动画
 - (void)alertTest8 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeShrink];
+    alertController.maxNumberOfActionHorizontalArrangementForAlert = 4;
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
@@ -229,8 +247,20 @@
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第2个");
     }];
+    action2.titleColor = [UIColor magentaColor];
+    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第3个");
+    }];
+    action3.titleColor  = [UIColor greenColor];
+    SPAlertAction *action4 = [SPAlertAction actionWithTitle:@"第4个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第4个");
+    }];
+    action4.titleColor = [UIColor purpleColor];
+    
     [alertController addAction:action1];
     [alertController addAction:action2];
+    [alertController addAction:action3];
+    [alertController addAction:action4];
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -241,9 +271,10 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例10:alert样式只有1个按钮
+// 示例10:alert样式无标题
 - (void)alertTest10 {
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeShrink];
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:nil message:nil preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeShrink];
+    alertController.maxNumberOfActionHorizontalArrangementForAlert = 2;
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了OK");
     }];
@@ -252,7 +283,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例11:alert样式下按钮大于2个，垂直排布
+// 示例11:alert样式下按钮垂直排布,如果想要3个按钮水平排列，可设置maxNumberOfActionHorizontalArrangementForAlert大于等于3即可
 - (void)alertTest11 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -269,6 +300,7 @@
     SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第3个");
     }];
+    action3.titleColor = [UIColor redColor];
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
@@ -314,7 +346,7 @@
     }
 }
 
-// 示例13:自定义视图
+// 示例13:自定义视图(alert样式)
 - (void)customTest13 {
     
     MyView *myView = [MyView shareMyView];
@@ -323,8 +355,30 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例14:自定义标题view
+
+// 示例14:自定义整个对话框(actionSheet样式从底部弹出)
 - (void)customTest14 {
+    
+    ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, 0, 300)];
+    shoppingCartView.backgroundColor = [UIColor whiteColor];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeRaiseUp customView:shoppingCartView];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例15:自定义整个对话框(actionSheet样式从顶部弹出)
+- (void)customTest15 {
+    CommodityListView *commodityListView = [[CommodityListView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
+    commodityListView.backgroundColor = [UIColor whiteColor];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDropDown customView:commodityListView];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例16:自定义titleView
+- (void)customTest16 {
     MyTitleView *myTitleView = [[MyTitleView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
     SPAlertController *alertController = [SPAlertController alertControllerWithPreferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customTitleView:myTitleView];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -344,8 +398,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例15:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于2,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
-- (void)customTest15 {
+// 示例17:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于maxNumberOfActionHorizontalArrangementForAlert,超过maxNumberOfActionHorizontalArrangementForAlert的action将不显示,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
+- (void)customTest17 {
     MyCenterView *centerView = [[MyCenterView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customCenterView:centerView];
@@ -364,27 +418,6 @@
     action2.titleColor = [UIColor redColor];
     [alertController addAction:action1];
     [alertController addAction:action2];
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-// 示例16:自定义视图
-- (void)customTest16 {
-    
-    ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, 0, 300)];
-    shoppingCartView.backgroundColor = [UIColor whiteColor];
-    
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeRaiseUp customView:shoppingCartView];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-// 示例17:自定义视图
-- (void)customTest17 {
-    CommodityListView *commodityListView = [[CommodityListView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
-    commodityListView.backgroundColor = [UIColor whiteColor];
-    
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDropDown customView:commodityListView];
-    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -440,6 +473,7 @@
     SPAlertAction *action15 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了取消");
     }];
+    
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
@@ -455,7 +489,7 @@
     [alertController addAction:action13];
     [alertController addAction:action14];
     [alertController addAction:action15];
-    
+
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -466,8 +500,6 @@
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
-    // 设置第1个action的字体
-    action1.titleColor = [UIColor blueColor];
     
     // SPAlertActionStyleDestructive默认文字为红色(可修改)
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
@@ -504,8 +536,6 @@
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
-    // 设置第1个action的字体
-    action1.titleColor = [UIColor blueColor];
     
     // SPAlertActionStyleDestructive默认文字为红色(可修改)
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
@@ -536,7 +566,7 @@
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
     self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况"];
-    self.dataSource = @[@[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"],@[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式只有一个action",@"alert样式下action多于2个时，垂直排布",@"alert样式含有文本输入框"],@[@"自定义1",@"自定义2",@"自定义3",@"自定义4",@"自定义5"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"]];
+    self.dataSource = @[@[@"actionSheet的默认动画",@"actionSheet从底部弹出(与默认样式一致)",@"actionSheet'从天而降'",@"actionSheet设置文字颜色和字体"],@[@"alert的默认动画",@"alert透明度渐变(与默认样式一致)",@"alert从小变大动画",@"alert从大变小动画",@"alert样式没有action",@"alert样式无标题",@"alert样式下垂直排布",@"alert样式含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义titleView",@"自定义centerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -550,8 +580,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
-    cell.backgroundColor = [UIColor clearColor];
-    cell.contentView.backgroundColor = [UIColor whiteColor];
+    cell.backgroundColor = [UIColor whiteColor];
     cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
     return cell;
 }

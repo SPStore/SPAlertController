@@ -9,11 +9,14 @@
 #import "SPAlertController.h"
 
 #define actionHeight 48.0
-#define actionColor [UIColor colorWithWhite:1.0 alpha:0.8]
-#define alertColor [UIColor colorWithWhite:1.0 alpha:0.5]
+#define actionColor [UIColor colorWithWhite:1 alpha:0.7]
+#define alertColor [UIColor colorWithWhite:1 alpha:0.5]
 
 #define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812)
 #define alertBottomMargin isIPhoneX ? 34 : 0 // 适配iPhoneX
+
+
+#pragma mark ---------------------------- SPAlertAction begin --------------------------------
 
 @interface SPAlertAction()
 
@@ -78,6 +81,10 @@
 
 @end
 
+#pragma mark ---------------------------- SPAlertAction end --------------------------------
+
+
+#pragma mark ---------------------------- SPAlertControllerActionCell begin --------------------------------
 
 @interface SPAlertControllerActionCell : UITableViewCell
 @property (nonatomic, strong) SPAlertAction *action;
@@ -90,11 +97,6 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         
-        // 设置背景透明，默认是白色，白色会阻挡分割线的毛玻璃效果
-        self.backgroundColor = [UIColor clearColor];
-        // contentView默认是透明色，给一个颜色，更加突出分割线（contentView的高度比cell小0.5，0.5就是分割线的额高度）
-        self.contentView.backgroundColor = actionColor;
-        
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
@@ -102,7 +104,20 @@
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         [titleLabel sizeToFit];
-        [self.contentView addSubview:titleLabel];
+        // footerCell指的是SPAlertControllerStyleActionSheet下的取消cell和SPAlertControllerStyleAlert下actions小于_maxNumberOfActionHorizontalArrangementForAlert时的cell
+        // 这个cell因为要修改系统自带的布局，如果直接加在contentView上，修改contentView的布局很容易出问题，所以此时用不着contentView，而且这个cell跟tableView没有任何关系，就是一个普通的view
+        if ([reuseIdentifier isEqualToString:@"footerCell"]) {
+            self.backgroundColor = actionColor;
+            // contentView在此处没用了
+            self.contentView.backgroundColor = [UIColor clearColor];
+            [self addSubview:titleLabel];
+        } else {
+            // 设置背景透明，默认是白色，白色会阻挡分割线
+            self.backgroundColor = [UIColor clearColor];
+            // contentView默认是透明色，给一个颜色，更加突出分割线（contentView的高度比cell小0.5，0.5就是分割线的高度）
+            self.contentView.backgroundColor = actionColor;
+            [self.contentView addSubview:titleLabel];
+        }
         _titleLabel = titleLabel;
         
         [self setNeedsUpdateConstraints];
@@ -125,20 +140,22 @@
 }
 
 - (void)updateConstraints {
+    [super updateConstraints];
+
     UILabel *titleLabel = self.titleLabel;
     
     NSMutableArray *titleLabelConstraints = [NSMutableArray array];
     if (self.titleLabelConstraints) {
-        [self.contentView removeConstraints:self.titleLabelConstraints];
+        [titleLabel.superview removeConstraints:self.titleLabelConstraints];
         self.titleLabelConstraints = nil;
     }
 
-    [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:titleLabel.superview attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(>=0)-[titleLabel]-(>=0)-|"] options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleLabel)]];
     [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[titleLabel]-0-|"] options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleLabel)]];
-    [self.contentView addConstraints:titleLabelConstraints];
+    [titleLabel.superview addConstraints:titleLabelConstraints];
     self.titleLabelConstraints = titleLabelConstraints;
-    [super updateConstraints];
+
 }
 
 + (BOOL)requiresConstraintBasedLayout {
@@ -147,6 +164,10 @@
 
 
 @end
+#pragma mark ---------------------------- SPAlertControllerActionCell end --------------------------------
+
+
+#pragma mark ---------------------------- SPAlertController begin --------------------------------
 
 @interface SPAlertController () <UIViewControllerTransitioningDelegate,UITableViewDataSource,UITableViewDelegate>
 
@@ -188,7 +209,6 @@
 @property (nonatomic, strong) NSMutableArray *actionTableViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerActionViewConstraints;
-@property (nonatomic, strong) NSMutableArray *footerActionViewContentViewConstraints;
 
 // ---------------- 自定义view --------------
 @property (nonatomic, strong) UIView *customView;
@@ -268,8 +288,7 @@
         NSAssert(action.style != SPAlertActionStyleCancel, @"SPAlertController不允许多个取消按钮,你可以检查是否多次设置了SPAlertActionStyleCancel");
         NSInteger index = [self.actions indexOfObject:self.cancelAction];
         // 将这个action插入到cancelAction之前，目的是保证cancelAction永远处于数组最后一个位置
-        [array insertObject:action atIndex:index];
-        
+        [array insertObject:action atIndex:index];        
     } else {
         [array addObject:action];
     }
@@ -289,13 +308,13 @@
         }
         self.dataSource = self.cancelAction ? [array subarrayWithRange:NSMakeRange(0, array.count-1)].copy : array.copy;
     } else {
-        if (self.actions.count <= 2) {
+        if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
             [self createFooterActionView:action];
-            // 当只有2个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于2个action时又得加回来
+            // 当只有_maxNumberOfActionHorizontalArrangementForAlert个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于_maxNumberOfActionHorizontalArrangementForAlert个action时又得加回来
             self.dataSource = nil;
         } else {
             if (self.customCenterView) {
-                NSLog(@"当自定义centerView时，SPAlertControllerStyleAlert下，action的个数最多只能是2个，超过2个时只显示最前面2个");
+                NSLog(@"当自定义centerView时，SPAlertControllerStyleAlert下，action的个数最多只能是_maxNumberOfActionHorizontalArrangementForAlert个，超过_maxNumberOfActionHorizontalArrangementForAlert个的action将不显示");
                 [array removeObject:action];
                 self.actions = array;
                 return;
@@ -321,7 +340,7 @@
                 [weakSelf.actionTableView reloadData];
             }
         } else {
-            if (weakSelf.actions.count <= 2) {
+            if (weakSelf.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
                 NSInteger index = [weakSelf.actions indexOfObject:action];
                 SPAlertControllerActionCell *footerCell = weakSelf.footerView.subviews[index];
                 footerCell.action = action;
@@ -445,6 +464,7 @@
         self.needBlur = YES;
         self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 0;
         self.maxMarginForAlert = 20.0;
+        self.maxNumberOfActionHorizontalArrangementForAlert = 2;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
@@ -465,8 +485,6 @@
     
     UIView *alertView = [[UIView alloc] init];
     alertView.translatesAutoresizingMaskIntoConstraints = NO;
-    // 设置白色透明度，会让毛玻璃效果变淡一些
-    alertView.backgroundColor = [UIColor clearColor];
     if (self.preferredStyle == SPAlertControllerStyleAlert) {
         alertView.layer.cornerRadius = 5;
         alertView.layer.masksToBounds = YES;
@@ -573,10 +591,8 @@
 }
 
 - (void)createFooterActionView:(SPAlertAction *)action {
-    // 直接拿一个cell来创建,因为cell中有label，而且也方便统一处理
-    SPAlertControllerActionCell *footerActionView = [[SPAlertControllerActionCell alloc] init];
-    footerActionView.backgroundColor = actionColor;
-    // 注意:footerActionView和它的contentView要同时为NO，如果contentView不为NO，系统默认是YES，contetnView是不会自动布局的，而且要手动对contentView布局
+    // 这个cell实际上就是一个普通的view，跟tableView没有任何关系，因为cell内部都有现成的控件和布局，直接用这个cell就好，没必要再去自定义一个view，需要注意的是，cell使用了自动布局,contentView会受到影响，看警告对症下药
+    SPAlertControllerActionCell *footerActionView = [[SPAlertControllerActionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"footerCell"];
     footerActionView.translatesAutoresizingMaskIntoConstraints = NO;
     footerActionView.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     footerActionView.action = action;
@@ -592,7 +608,7 @@
             self.cancelAction.handler(self.cancelAction);
         }
     } else {
-        if (self.actions.count <= 2) {
+        if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
             SPAlertControllerActionCell *footerActionView = (SPAlertControllerActionCell *)tap.view;
             NSInteger index = [self.footerView.subviews indexOfObject:footerActionView];
             SPAlertAction *action = [self.actions objectAtIndex:index];
@@ -710,17 +726,6 @@
     if (self.footerActionViewConstraints) {
         [footerView removeConstraints:self.footerActionViewConstraints];
         self.footerActionViewConstraints = nil;
-    }
-    if (self.footerActionViewContentViewConstraints.count) {
-        for (int i = 0; i < self.footerActionViewContentViewConstraints.count; i++) {
-            NSMutableArray *contentViewConstraints = self.footerActionViewContentViewConstraints[i];
-            if (self.footerView.subviews.count > i) {
-                UIView *footerActionView = self.footerView.subviews[i];
-                [footerActionView removeConstraints:contentViewConstraints];
-                contentViewConstraints = nil;
-            }
-        }
-        self.footerActionViewContentViewConstraints = nil;
     }
     
     [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
@@ -854,6 +859,7 @@
     [actionBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelView)]];
     [actionBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[headerBezelView]-%f-[actionBezelView]-0-|",headerActionPadding] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelView,headerBezelView)]];
     NSLayoutConstraint *actionBezelViewHeightContraint = [NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionBezelHeight];
+
     // 设置优先级，要比上面headerBezelViewContraintHeight的优先级低
     actionBezelViewHeightContraint.priority = 997.0f;
     if (self.actions.count) {
@@ -877,7 +883,7 @@
     [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[footerView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView)]];
     [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionBezelContentView)]];
     // 这个条件判断需不需要footerView，不满足条件footerView的高度就给0
-    if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= 2) && self.actions.count)) {
+    if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) && self.actions.count)) {
         [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
     } else {
         // 不满足条件，高度置为0，注意给0和不给高度是两回事，给0至少footerView有一个高度约束，不给的话就没有高度约束，这会导致tableView的底部间距设置无效，从而导致tableView不显示
@@ -886,9 +892,9 @@
     [actionBezelView addConstraints:footerViewConstraints];
     
     NSArray *footerActionViews = footerView.subviews;
-    if (footerActionViews.count && ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && self.actions.count <= 2))) {
+    if (footerActionViews.count && ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert))) {
         [footerActionViews enumerateObjectsUsingBlock:^(SPAlertControllerActionCell *footerActionView, NSUInteger idx, BOOL * _Nonnull stop) {
-            //  设置footerActionView的上下间距
+            // 设置footerActionView的上下间距
             [footerActionViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[footerActionView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerActionView)]];
             // 第一个footerActionView的左间距
             if (idx == 0) {
@@ -905,15 +911,10 @@
                 // 等宽
                 [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:footerActionViews[idx - 1] attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
             }
-            UIView *contentView = footerActionView.contentView;
-            NSMutableArray *contentViewConstraints = [NSMutableArray array];
-            [contentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[contentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(contentView)]];
-            [contentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[contentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(contentView)]];
-            [contentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:footerActionView attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
-            [footerActionView addConstraints:contentViewConstraints];
-            [self.footerActionViewContentViewConstraints addObject:contentViewConstraints];
-            
+            // 在这里，这个cell的contentView没有任何作用，但是为了消除控制台打印的contentView应该给一个高度的警告，这里给一个0
+            [footerActionView.contentView addConstraint:[NSLayoutConstraint constraintWithItem:footerActionView.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0]];
         }];
+        
         [footerView addConstraints:footerActionViewConstraints];
     }
     
@@ -1026,10 +1027,10 @@
                 }
             }
         } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
-            if (self.actions.count <= 2) {
-                if (!self.customCenterView) { // 当有自定义的customCenterView时，最多只会有2个action，在addAction:方法里做了处理
+            if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
+                if (!self.customCenterView) { // 当有自定义的customCenterView时，最多只会有_maxNumberOfActionHorizontalArrangementForAlert个action，在addAction:方法里做了处理
                     actionBezelHeight = actionHeight;
-                } else { // 2个以下action且有自定义scrollView
+                } else { // _maxNumberOfActionHorizontalArrangementForAlert个以下action且有自定义scrollView
                     actionBezelHeight = _customCenterViewH + actionHeight;
                 }
             } else {
@@ -1054,7 +1055,11 @@
         }
     } else {
         if (self.actions.count > 3) { // 没有取消按钮，其余按钮在3个或3个以上
-            minActionHeight = 3.5 * actionHeight;
+            if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
+                minActionHeight = minActionHeight;
+            } else {
+                minActionHeight = 3.5 * actionHeight;
+            }
         } else {
             if (self.preferredStyle == SPAlertControllerStyleAlert) {
                 if (self.actions.count) {
@@ -1118,7 +1123,7 @@
         self.alertEffectView.alpha = 0.0;
     } else {
         self.alertView.backgroundColor = alertColor;
-        self.alertEffectView.alpha = 1.0;
+        self.alertEffectView.alpha = 1;
     }
 }
 
@@ -1140,9 +1145,9 @@
     }
 }
 
-- (void)setAlertCornerRadius:(CGFloat)alertCornerRadius {
-    _alertCornerRadius = alertCornerRadius;
-    self.alertView.layer.cornerRadius = alertCornerRadius;
+- (void)setCornerRadiusForAlert:(CGFloat)cornerRadiusForAlert {
+    _cornerRadiusForAlert = cornerRadiusForAlert;
+    self.alertView.layer.cornerRadius = cornerRadiusForAlert;
 }
 
 - (void)setOffsetY:(CGFloat)offsetY {
@@ -1219,13 +1224,6 @@
     return _textFields;
 }
 
-- (NSMutableArray *)footerActionViewContentViewConstraints {
-    if (!_footerActionViewContentViewConstraints) {
-        _footerActionViewContentViewConstraints = [NSMutableArray array];
-    }
-    return _footerActionViewContentViewConstraints;
-}
-
 #pragma mark - 通知
 - (void)keyboardWillShow:(NSNotification *)notification {
     
@@ -1257,6 +1255,10 @@
 
 
 @end
+
+#pragma mark ---------------------------- SPAlertController end --------------------------------
+
+#pragma mark ---------------------------- SPAlertAnimation begin --------------------------------
 
 @interface SPAlertAnimation()
 @property (nonatomic, assign) BOOL presenting;
@@ -1530,4 +1532,5 @@
 
 @end
 
+#pragma mark ---------------------------- SPAlertAnimation end --------------------------------
 

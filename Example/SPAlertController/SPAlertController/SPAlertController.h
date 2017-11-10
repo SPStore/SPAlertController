@@ -139,9 +139,6 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 /** 副标题字体 */
 @property (nonatomic, strong) UIFont *messageFont;
 
-/** 是否需要毛玻璃效果,默认为YES */
-@property (nonatomic, assign) BOOL needBlur;
-
 /** actionSheet样式下,最大的顶部间距,默认为0,iPhoneX下默认44 */
 @property (nonatomic, assign) CGFloat maxTopMarginForActionSheet;
 
@@ -149,10 +146,16 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 @property (nonatomic, assign) CGFloat maxMarginForAlert;
 
 /** alert样式下，圆角半径 */
-@property (nonatomic, assign) CGFloat alertCornerRadius;
+@property (nonatomic, assign) CGFloat cornerRadiusForAlert;
 
 /** alert样式下，弹窗的中心y值，为正向上偏移，为负向下偏移 */
 @property (nonatomic, assign) CGFloat offsetY;
+
+/** 是否需要毛玻璃效果,默认为YES */
+@property (nonatomic, assign) BOOL needBlur;
+
+/** alert样式下，水平排列的最大个数，如果大于了这个数，则所有action将垂直排列；默认是2 */
+@property (nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert;
 
 @end
 
