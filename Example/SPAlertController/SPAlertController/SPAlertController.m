@@ -9,8 +9,8 @@
 #import "SPAlertController.h"
 
 #define actionHeight 48.0
-#define actionColor [UIColor colorWithWhite:1 alpha:0.7]
-#define alertColor [UIColor colorWithWhite:1 alpha:0.5]
+#define actionColor [UIColor colorWithWhite:1 alpha:0.8]
+#define alertColor [UIColor colorWithWhite:1 alpha:0.6]
 
 #define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812)
 #define alertBottomMargin isIPhoneX ? 34 : 0 // 适配iPhoneX
@@ -1078,7 +1078,7 @@
 - (void)setNeedBlur:(BOOL)needBlur {
     _needBlur = needBlur;
     if (!needBlur) {
-        self.alertView.backgroundColor = [UIColor lightGrayColor];
+        self.alertView.backgroundColor = [UIColor colorWithDisplayP3Red:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1];
         [self.alertEffectView removeFromSuperview];
         self.alertEffectView = nil;
     } else {
