@@ -97,7 +97,6 @@
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
-    NSLog(@"--- %@",alertController.actions);
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -580,7 +579,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
-    cell.backgroundColor = [UIColor whiteColor];
+    cell.backgroundColor = [UIColor redColor];
     cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
     return cell;
 }

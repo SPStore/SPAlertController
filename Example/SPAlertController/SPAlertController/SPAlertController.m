@@ -172,8 +172,6 @@
 @interface SPAlertController () <UIViewControllerTransitioningDelegate,UITableViewDataSource,UITableViewDelegate>
 
 @property (nonatomic, weak) UIView *backgroundView;
-@property (nonatomic, strong) NSMutableArray *backgroundViewConstraints;
-
 @property (nonatomic, strong) UIView *alertView;
 @property (nonatomic, weak) UIVisualEffectView *alertEffectView;
 
@@ -188,7 +186,6 @@
 
 // ---------------- 头部控件的约束数组 -----------------
 @property (nonatomic, strong) NSMutableArray *alertViewConstraints;
-@property (nonatomic, strong) NSMutableArray *effectViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerBezelViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerScrollViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerScrollContentViewConstraints;
@@ -475,7 +472,8 @@
 
 - (void)setupViewsWithCustomView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView {
     UIView *backgroundView = [[UIView alloc] init];
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    backgroundView.frame = self.view.bounds;
+    backgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     backgroundView.backgroundColor = [UIColor blackColor];
     backgroundView.alpha = 0.0;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBackgroundView)];
@@ -493,11 +491,6 @@
     _alertView = alertView;
     
     if (!customView) {
-        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:effect];
-        alertEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-        [alertView addSubview:alertEffectView];
-        _alertEffectView = alertEffectView;
         
         UIView *headerBezelView = [[UIView alloc] init];
         // 如果布局使用的是autolayout，一定要将对应的控件设置translatesAutoresizingMaskIntoConstraints为NO
@@ -636,9 +629,7 @@
     CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
     CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
     
-    UIView *backgroundView = self.backgroundView;
     UIView *alertView = self.alertView;
-    UIView *alertEffectView = self.alertEffectView;
     UIView *headerBezelView = self.headerBezelView;
     UIScrollView *headerScrollView = self.headerScrollView;
     UIView *headerScrollContentView = self.headerScrollContentView;
@@ -650,9 +641,7 @@
     UIView *footerView = self.footerView;
     
     // 预备相应控件的约束数组
-    NSMutableArray *backgroundViewConstraints = [NSMutableArray array];
     NSMutableArray *alertViewConstraints = [NSMutableArray array];
-    NSMutableArray *effectViewConstraints = [NSMutableArray array];
     NSMutableArray *headerBezelViewConstraints = [NSMutableArray array];
     NSMutableArray *headerScrollViewConstraints = [NSMutableArray array];
     NSMutableArray *headerScrollContentViewConstraints = [NSMutableArray array];
@@ -667,17 +656,9 @@
     NSMutableArray *footerActionViewConstraints = [NSMutableArray array];
     
     // 移除存在的约束
-    if (self.backgroundViewConstraints) {
-        [self.view removeConstraints:backgroundViewConstraints];
-        self.backgroundViewConstraints = nil;
-    }
     if (self.alertViewConstraints) {
         [self.view removeConstraints:self.alertViewConstraints];
         self.alertViewConstraints = nil;
-    }
-    if (self.effectViewConstraints) {
-        [alertView removeConstraints:self.effectViewConstraints];
-        self.effectViewConstraints = nil;
     }
     if (self.headerBezelViewConstraints) {
         [alertView removeConstraints:self.headerBezelViewConstraints];
@@ -728,10 +709,6 @@
         self.footerActionViewConstraints = nil;
     }
     
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [self.view addConstraints:backgroundViewConstraints];
-    
     CGFloat margin = 15;
     CGFloat footerTopMargin = self.cancelAction ? 6.0 : 0.0;
     CGFloat headerActionPadding = (!titleView.subviews.count || !self.actions.count) ? 0 : 0.5;
@@ -750,10 +727,6 @@
         [alertViewConstraints addObject:_alertConstraintCenterY];
     }
     [self.view addConstraints:alertViewConstraints];
-    
-    [effectViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[alertEffectView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertEffectView)]];
-    [effectViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[alertEffectView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertEffectView)]];
-    [alertView addConstraints:effectViewConstraints];
     
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView)]];
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[headerBezelView]-%f-[actionBezelView]-0-|",headerActionPadding] options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView,actionBezelView)]];
@@ -926,9 +899,7 @@
         [self.headerScrollView scrollRectToVisible:firstTextField.frame animated:YES];
     }
     
-    self.backgroundViewConstraints = backgroundViewConstraints;
     self.alertViewConstraints = alertViewConstraints;
-    self.effectViewConstraints = effectViewConstraints;
     self.headerBezelViewConstraints = headerBezelViewConstraints;
     self.headerScrollViewConstraints = headerScrollViewConstraints;
     self.headerScrollContentViewConstraints  = headerScrollContentViewConstraints;
@@ -951,18 +922,12 @@
     CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
     CGFloat maxTopMarginForActionSheet = self.maxTopMarginForActionSheet;
     
-    UIView *backgroundView = self.backgroundView;
     UIView *alertView = self.alertView;
     UIView *customView = self.customView;
     
-    NSMutableArray *backgroundViewConstraints = [NSMutableArray array];
     NSMutableArray *alertViewConstraints = [NSMutableArray array];
     NSMutableArray *customViewConstraints = [NSMutableArray array];
     
-    if (self.backgroundViewConstraints) {
-        [self.view removeConstraints:self.backgroundViewConstraints];
-        self.backgroundViewConstraints = nil;
-    }
     if (self.alertViewConstraints) {
         [self.view removeConstraints:self.alertViewConstraints];
         self.alertViewConstraints = nil;
@@ -971,11 +936,6 @@
         [alertView removeConstraints:self.customViewConstraints];
         self.customViewConstraints = nil;
     }
-    
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [self.view addConstraints:backgroundViewConstraints];
-    
     CGRect customViewRect = customView.frame;
     CGFloat alertH = customViewRect.size.height;
     if (alertH > (self.view.bounds.size.height-(topMarginForAlert+bottomMarginForAlert))) {
@@ -999,7 +959,6 @@
     
     [self.view layoutIfNeeded];
     
-    self.backgroundViewConstraints = backgroundViewConstraints;
     self.alertViewConstraints = alertViewConstraints;
     self.customViewConstraints = customViewConstraints;
 }
@@ -1120,10 +1079,17 @@
     _needBlur = needBlur;
     if (!needBlur) {
         self.alertView.backgroundColor = [UIColor lightGrayColor];
-        self.alertEffectView.alpha = 0.0;
+        [self.alertEffectView removeFromSuperview];
+        self.alertEffectView = nil;
     } else {
+        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        [_alertView insertSubview:alertEffectView atIndex:0];
+        alertEffectView.frame = _alertView.bounds;
+        alertEffectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+        _alertEffectView = alertEffectView;
         self.alertView.backgroundColor = alertColor;
-        self.alertEffectView.alpha = 1;
+        self.alertView.layer.allowsGroupOpacity = NO;
     }
 }
 
