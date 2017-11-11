@@ -1,4 +1,11 @@
 
+# SPAlertController
+[![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
+[![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
+[![Pod Platform](http://img.shields.io/cocoapods/p/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
+[![Pod License](http://img.shields.io/cocoapods/l/SPAlertController.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SPStore/SPAlertController)
+[![codecov](https://codecov.io/gh/SPStore/SPAlertController/branch/master/graph/badge.svg)](https://codecov.io/gh/SPStore/SPAlertController)
 # 目录
 * [如何导入](#如何导入)
 * [Gif演示图](#gif演示图)  
