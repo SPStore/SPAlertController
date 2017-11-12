@@ -8,12 +8,18 @@
 
 #import "SPAlertController.h"
 
+#define ScreenWidth [UIScreen mainScreen].bounds.size.width
+#define ScreenHeight [UIScreen mainScreen].bounds.size.height
+
 #define actionHeight 48.0
-#define actionColor [UIColor colorWithWhite:1.0 alpha:0.8]
-#define alertColor [UIColor colorWithWhite:1.0 alpha:0.5]
+#define actionColor [UIColor colorWithWhite:1 alpha:0.8]
+#define alertColor [UIColor colorWithWhite:1 alpha:0]
 
 #define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812)
 #define alertBottomMargin isIPhoneX ? 34 : 0 // 适配iPhoneX
+
+
+#pragma mark ---------------------------- SPAlertAction begin --------------------------------
 
 @interface SPAlertAction()
 
@@ -78,6 +84,9 @@
 
 @end
 
+#pragma mark ---------------------------- SPAlertAction end --------------------------------
+
+#pragma mark ---------------------------- SPAlertControllerActionCell begin --------------------------------
 
 @interface SPAlertControllerActionCell : UITableViewCell
 @property (nonatomic, strong) SPAlertAction *action;
@@ -90,11 +99,6 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         
-        // 设置背景透明，默认是白色，白色会阻挡分割线的毛玻璃效果
-        self.backgroundColor = [UIColor clearColor];
-        // contentView默认是透明色，给一个颜色，更加突出分割线（contentView的高度比cell小0.5，0.5就是分割线的额高度）
-        self.contentView.backgroundColor = actionColor;
-        
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         // 设置垂直方向的抗压缩优先级,优先级越高越不容易被压缩,默认的优先级是750
@@ -102,7 +106,20 @@
         titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         [titleLabel sizeToFit];
-        [self.contentView addSubview:titleLabel];
+        // footerCell指的是SPAlertControllerStyleActionSheet下的取消cell和SPAlertControllerStyleAlert下actions小于_maxNumberOfActionHorizontalArrangementForAlert时的cell
+        // 这个cell因为要修改系统自带的布局，如果直接加在contentView上，修改contentView的布局很容易出问题，所以此时用不着contentView，而且这个cell跟tableView没有任何关系，就是一个普通的view
+        if ([reuseIdentifier isEqualToString:@"footerCell"]) {
+            self.backgroundColor = actionColor;
+            // contentView在此处没用了
+            self.contentView.backgroundColor = [UIColor clearColor];
+            [self addSubview:titleLabel];
+        } else {
+            // 设置背景透明，默认是白色，白色会阻挡分割线
+            self.backgroundColor = [UIColor clearColor];
+            // contentView默认是透明色，给一个颜色，更加突出分割线（contentView的高度比cell小0.5，0.5就是分割线的高度）
+            self.contentView.backgroundColor = actionColor;
+            [self.contentView addSubview:titleLabel];
+        }
         _titleLabel = titleLabel;
         
         [self setNeedsUpdateConstraints];
@@ -125,20 +142,22 @@
 }
 
 - (void)updateConstraints {
+    [super updateConstraints];
+
     UILabel *titleLabel = self.titleLabel;
     
     NSMutableArray *titleLabelConstraints = [NSMutableArray array];
     if (self.titleLabelConstraints) {
-        [self.contentView removeConstraints:self.titleLabelConstraints];
+        [titleLabel.superview removeConstraints:self.titleLabelConstraints];
         self.titleLabelConstraints = nil;
     }
 
-    [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:titleLabel.superview attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(>=0)-[titleLabel]-(>=0)-|"] options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleLabel)]];
     [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[titleLabel]-0-|"] options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleLabel)]];
-    [self.contentView addConstraints:titleLabelConstraints];
+    [titleLabel.superview addConstraints:titleLabelConstraints];
     self.titleLabelConstraints = titleLabelConstraints;
-    [super updateConstraints];
+
 }
 
 + (BOOL)requiresConstraintBasedLayout {
@@ -147,11 +166,12 @@
 
 
 @end
+#pragma mark ---------------------------- SPAlertControllerActionCell end --------------------------------
+
+
+#pragma mark ---------------------------- SPAlertController begin --------------------------------
 
 @interface SPAlertController () <UIViewControllerTransitioningDelegate,UITableViewDataSource,UITableViewDelegate>
-
-@property (nonatomic, weak) UIView *backgroundView;
-@property (nonatomic, strong) NSMutableArray *backgroundViewConstraints;
 
 @property (nonatomic, strong) UIView *alertView;
 @property (nonatomic, weak) UIVisualEffectView *alertEffectView;
@@ -166,8 +186,6 @@
 @property (nonatomic, weak) UIView *textFieldView;
 
 // ---------------- 头部控件的约束数组 -----------------
-@property (nonatomic, strong) NSMutableArray *alertViewConstraints;
-@property (nonatomic, strong) NSMutableArray *effectViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerBezelViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerScrollViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerScrollContentViewConstraints;
@@ -188,7 +206,6 @@
 @property (nonatomic, strong) NSMutableArray *actionTableViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerActionViewConstraints;
-@property (nonatomic, strong) NSMutableArray *footerActionViewContentViewConstraints;
 
 // ---------------- 自定义view --------------
 @property (nonatomic, strong) UIView *customView;
@@ -212,6 +229,7 @@
 @property (nonatomic, assign) BOOL keyboardShow;
 @property (nonatomic, assign) NSLayoutConstraint *alertConstraintCenterY;
 
+@property (nonatomic, assign) CGFloat customViewH;
 @property (nonatomic, assign) CGFloat customCenterViewH;
 @end
 
@@ -268,8 +286,7 @@
         NSAssert(action.style != SPAlertActionStyleCancel, @"SPAlertController不允许多个取消按钮,你可以检查是否多次设置了SPAlertActionStyleCancel");
         NSInteger index = [self.actions indexOfObject:self.cancelAction];
         // 将这个action插入到cancelAction之前，目的是保证cancelAction永远处于数组最后一个位置
-        [array insertObject:action atIndex:index];
-        
+        [array insertObject:action atIndex:index];        
     } else {
         [array addObject:action];
     }
@@ -289,13 +306,13 @@
         }
         self.dataSource = self.cancelAction ? [array subarrayWithRange:NSMakeRange(0, array.count-1)].copy : array.copy;
     } else {
-        if (self.actions.count <= 2) {
+        if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
             [self createFooterActionView:action];
-            // 当只有2个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于2个action时又得加回来
+            // 当只有_maxNumberOfActionHorizontalArrangementForAlert个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于_maxNumberOfActionHorizontalArrangementForAlert个action时又得加回来
             self.dataSource = nil;
         } else {
             if (self.customCenterView) {
-                NSLog(@"当自定义centerView时，SPAlertControllerStyleAlert下，action的个数最多只能是2个，超过2个时只显示最前面2个");
+                NSLog(@"当自定义centerView时，SPAlertControllerStyleAlert下，action的个数最多只能是_maxNumberOfActionHorizontalArrangementForAlert个，超过_maxNumberOfActionHorizontalArrangementForAlert个的action将不显示");
                 [array removeObject:action];
                 self.actions = array;
                 return;
@@ -321,7 +338,7 @@
                 [weakSelf.actionTableView reloadData];
             }
         } else {
-            if (weakSelf.actions.count <= 2) {
+            if (weakSelf.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
                 NSInteger index = [weakSelf.actions indexOfObject:action];
                 SPAlertControllerActionCell *footerCell = weakSelf.footerView.subviews[index];
                 footerCell.action = action;
@@ -443,8 +460,10 @@
         [self setupViewsWithCustomView:customView customTitleView:customTitleView customCenterView:customCenterView];
         
         self.needBlur = YES;
+        self.cornerRadiusForAlert = 5;
         self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 0;
         self.maxMarginForAlert = 20.0;
+        self.maxNumberOfActionHorizontalArrangementForAlert = 2;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
@@ -454,32 +473,14 @@
 }
 
 - (void)setupViewsWithCustomView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView {
-    UIView *backgroundView = [[UIView alloc] init];
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    backgroundView.backgroundColor = [UIColor blackColor];
-    backgroundView.alpha = 0.0;
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBackgroundView)];
-    [backgroundView addGestureRecognizer:tap];
-    [self.view addSubview:backgroundView];
-    _backgroundView = backgroundView;
     
     UIView *alertView = [[UIView alloc] init];
-    alertView.translatesAutoresizingMaskIntoConstraints = NO;
-    // 设置白色透明度，会让毛玻璃效果变淡一些
-    alertView.backgroundColor = [UIColor clearColor];
-    if (self.preferredStyle == SPAlertControllerStyleAlert) {
-        alertView.layer.cornerRadius = 5;
-        alertView.layer.masksToBounds = YES;
-    }
+    alertView.frame = self.view.bounds;
+    alertView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self.view addSubview:alertView];
     _alertView = alertView;
     
     if (!customView) {
-        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:effect];
-        alertEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-        [alertView addSubview:alertEffectView];
-        _alertEffectView = alertEffectView;
         
         UIView *headerBezelView = [[UIView alloc] init];
         // 如果布局使用的是autolayout，一定要将对应的控件设置translatesAutoresizingMaskIntoConstraints为NO
@@ -513,7 +514,6 @@
             UIView *textFieldView = [[UIView alloc] init];
             textFieldView.translatesAutoresizingMaskIntoConstraints = NO;
             [headerScrollContentView addSubview:textFieldView];
-            _textFieldView.backgroundColor = [UIColor redColor];
             _textFieldView = textFieldView;
             
             if (self.title.length) {
@@ -573,10 +573,8 @@
 }
 
 - (void)createFooterActionView:(SPAlertAction *)action {
-    // 直接拿一个cell来创建,因为cell中有label，而且也方便统一处理
-    SPAlertControllerActionCell *footerActionView = [[SPAlertControllerActionCell alloc] init];
-    footerActionView.backgroundColor = actionColor;
-    // 注意:footerActionView和它的contentView要同时为NO，如果contentView不为NO，系统默认是YES，contetnView是不会自动布局的，而且要手动对contentView布局
+    // 这个cell实际上就是一个普通的view，跟tableView没有任何关系，因为cell内部都有现成的控件和布局，直接用这个cell就好，没必要再去自定义一个view，需要注意的是，cell使用了自动布局,contentView会受到影响，看警告对症下药
+    SPAlertControllerActionCell *footerActionView = [[SPAlertControllerActionCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"footerCell"];
     footerActionView.translatesAutoresizingMaskIntoConstraints = NO;
     footerActionView.contentView.translatesAutoresizingMaskIntoConstraints = NO;
     footerActionView.action = action;
@@ -592,7 +590,7 @@
             self.cancelAction.handler(self.cancelAction);
         }
     } else {
-        if (self.actions.count <= 2) {
+        if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
             SPAlertControllerActionCell *footerActionView = (SPAlertControllerActionCell *)tap.view;
             NSInteger index = [self.footerView.subviews indexOfObject:footerActionView];
             SPAlertAction *action = [self.actions objectAtIndex:index];
@@ -605,24 +603,13 @@
     [self dismissViewControllerAnimated:YES completion:^{}];
 }
 
-- (void)tapBackgroundView {
-    [self dismissViewControllerAnimated:YES completion:^{}];
-}
-
 #pragma mark - 布局
 - (void)layoutViewConstraints {
     
     if (self.customView) {
         return;
     }
-    CGFloat maxTopMarginForActionSheet = self.maxTopMarginForActionSheet;
-    CGFloat maxMarginForAlert = self.maxMarginForAlert;
-    CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
-    CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
-    
-    UIView *backgroundView = self.backgroundView;
     UIView *alertView = self.alertView;
-    UIView *alertEffectView = self.alertEffectView;
     UIView *headerBezelView = self.headerBezelView;
     UIScrollView *headerScrollView = self.headerScrollView;
     UIView *headerScrollContentView = self.headerScrollContentView;
@@ -634,9 +621,6 @@
     UIView *footerView = self.footerView;
     
     // 预备相应控件的约束数组
-    NSMutableArray *backgroundViewConstraints = [NSMutableArray array];
-    NSMutableArray *alertViewConstraints = [NSMutableArray array];
-    NSMutableArray *effectViewConstraints = [NSMutableArray array];
     NSMutableArray *headerBezelViewConstraints = [NSMutableArray array];
     NSMutableArray *headerScrollViewConstraints = [NSMutableArray array];
     NSMutableArray *headerScrollContentViewConstraints = [NSMutableArray array];
@@ -651,18 +635,6 @@
     NSMutableArray *footerActionViewConstraints = [NSMutableArray array];
     
     // 移除存在的约束
-    if (self.backgroundViewConstraints) {
-        [self.view removeConstraints:backgroundViewConstraints];
-        self.backgroundViewConstraints = nil;
-    }
-    if (self.alertViewConstraints) {
-        [self.view removeConstraints:self.alertViewConstraints];
-        self.alertViewConstraints = nil;
-    }
-    if (self.effectViewConstraints) {
-        [alertView removeConstraints:self.effectViewConstraints];
-        self.effectViewConstraints = nil;
-    }
     if (self.headerBezelViewConstraints) {
         [alertView removeConstraints:self.headerBezelViewConstraints];
         self.headerBezelViewConstraints = nil;
@@ -711,45 +683,13 @@
         [footerView removeConstraints:self.footerActionViewConstraints];
         self.footerActionViewConstraints = nil;
     }
-    if (self.footerActionViewContentViewConstraints.count) {
-        for (int i = 0; i < self.footerActionViewContentViewConstraints.count; i++) {
-            NSMutableArray *contentViewConstraints = self.footerActionViewContentViewConstraints[i];
-            if (self.footerView.subviews.count > i) {
-                UIView *footerActionView = self.footerView.subviews[i];
-                [footerActionView removeConstraints:contentViewConstraints];
-                contentViewConstraints = nil;
-            }
-        }
-        self.footerActionViewContentViewConstraints = nil;
-    }
-    
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [self.view addConstraints:backgroundViewConstraints];
     
     CGFloat margin = 15;
-    CGFloat footerTopMargin = self.cancelAction ? 6.0 : 0.0;
+    CGFloat footerTopMargin = self.cancelAction ? 5.0 : 0.0;
     CGFloat headerActionPadding = (!titleView.subviews.count || !self.actions.count) ? 0 : 0.5;
     // 计算actionBezelView的高度
     CGFloat actionBezelHeight = [self actionBezelHeight:footerTopMargin];
-    
-    if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[alertView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[alertView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(alertView)]];
-    } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[alertView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
-        _alertConstraintCenterY = [NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:0];
-        [alertViewConstraints addObject:_alertConstraintCenterY];
-    }
-    [self.view addConstraints:alertViewConstraints];
-    
-    [effectViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[alertEffectView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertEffectView)]];
-    [effectViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[alertEffectView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertEffectView)]];
-    [alertView addConstraints:effectViewConstraints];
-    
+
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView)]];
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[headerBezelView]-%f-[actionBezelView]-0-|",headerActionPadding] options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView,actionBezelView)]];
     // headerBezelView的高度最大为(self.view.bounds.size.height-itemHeight)
@@ -854,6 +794,7 @@
     [actionBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelView)]];
     [actionBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[headerBezelView]-%f-[actionBezelView]-0-|",headerActionPadding] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelView,headerBezelView)]];
     NSLayoutConstraint *actionBezelViewHeightContraint = [NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionBezelHeight];
+
     // 设置优先级，要比上面headerBezelViewContraintHeight的优先级低
     actionBezelViewHeightContraint.priority = 997.0f;
     if (self.actions.count) {
@@ -877,7 +818,7 @@
     [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[footerView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView)]];
     [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionBezelContentView)]];
     // 这个条件判断需不需要footerView，不满足条件footerView的高度就给0
-    if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= 2) && self.actions.count)) {
+    if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) && self.actions.count)) {
         [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
     } else {
         // 不满足条件，高度置为0，注意给0和不给高度是两回事，给0至少footerView有一个高度约束，不给的话就没有高度约束，这会导致tableView的底部间距设置无效，从而导致tableView不显示
@@ -886,9 +827,9 @@
     [actionBezelView addConstraints:footerViewConstraints];
     
     NSArray *footerActionViews = footerView.subviews;
-    if (footerActionViews.count && ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && self.actions.count <= 2))) {
+    if (footerActionViews.count && ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert))) {
         [footerActionViews enumerateObjectsUsingBlock:^(SPAlertControllerActionCell *footerActionView, NSUInteger idx, BOOL * _Nonnull stop) {
-            //  设置footerActionView的上下间距
+            // 设置footerActionView的上下间距
             [footerActionViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[footerActionView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerActionView)]];
             // 第一个footerActionView的左间距
             if (idx == 0) {
@@ -905,15 +846,10 @@
                 // 等宽
                 [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:footerActionViews[idx - 1] attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
             }
-            UIView *contentView = footerActionView.contentView;
-            NSMutableArray *contentViewConstraints = [NSMutableArray array];
-            [contentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[contentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(contentView)]];
-            [contentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[contentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(contentView)]];
-            [contentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:footerActionView attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
-            [footerActionView addConstraints:contentViewConstraints];
-            [self.footerActionViewContentViewConstraints addObject:contentViewConstraints];
-            
+            // 在这里，这个cell的contentView没有任何作用，但是为了消除控制台打印的contentView应该给一个高度的警告，这里给一个0
+            [footerActionView.contentView addConstraint:[NSLayoutConstraint constraintWithItem:footerActionView.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0]];
         }];
+        
         [footerView addConstraints:footerActionViewConstraints];
     }
     
@@ -925,9 +861,6 @@
         [self.headerScrollView scrollRectToVisible:firstTextField.frame animated:YES];
     }
     
-    self.backgroundViewConstraints = backgroundViewConstraints;
-    self.alertViewConstraints = alertViewConstraints;
-    self.effectViewConstraints = effectViewConstraints;
     self.headerBezelViewConstraints = headerBezelViewConstraints;
     self.headerScrollViewConstraints = headerScrollViewConstraints;
     self.headerScrollContentViewConstraints  = headerScrollContentViewConstraints;
@@ -940,66 +873,24 @@
     self.actionTableViewConstraints = actionTableViewConstraints;
     self.footerViewConstraints = footerViewConstraints;
     self.footerActionViewConstraints = footerActionViewConstraints;
+    
 }
 
 // 布局自定义的view
 - (void)layoutCustomView {
-    
-    CGFloat maxMarginForAlert = self.maxMarginForAlert;
-    CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
-    CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
-    CGFloat maxTopMarginForActionSheet = self.maxTopMarginForActionSheet;
-    
-    UIView *backgroundView = self.backgroundView;
+
     UIView *alertView = self.alertView;
     UIView *customView = self.customView;
     
-    NSMutableArray *backgroundViewConstraints = [NSMutableArray array];
-    NSMutableArray *alertViewConstraints = [NSMutableArray array];
     NSMutableArray *customViewConstraints = [NSMutableArray array];
-    
-    if (self.backgroundViewConstraints) {
-        [self.view removeConstraints:self.backgroundViewConstraints];
-        self.backgroundViewConstraints = nil;
-    }
-    if (self.alertViewConstraints) {
-        [self.view removeConstraints:self.alertViewConstraints];
-        self.alertViewConstraints = nil;
-    }
     if (self.customViewConstraints) {
         [alertView removeConstraints:self.customViewConstraints];
         self.customViewConstraints = nil;
     }
-    
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [backgroundViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[backgroundView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(backgroundView)]];
-    [self.view addConstraints:backgroundViewConstraints];
-    
-    CGRect customViewRect = customView.frame;
-    CGFloat alertH = customViewRect.size.height;
-    if (alertH > (self.view.bounds.size.height-(topMarginForAlert+bottomMarginForAlert))) {
-        alertH = (self.view.bounds.size.height-(topMarginForAlert+bottomMarginForAlert));
-    }
-    if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[alertView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[alertView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(alertView)]];
-        
-    } else {
-        [alertViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[alertView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(alertView)]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
-        [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-    }
-    [alertViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertH]];
-    [self.view addConstraints:alertViewConstraints];
     [customViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[customView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(customView)]];
     [customViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[customView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(customView)]];
     [alertView addConstraints:customViewConstraints];
-    
-    [self.view layoutIfNeeded];
-    
-    self.backgroundViewConstraints = backgroundViewConstraints;
-    self.alertViewConstraints = alertViewConstraints;
+
     self.customViewConstraints = customViewConstraints;
 }
 
@@ -1026,10 +917,10 @@
                 }
             }
         } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
-            if (self.actions.count <= 2) {
-                if (!self.customCenterView) { // 当有自定义的customCenterView时，最多只会有2个action，在addAction:方法里做了处理
+            if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
+                if (!self.customCenterView) { // 当有自定义的customCenterView时，最多只会有_maxNumberOfActionHorizontalArrangementForAlert个action，在addAction:方法里做了处理
                     actionBezelHeight = actionHeight;
-                } else { // 2个以下action且有自定义scrollView
+                } else { // _maxNumberOfActionHorizontalArrangementForAlert个以下action且有自定义scrollView
                     actionBezelHeight = _customCenterViewH + actionHeight;
                 }
             } else {
@@ -1054,7 +945,11 @@
         }
     } else {
         if (self.actions.count > 3) { // 没有取消按钮，其余按钮在3个或3个以上
-            minActionHeight = 3.5 * actionHeight;
+            if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
+                minActionHeight = minActionHeight;
+            } else {
+                minActionHeight = 3.5 * actionHeight;
+            }
         } else {
             if (self.preferredStyle == SPAlertControllerStyleAlert) {
                 if (self.actions.count) {
@@ -1114,11 +1009,18 @@
 - (void)setNeedBlur:(BOOL)needBlur {
     _needBlur = needBlur;
     if (!needBlur) {
-        self.alertView.backgroundColor = [UIColor lightGrayColor];
-        self.alertEffectView.alpha = 0.0;
+        self.alertView.backgroundColor = [UIColor colorWithDisplayP3Red:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1];
+        [self.alertEffectView removeFromSuperview];
+        self.alertEffectView = nil;
     } else {
-        self.alertView.backgroundColor = alertColor;
-        self.alertEffectView.alpha = 1.0;
+        
+        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:effect];
+        alertEffectView.frame = self.alertView.bounds;
+        alertEffectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+//        UIView *effectFilterView = [alertEffectView valueForKeyPath:@"_grayscaleSubview"];
+//        effectFilterView.backgroundColor = [UIColor colorWithWhite:0.97 alpha:0.8];
+        [self.alertView insertSubview:alertEffectView atIndex:0];
     }
 }
 
@@ -1140,19 +1042,22 @@
     }
 }
 
-- (void)setAlertCornerRadius:(CGFloat)alertCornerRadius {
-    _alertCornerRadius = alertCornerRadius;
-    self.alertView.layer.cornerRadius = alertCornerRadius;
+- (void)setCornerRadiusForAlert:(CGFloat)cornerRadiusForAlert {
+    _cornerRadiusForAlert = cornerRadiusForAlert;
+    if (self.preferredStyle == SPAlertControllerStyleAlert) {
+        self.view.layer.cornerRadius = cornerRadiusForAlert;
+        self.view.layer.masksToBounds = YES;
+    }
 }
 
 - (void)setOffsetY:(CGFloat)offsetY {
     _offsetY = offsetY;
-    _alertConstraintCenterY.constant = -offsetY;
 }
 
 - (void)setCustomView:(UIView *)customView {
     _customView = customView;
     [customView layoutIfNeeded];
+    _customViewH = customView.frame.size.height;
     customView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.alertView addSubview:customView];
     [self layoutCustomView];
@@ -1219,13 +1124,6 @@
     return _textFields;
 }
 
-- (NSMutableArray *)footerActionViewContentViewConstraints {
-    if (!_footerActionViewContentViewConstraints) {
-        _footerActionViewContentViewConstraints = [NSMutableArray array];
-    }
-    return _footerActionViewContentViewConstraints;
-}
-
 #pragma mark - 通知
 - (void)keyboardWillShow:(NSNotification *)notification {
     
@@ -1246,7 +1144,6 @@
 
 #pragma mark - UIViewControllerTransitioningDelegate
 - (nullable id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-
     return [SPAlertAnimation animationIsPresenting:YES];
 }
 
@@ -1255,8 +1152,134 @@
     return [SPAlertAnimation animationIsPresenting:NO];
 }
 
+- (nullable UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented presentingViewController:(nullable UIViewController *)presenting sourceViewController:(UIViewController *)source NS_AVAILABLE_IOS(8_0) {
+    return [[SPAlertPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
+}
 
 @end
+
+#pragma mark ---------------------------- SPAlertController end --------------------------------
+
+#pragma mark ---------------------------- SPAlertPresentationController begin --------------------------------
+
+@interface SPAlertPresentationController()
+@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) NSMutableArray *presentedViewConstraints;
+@end
+
+@implementation SPAlertPresentationController
+
+- (instancetype)initWithPresentedViewController:(UIViewController *)presentedViewController presentingViewController:(UIViewController *)presentingViewController {
+    if (self = [super initWithPresentedViewController:presentedViewController presentingViewController:presentingViewController]) {
+        self.presentedView.translatesAutoresizingMaskIntoConstraints = NO;
+    }
+    return self;
+}
+
+- (void)containerViewWillLayoutSubviews {
+    [super containerViewWillLayoutSubviews];
+    
+    SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
+    CGFloat maxTopMarginForActionSheet = alertController.maxTopMarginForActionSheet;
+    CGFloat maxMarginForAlert = alertController.maxMarginForAlert;
+    CGFloat topMarginForAlert = isIPhoneX ? (maxMarginForAlert+44):maxMarginForAlert;
+    CGFloat bottomMarginForAlert = isIPhoneX ? (maxMarginForAlert+34):maxMarginForAlert;
+    
+    UIView *presentedView = self.presentedView;
+    
+    NSMutableArray *presentedViewConstraints = [NSMutableArray array];
+    if (self.presentedViewConstraints) {
+        [self.containerView removeConstraints:self.presentedViewConstraints];
+        self.presentedViewConstraints = nil;
+    }
+    UIView *customView = alertController.customView;
+    if (!customView) {
+        if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
+            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[presentedView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(presentedView)]];
+            if (alertController.animationType == SPAlertAnimationTypeDropDown) {
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[presentedView]-(>=alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else {
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            }
+        } else if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
+            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[presentedView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:-alertController.offsetY]];
+        }
+    } else {
+        CGFloat alertH = alertController.customViewH;
+        if (alertH > (self.containerView.bounds.size.height-maxTopMarginForActionSheet)) {
+            alertH = (self.containerView.bounds.size.height-(topMarginForAlert+bottomMarginForAlert));
+        }
+        if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
+            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[presentedView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(presentedView)]];
+            if (alertController.animationType == SPAlertAnimationTypeDropDown) {
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==maxTopMarginForActionSheet)-[presentedView]-(>=alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else {
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            }
+            
+        } else {
+            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[presentedView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:-alertController.offsetY]];
+        }
+        [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertH]];
+    }
+    [self.containerView addConstraints:presentedViewConstraints];
+    
+    self.presentedViewConstraints = presentedViewConstraints;
+}
+
+- (void)presentationTransitionWillBegin {
+    [super presentationTransitionWillBegin];
+    
+    UIView *maskView = [[UIView alloc] init];
+    maskView.frame = self.containerView.bounds;
+    maskView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    maskView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
+    maskView.alpha = 0;
+    [self.containerView addSubview:maskView];
+    _maskView = maskView;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapMaskView)];
+    [maskView addGestureRecognizer:tap];
+}
+
+- (void)presentationTransitionDidEnd:(BOOL)completed {
+    [super presentationTransitionDidEnd:completed];
+
+}
+
+- (void)dismissalTransitionWillBegin {
+    [super dismissalTransitionWillBegin];
+}
+
+- (void)dismissalTransitionDidEnd:(BOOL)completed {
+    [super dismissalTransitionDidEnd:completed];
+    if (completed) {
+        [_maskView removeFromSuperview];
+        _maskView = nil;
+    }
+}
+
+- (CGRect)frameOfPresentedViewInContainerView{
+    return self.presentedView.frame;
+}
+
+- (void)tapMaskView {
+    [self.presentedViewController dismissViewControllerAnimated:YES completion:^{}];
+}
+
+@end
+
+#pragma mark ---------------------------- SPAlertPresentationController end --------------------------------
+
+
+#pragma mark ---------------------------- SPAlertAnimation begin --------------------------------
 
 @interface SPAlertAnimation()
 @property (nonatomic, assign) BOOL presenting;
@@ -1290,31 +1313,41 @@
 
 - (void)presentAnimationTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
     SPAlertController *alertController = (SPAlertController *)[transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
-    CGFloat alertViewHeight = CGRectGetHeight(alertController.alertView.frame);
-    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+    CGSize controlViewSize = alertController.view.bounds.size;
     
+    // 获取presentationController，注意不是presentedController
+    SPAlertPresentationController *presentedController = (SPAlertPresentationController *)alertController.presentationController;
+    UIView *maskView = presentedController.maskView;
+
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
             [self raiseUpWhenPresentForController:alertController
                                        transition:transitionContext
-                                  alertViewHeight:alertViewHeight
-                                     screenHeight:screenHeight];
+                                  controlViewSize:controlViewSize maskView:maskView];
             break;
         case SPAlertAnimationTypeDropDown:
             [self dropDownWhenPresentForController:alertController
                                         transition:transitionContext
-                                   alertViewHeight:alertViewHeight
-                                      screenHeight:screenHeight];
+                                   controlViewSize:controlViewSize maskView:maskView];
 
             break;
         case SPAlertAnimationTypeAlpha:
-            [self alphaWhenPresentForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+            [self alphaWhenPresentForController:alertController
+                                     transition:transitionContext
+                                controlViewSize:controlViewSize
+                                       maskView:maskView];
             break;
         case SPAlertAnimationTypeExpand:
-            [self expandWhenPresentForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+            [self expandWhenPresentForController:alertController
+                                      transition:transitionContext
+                                 controlViewSize:controlViewSize
+                                        maskView:maskView];
             break;
         case SPAlertAnimationTypeShrink:
-            [self shrinkWhenPresentForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+            [self shrinkWhenPresentForController:alertController
+                                      transition:transitionContext
+                                 controlViewSize:controlViewSize
+                                        maskView:maskView];
             break;
         default:
             break;
@@ -1323,31 +1356,43 @@
 }
 
 - (void)dismissAnimationTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
-        SPAlertController *alertController = (SPAlertController *)[transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    CGFloat alertViewHeight = CGRectGetHeight(alertController.alertView.frame);
-    CGFloat screenHeight = [UIScreen mainScreen].bounds.size.height;
+    SPAlertController *alertController = (SPAlertController *)[transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+    CGSize controlViewSize = alertController.view.bounds.size;
+    // 获取presentationController，注意不是presentedController
+    SPAlertPresentationController *presentedController = (SPAlertPresentationController *)alertController.presentationController;
+    UIView *maskView = presentedController.maskView;
+    
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
             [self dismissCorrespondingRaiseUpForController:alertController
                                                 transition:transitionContext
-                                           alertViewHeight:alertViewHeight
-                                              screenHeight:screenHeight];
+                                           controlViewSize:controlViewSize
+                                                  maskView:maskView];
             break;
         case SPAlertAnimationTypeDropDown:
             [self dismissCorrespondingDropDownForController:alertController
                                                  transition:transitionContext
-                                            alertViewHeight:alertViewHeight
-                                               screenHeight:screenHeight];
+                                            controlViewSize:controlViewSize
+                                                   maskView:maskView];
             break;
 
         case SPAlertAnimationTypeAlpha:
-            [self dismissCorrespondingAlphaForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+            [self dismissCorrespondingAlphaForController:alertController
+                                              transition:transitionContext
+                                         controlViewSize:controlViewSize
+                                                maskView:maskView];
             break;
         case SPAlertAnimationTypeExpand:
-            [self dismissCorrespondingExpandForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+            [self dismissCorrespondingExpandForController:alertController
+                                               transition:transitionContext
+                                          controlViewSize:controlViewSize
+                                                 maskView:maskView];
             break;
         case SPAlertAnimationTypeShrink:
-            [self dismissCorrespondingShrinkForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+            [self dismissCorrespondingShrinkForController:alertController
+                                               transition:transitionContext
+                                          controlViewSize:controlViewSize
+                                                 maskView:maskView];
             break;
         default:
             break;
@@ -1358,17 +1403,20 @@
 // 从底部忘上弹的present动画
 - (void)raiseUpWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        alertViewHeight:(CGFloat)alertViewHeight
-                           screenHeight:(CGFloat)screenHeight {
+                        controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     
-    alertController.backgroundView.alpha = 0.0;
-    alertController.alertView.transform = CGAffineTransformMakeTranslation(0, alertViewHeight);
+    CGRect controlViewFrame = alertController.view.frame;
+    controlViewFrame.origin.y = ScreenHeight;
+    alertController.view.frame = controlViewFrame;
+    
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        alertController.backgroundView.alpha = 0.5;
-        alertController.alertView.transform = CGAffineTransformIdentity;
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.y = ScreenHeight-controlViewSize.height;
+        alertController.view.frame = controlViewFrame;
+        maskView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1378,12 +1426,13 @@
 // 从底部往上弹对应的dismiss动画
 - (void)dismissCorrespondingRaiseUpForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        alertViewHeight:(CGFloat)alertViewHeight
-                           screenHeight:(CGFloat)screenHeight {
+                        controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        alertController.backgroundView.alpha = 0.0;
-        alertController.alertView.transform = CGAffineTransformMakeTranslation(0, alertViewHeight);
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.y = ScreenHeight;
+        alertController.view.frame = controlViewFrame;
+        maskView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1393,17 +1442,20 @@
 // 从顶部往下弹的present动画
 - (void)dropDownWhenPresentForController:(SPAlertController *)alertController
                               transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                         alertViewHeight:(CGFloat)alertViewHeight
-                            screenHeight:(CGFloat)screenHeight {
-    alertController.backgroundView.alpha = 0.0;
-    alertController.alertView.transform = CGAffineTransformMakeTranslation(0, -screenHeight);
+                         controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+    
+    CGRect controlViewFrame = alertController.view.frame;
+    controlViewFrame.origin.y = -controlViewSize.height;
+    alertController.view.frame = controlViewFrame;
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
-    
+
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        alertController.backgroundView.alpha = 0.5;
-        alertController.alertView.transform = CGAffineTransformMakeTranslation(0, -(screenHeight-alertViewHeight-(isIPhoneX?(44+34):0)));
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.y = 0;
+        alertController.view.frame = controlViewFrame;
+        maskView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1413,12 +1465,13 @@
 // 从顶部往下弹对应的dismiss动画
 - (void)dismissCorrespondingDropDownForController:(SPAlertController *)alertController
                                       transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                 alertViewHeight:(CGFloat)alertViewHeight
-                                    screenHeight:(CGFloat)screenHeight {
+                                 controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
-        alertController.backgroundView.alpha = 0.0;
-        alertController.alertView.transform = CGAffineTransformMakeTranslation(0, -screenHeight);
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.y = -controlViewSize.height;
+        alertController.view.frame = controlViewFrame;
+        maskView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1427,18 +1480,16 @@
 // alpha值从0到1变化的present动画
 - (void)alphaWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        alertViewHeight:(CGFloat)alertViewHeight
-                           screenHeight:(CGFloat)screenHeight {
+                        controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     
-    alertController.backgroundView.alpha = 0.0;
-    alertController.alertView.alpha = 0.0;
+    alertController.view.alpha = 0;
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        alertController.backgroundView.alpha = 0.5;
-        alertController.alertView.alpha = 1.0;
+        alertController.view.alpha = 1.0;
+        maskView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1448,14 +1499,13 @@
 // alpha值从0到1变化对应的的dismiss动画
 - (void)dismissCorrespondingAlphaForController:(SPAlertController *)alertController
                                        transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                  alertViewHeight:(CGFloat)alertViewHeight
-                                     screenHeight:(CGFloat)screenHeight {
+                                  controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        alertController.backgroundView.alpha = 0;
-        alertController.alertView.alpha = 0;
+        alertController.view.alpha = 0;
+        maskView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1465,18 +1515,16 @@
 // 发散的prensent动画
 - (void)expandWhenPresentForController:(SPAlertController *)alertController
                            transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                      alertViewHeight:(CGFloat)alertViewHeight
-                         screenHeight:(CGFloat)screenHeight {
-    
-    alertController.backgroundView.alpha = 0.0;
-    alertController.alertView.transform = CGAffineTransformMakeScale(0.5, 0.5);
+                      controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+
+    alertController.view.transform = CGAffineTransformMakeScale(0.5, 0.5);
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
-    
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        alertController.backgroundView.alpha = 0.5;
-        alertController.alertView.transform = CGAffineTransformIdentity;
+
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 usingSpringWithDamping:0.6 initialSpringVelocity:20 options:UIViewAnimationOptionCurveLinear animations:^{
+        alertController.view.transform = CGAffineTransformIdentity;
+        maskView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1485,14 +1533,13 @@
 // 发散对应的dismiss动画
 - (void)dismissCorrespondingExpandForController:(SPAlertController *)alertController
                                     transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                               alertViewHeight:(CGFloat)alertViewHeight
-                                  screenHeight:(CGFloat)screenHeight {
+                               controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        alertController.backgroundView.alpha = 0;
-        alertController.alertView.transform = CGAffineTransformMakeScale(0, 0);
+        alertController.view.transform = CGAffineTransformMakeScale(0, 0);
+        maskView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1502,18 +1549,17 @@
 // 收缩的present动画
 - (void)shrinkWhenPresentForController:(SPAlertController *)alertController
                             transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                       alertViewHeight:(CGFloat)alertViewHeight
-                          screenHeight:(CGFloat)screenHeight {
-    
-    alertController.backgroundView.alpha = 0.0;
-    alertController.alertView.transform = CGAffineTransformMakeScale(1.1, 1.1);
+                       controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+   
+    alertController.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
+    
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        alertController.backgroundView.alpha = 0.5;
-        alertController.alertView.transform = CGAffineTransformIdentity;
+        alertController.view.transform = CGAffineTransformIdentity;
+        maskView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1522,12 +1568,12 @@
 // 收缩对应的的dismiss动画
 - (void)dismissCorrespondingShrinkForController:(SPAlertController *)alertController
                                      transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                alertViewHeight:(CGFloat)alertViewHeight
-                                   screenHeight:(CGFloat)screenHeight {
+                                controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
     // 与发散对应的dismiss动画相同
-    [self dismissCorrespondingExpandForController:alertController transition:transitionContext alertViewHeight:alertViewHeight screenHeight:screenHeight];
+    [self dismissCorrespondingExpandForController:alertController transition:transitionContext controlViewSize:controlViewSize maskView:maskView ];
 }
 
 @end
 
+#pragma mark ---------------------------- SPAlertAnimation end --------------------------------
 

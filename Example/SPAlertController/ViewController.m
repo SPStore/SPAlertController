@@ -35,7 +35,6 @@
 - (void)actionSheetTest1 {
     // actionSheet中，SPAlertAnimationTypeDefault 等价于 SPAlertAnimationTypeRaiseUp
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
-    alertController.needBlur = NO;
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -369,7 +368,7 @@
 
 // 示例15:自定义整个对话框(actionSheet样式从顶部弹出)
 - (void)customTest15 {
-    CommodityListView *commodityListView = [[CommodityListView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
+    CommodityListView *commodityListView = [[CommodityListView alloc] initWithFrame:CGRectMake(0, 0, 0, 600)];
     commodityListView.backgroundColor = [UIColor whiteColor];
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDropDown customView:commodityListView];
@@ -424,7 +423,7 @@
 // 示例18:当按钮过多时
 - (void)test18 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
-    alertController.maxTopMarginForActionSheet = 100;
+    alertController.maxTopMarginForActionSheet = 70;
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
@@ -580,7 +579,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
-    cell.backgroundColor = [UIColor whiteColor];
+    cell.backgroundColor = [UIColor greenColor];
     cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
     return cell;
 }
