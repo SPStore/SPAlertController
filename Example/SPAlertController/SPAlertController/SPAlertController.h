@@ -78,6 +78,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *  @param animationType   动画类型
  *  @param customView      自定义的view，如果customView传nil，就跟第一个方法等效
  */
+// 对话框的大小取决于customView的大小
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
 
 /**
@@ -87,6 +88,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *  @param animationType   动画类型
  *  @param customTitleView 自定义的titleView，如果customTitleView传nil，就跟第一个方法等效
  */
+// 如果customTitleView宽度小于等于0，或者大于等于了对话框的宽度，会自动等宽于对话框，除此之外，宽度会按照customTitleView的宽度居中布局
 + (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customTitleView:(nullable UIView *)customTitleView;
 
 /**
@@ -98,7 +100,20 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  *  @param animationType   动画类型
  *  @param customCenterView 自定义的centerView，如果customCenterView传nil，就跟第一个方法等效
  */
+// 如果customCenterView宽度小于等于0，或者大于等于了对话框的宽度，会自动等宽于对话框，除此之外，宽度会按照customCenterView的宽度居中布局
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView;
+
+/**
+ *  创建控制器
+ *
+ *  @param title    大标题
+ *  @param message  副标题
+ *  @param preferredStyle  样式
+ *  @param animationType   动画类型
+ *  @param customFooterView 自定义的customFooterView，如果customFooterView传nil，就跟第一个方法等效
+ */
+// 如果customFooterView宽度小于等于0，或者大于等于了对话框的宽度，会自动等宽于对话框，除此之外，宽度会按照customCenterView的宽度居中布局
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customFooterView:(nullable UIView *)customFooterView;
 
 /**
  *  添加action
@@ -111,7 +126,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 /**
  *  添加文本输入框
  *
- *  @param configurationHandler  一旦添加后就会回调一次(仅回调一次,因此可以在这个block块里面自由定制textFiled，如设置textField的属性，设置代理，添加addTarget，监听通知等)
+ *  @param configurationHandler  一旦添加后就会回调一次(仅回调一次,因此可以在这个block块里面自由定制textFiled，如设置textField的属性，设置代理，添加addTarget，监听通知等),只有present后，textField才有superView
  */
 - (void)addTextFieldWithConfigurationHandler:(void (^ __nullable)(UITextField *textField))configurationHandler;
 
@@ -146,14 +161,15 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
 /** alert样式下，圆角半径 */
 @property (nonatomic, assign) CGFloat cornerRadiusForAlert;
 
-/** alert样式下，弹窗的中心y值，为正向上偏移，为负向下偏移 */
-@property (nonatomic, assign) CGFloat offsetY;
+/** alert样式下，弹窗的中心y值，为正向下偏移，为负向上偏移 */
+@property (nonatomic, assign) CGFloat offsetYForAlert;
+
+/** alert样式下，水平排列的最大个数，如果大于了这个数，则所有action将垂直排列；默认是2 */
+// 当自定义了footerView时，该属性不起作用
+@property (nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert;
 
 /** 是否需要毛玻璃效果,默认为YES */
 @property (nonatomic, assign) BOOL needBlur;
-
-/** alert样式下，水平排列的最大个数，如果大于了这个数，则所有action将垂直排列；默认是2 */
-@property (nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert;
 
 @end
 

@@ -187,7 +187,6 @@
 
 // ---------------- 头部控件的约束数组 -----------------
 @property (nonatomic, strong) NSMutableArray *headerBezelViewConstraints;
-@property (nonatomic, strong) NSMutableArray *headerScrollViewConstraints;
 @property (nonatomic, strong) NSMutableArray *headerScrollContentViewConstraints;
 @property (nonatomic, strong) NSMutableArray *titleViewConstraints;
 @property (nonatomic, strong) NSMutableArray *titleLabelConstraints;
@@ -203,7 +202,6 @@
 // ---------------- action控件的约束数组 -------------------
 @property (nonatomic, strong) NSMutableArray *actionBezelViewConstraints;
 @property (nonatomic, strong) NSMutableArray *actionBezelContentViewConstraints;
-@property (nonatomic, strong) NSMutableArray *actionTableViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerViewConstraints;
 @property (nonatomic, strong) NSMutableArray *footerActionViewConstraints;
 
@@ -211,6 +209,12 @@
 @property (nonatomic, strong) UIView *customView;
 @property (nonatomic, strong) UIView *customTitleView;
 @property (nonatomic, strong) UIView *customCenterView;
+@property (nonatomic, strong) UIView *customFooterView;
+
+@property (nonatomic, assign) CGSize customViewSize;
+@property (nonatomic, assign) CGSize customTitleViewSize;
+@property (nonatomic, assign) CGSize customCenterViewSize;
+@property (nonatomic, assign) CGSize customFooterViewSize;
 // ---------------- action控件的约束数组 -------------------
 @property (nonatomic, strong) NSMutableArray *customViewConstraints;
 
@@ -229,8 +233,6 @@
 @property (nonatomic, assign) BOOL keyboardShow;
 @property (nonatomic, assign) NSLayoutConstraint *alertConstraintCenterY;
 
-@property (nonatomic, assign) CGFloat customViewH;
-@property (nonatomic, assign) CGFloat customCenterViewH;
 @end
 
 @implementation SPAlertController
@@ -257,19 +259,25 @@
 
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(UIView *)customView {
     // 创建控制器
-    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:customView customTitleView:nil customCenterView:nil];
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:customView customTitleView:nil customCenterView:nil customFooterView:nil];
     return alertController;
 }
 
 + (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customTitleView:(nullable UIView *)customTitleView {
     // 创建控制器
-    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:nil message:nil preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:customTitleView customCenterView:nil];
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:nil message:nil preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:customTitleView customCenterView:nil customFooterView:nil];
     return alertController;
 }
 
 + (instancetype)alertControllerWithTitle:(NSString *)title message:(NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(UIView *)customCenterView {
     // 创建控制器
-    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:nil customCenterView:customCenterView];
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:nil customCenterView:customCenterView customFooterView:nil];
+    return alertController;
+}
+
++ (instancetype)alertControllerWithTitle:(NSString *)title message:(NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customFooterView:(UIView *)customFooterView {
+    // 创建控制器
+    SPAlertController *alertController = [[SPAlertController alloc] initWithTitle:title message:message preferredStyle:preferredStyle animationType:animationType customView:nil customTitleView:nil customCenterView:nil customFooterView:customFooterView];
     return alertController;
 }
 
@@ -300,13 +308,13 @@
             [self layoutViewConstraints];
             return;
         }
-        if (action.style == SPAlertActionStyleCancel) {
+        if (action.style == SPAlertActionStyleCancel && !self.customFooterView) {
             self.cancelAction = action;
             [self createFooterActionView:action];
         }
         self.dataSource = self.cancelAction ? [array subarrayWithRange:NSMakeRange(0, array.count-1)].copy : array.copy;
     } else {
-        if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
+        if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert && !self.customFooterView) {
             [self createFooterActionView:action];
             // 当只有_maxNumberOfActionHorizontalArrangementForAlert个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于_maxNumberOfActionHorizontalArrangementForAlert个action时又得加回来
             self.dataSource = nil;
@@ -367,21 +375,13 @@
     textField.leftView.userInteractionEnabled = NO;
     textField.leftViewMode = UITextFieldViewModeAlways;
     textField.font = [UIFont systemFontOfSize:14];
-    [self.textFieldView addSubview:textField];
     
     NSMutableArray *array = self.textFields.mutableCopy;
     [array addObject:textField];
     self.textFields = array;
-    
-    UITextField *firstTextField = array.firstObject;
-    // 成为第一响应者，这样一旦present出来后，键盘就会弹出
-    [firstTextField becomeFirstResponder];
-    
     if (configurationHandler) {
         configurationHandler(textField);
     }
-    
-    [self layoutViewConstraints];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -431,7 +431,7 @@
 }
 
 #pragma mark - Private
-- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView {
+- (instancetype)initWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView customFooterView:(UIView *)customFooterView{
     
     if (self = [super init]) {
         
@@ -457,7 +457,7 @@
         self.animationType = animationType;
         
         // 添加子控件
-        [self setupViewsWithCustomView:customView customTitleView:customTitleView customCenterView:customCenterView];
+        [self setupViewsWithCustomView:customView customTitleView:customTitleView customCenterView:customCenterView customFooterView:customFooterView];
         
         self.needBlur = YES;
         self.cornerRadiusForAlert = 5;
@@ -472,7 +472,7 @@
     return self;
 }
 
-- (void)setupViewsWithCustomView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView {
+- (void)setupViewsWithCustomView:(UIView *)customView customTitleView:(UIView *)customTitleView customCenterView:(UIView *)customCenterView customFooterView:(UIView *)customFooterView {
     
     UIView *alertView = [[UIView alloc] init];
     alertView.frame = self.view.bounds;
@@ -480,17 +480,17 @@
     [self.view addSubview:alertView];
     _alertView = alertView;
     
-    if (!customView) {
+    if (!customView) { // 没有自定义整个对话框
         
         UIView *headerBezelView = [[UIView alloc] init];
-        // 如果布局使用的是autolayout，一定要将对应的控件设置translatesAutoresizingMaskIntoConstraints为NO
         headerBezelView.translatesAutoresizingMaskIntoConstraints = NO;
         [alertView addSubview:headerBezelView];
         _headerBezelView = headerBezelView;
         
         // 创建头部scrollView
         UIScrollView *headerScrollView = [[UIScrollView alloc] init];
-        headerScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+        headerScrollView.frame = headerBezelView.bounds;
+        headerScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         headerScrollView.showsHorizontalScrollIndicator = NO;
         if (@available(iOS 11.0, *)) {
             headerScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
@@ -505,7 +505,7 @@
         headerScrollContentView.backgroundColor = actionColor;
         [headerScrollView addSubview:headerScrollContentView];
         _headerScrollContentView = headerScrollContentView;
-        if (!customTitleView) {
+        if (!customTitleView) { // 不是自定义的titleView
             UIView *titleView = [[UIView alloc] init];
             titleView.translatesAutoresizingMaskIntoConstraints = NO;
             [headerScrollContentView addSubview:titleView];
@@ -524,25 +524,24 @@
                 self.detailTitleLabel.text = self.message;
                 [titleView addSubview:self.detailTitleLabel];
             }
-        } else {
+        } else { // 是自定义的titleView
             self.customTitleView = customTitleView;
         }
 
         UIView *actionBezelView = [[UIView alloc] init];
-        // 如果布局使用的是autolayout，一定要将对应的控件设置translatesAutoresizingMaskIntoConstraints为NO
         actionBezelView.translatesAutoresizingMaskIntoConstraints = NO;
         [alertView addSubview:actionBezelView];
         _actionBezelView = actionBezelView;
         
         if (!customCenterView) {
-
             UIView *actionBezelContentView = [[UIView alloc] init];
             actionBezelContentView.translatesAutoresizingMaskIntoConstraints = NO;
             [actionBezelView addSubview:actionBezelContentView];
             _actionBezelContentView = actionBezelContentView;
             
             UITableView *actionTableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-            actionTableView.translatesAutoresizingMaskIntoConstraints = NO;
+            actionTableView.frame = actionBezelContentView.bounds;
+            actionTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             actionTableView.showsHorizontalScrollIndicator = NO;
             actionTableView.alwaysBounceVertical = NO; // tableView内容没有超出contentSize时，禁止滑动
             actionTableView.backgroundColor = [UIColor clearColor];
@@ -558,16 +557,27 @@
             [actionBezelContentView addSubview:actionTableView];
             _actionTableView = actionTableView;
         } else {
+            [self.actionBezelContentView removeFromSuperview];
+            self.actionBezelContentView = nil;
             self.customCenterView = customCenterView;
         }
         
-        UIView *footerView = [[UIView alloc] init];
-        footerView.translatesAutoresizingMaskIntoConstraints = NO;
-        [_actionBezelView addSubview:footerView];
-        _footerView = footerView;
-        
+        if (!customFooterView) {
+            UIView *footerView = [[UIView alloc] init];
+            footerView.translatesAutoresizingMaskIntoConstraints = NO;
+            [_actionBezelView addSubview:footerView];
+            _footerView = footerView;
+        } else {
+            [self.footerView removeFromSuperview];
+            self.footerView = nil;
+            self.customFooterView = customFooterView;
+        }
         [self layoutViewConstraints];
     } else {
+        [self.alertView.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            [obj removeFromSuperview];
+            obj = nil;
+        }];
         self.customView = customView;
     }
 }
@@ -617,12 +627,10 @@
     UIView *textFieldView = self.textFieldView;
     UIView *actionBezelView = self.actionBezelView;
     UIView *actionBezelContentView = self.customCenterView ? self.customCenterView : self.actionBezelContentView;
-    UIScrollView *actionTableView = self.actionTableView;
-    UIView *footerView = self.footerView;
+    UIView *footerView = self.customFooterView ? self.customFooterView : self.footerView;
     
     // 预备相应控件的约束数组
     NSMutableArray *headerBezelViewConstraints = [NSMutableArray array];
-    NSMutableArray *headerScrollViewConstraints = [NSMutableArray array];
     NSMutableArray *headerScrollContentViewConstraints = [NSMutableArray array];
     NSMutableArray *titleViewConstraints = [NSMutableArray array];
     NSMutableArray *titleLabelConstraints = [NSMutableArray array];
@@ -630,7 +638,6 @@
     NSMutableArray *textFieldConstraints = [NSMutableArray array];
     NSMutableArray *actionBezelViewConstraints = [NSMutableArray array];
     NSMutableArray *actionBezelContentViewConstraints = [NSMutableArray array];
-    NSMutableArray *actionTableViewConstraints = [NSMutableArray array];
     NSMutableArray *footerViewConstraints = [NSMutableArray array];
     NSMutableArray *footerActionViewConstraints = [NSMutableArray array];
     
@@ -638,10 +645,6 @@
     if (self.headerBezelViewConstraints) {
         [alertView removeConstraints:self.headerBezelViewConstraints];
         self.headerBezelViewConstraints = nil;
-    }
-    if (self.headerScrollViewConstraints) {
-        [headerBezelView removeConstraints:self.headerScrollViewConstraints];
-        self.headerScrollViewConstraints = nil;
     }
     if (self.headerScrollContentViewConstraints) {
         [headerScrollView removeConstraints:self.headerScrollContentViewConstraints];
@@ -671,10 +674,6 @@
         [actionBezelView removeConstraints:self.actionBezelContentViewConstraints];
         self.actionBezelContentViewConstraints = nil;
     }
-    if (self.actionTableViewConstraints) {
-        [actionBezelView removeConstraints:self.actionTableViewConstraints];
-        self.actionTableViewConstraints = nil;
-    }
     if (self.footerViewConstraints) {
         [actionBezelView removeConstraints:self.footerViewConstraints];
         self.footerViewConstraints = nil;
@@ -685,11 +684,11 @@
     }
     
     CGFloat margin = 15;
-    CGFloat footerTopMargin = self.cancelAction ? 5.0 : 0.0;
+    CGFloat footerTopMargin = self.cancelAction ? 6.0 : 0.0;
     CGFloat headerActionPadding = (!titleView.subviews.count || !self.actions.count) ? 0 : 0.5;
-    // 计算actionBezelView的高度
+    
+    // 计算好actionBezelView的高度, 本也可以让设置每个子控件都高度约束，以及顶底约束和子控件之间的间距，这样便可以把actionBezelView的高度撑起来，但是这里要比较一下actionBezelView和headerBezelView的高度优先级，所以父控件设置高度比较方便，谁的优先级高，谁展示的内容就更多
     CGFloat actionBezelHeight = [self actionBezelHeight:footerTopMargin];
-
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView)]];
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[headerBezelView]-%f-[actionBezelView]-0-|",headerActionPadding] options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView,actionBezelView)]];
     // headerBezelView的高度最大为(self.view.bounds.size.height-itemHeight)
@@ -700,10 +699,6 @@
     headerBezelViewContsraintHeight.priority = 998.0;
     [headerBezelViewConstraints addObject:headerBezelViewContsraintHeight];
     [alertView addConstraints:headerBezelViewConstraints];
-    
-    [headerScrollViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerScrollView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerScrollView)]];
-    [headerScrollViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[headerScrollView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerScrollView)]];
-    [headerBezelView addConstraints:headerScrollViewConstraints];
     
     // 设置actionScrollContentView的相关约束，值得注意的是不能仅仅设置上下左右间距为0就完事了，对于scrollView的contentView， autoLayout布局必须设置宽或高约束
     [headerScrollContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerScrollContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerScrollContentView)]];
@@ -750,6 +745,7 @@
         [texFieldViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-[textFieldView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView,textFieldView)]];
         [texFieldViewConstraints addObject:[NSLayoutConstraint constraintWithItem:textFieldView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:textFieldViewHeight]];
         [headerScrollContentView addConstraints:texFieldViewConstraints];
+        
         NSArray *textFields = textFieldView.subviews;
         [textFields enumerateObjectsUsingBlock:^(UITextField *textField, NSUInteger idx, BOOL * _Nonnull stop) {
             // 左右间距
@@ -772,14 +768,16 @@
         [textFieldView addConstraints:textFieldConstraints];
     } else {
         // 自定义titleView时，这里的titleView就是customTitleView
-        [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[titleView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView)]];
+        [titleViewConstraints addObject:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:_customTitleViewSize.width]];
+        [titleViewConstraints addObject:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:headerScrollContentView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [titleViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleView)]];
-        [titleViewConstraints addObject:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:titleView.bounds.size.height]];
+        [titleViewConstraints addObject:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:_customTitleViewSize.height]];
         [headerScrollContentView addConstraints:titleViewConstraints];
     }
 
     // 先强制布局一次，否则下面拿到的CGRectGetMaxY(titleView.frame)还没有值
-    [headerBezelView layoutIfNeeded];
+    [headerBezelView setNeedsLayout]; // 确保一定走layoutSubViews(异步)
+    [headerBezelView layoutIfNeeded]; // 立即调用layoutSubViews
     // 设置headerBezelView的高度(这个高度同样可以通过计算titleLabel和detailTitleLabel的文字高度计算出来,但是那样计算出来的高度会有零点几的误差,只要差了一点,有可能scrollView即便内容没有超过contentSize,仍然能够滑动)
     CGRect rect;
     if (!self.customTitleView) {
@@ -794,63 +792,78 @@
     [actionBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelView)]];
     [actionBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[headerBezelView]-%f-[actionBezelView]-0-|",headerActionPadding] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelView,headerBezelView)]];
     NSLayoutConstraint *actionBezelViewHeightContraint = [NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionBezelHeight];
-
-    // 设置优先级，要比上面headerBezelViewContraintHeight的优先级低
+    // 设置优先级，要比上面headerBezelViewContraintHeight的优先级低,这样当文字过多和action同时过多时，都超出了最大限制，此时优先展示文字
     actionBezelViewHeightContraint.priority = 997.0f;
-    if (self.actions.count) {
         // 计算最小高度
-        CGFloat minActionHeight = [self minActionHeight:footerTopMargin];
-        [actionBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:minActionHeight]];
-    }
+    CGFloat minActionHeight = [self minActionHeight:footerTopMargin];
+    NSLayoutConstraint *minActionHeightConstraint = [NSLayoutConstraint constraintWithItem:actionBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:minActionHeight];
+    [actionBezelViewConstraints addObject:minActionHeightConstraint];
+    
     [actionBezelViewConstraints addObject:actionBezelViewHeightContraint];
     [alertView addConstraints:actionBezelViewConstraints];
     
-    [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView)]];
+    // 如果customCenterView有值，actionBezelContentView就是customCenterView
+    if (!self.customCenterView) {
+        [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionBezelContentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView)]];
+    } else {
+        [actionBezelContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelContentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:_customCenterViewSize.width]];
+        [actionBezelContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:actionBezelContentView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:actionBezelView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    }
     [actionBezelContentViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionBezelContentView,footerView)]];
     [actionBezelView addConstraints:actionBezelContentViewConstraints];
     
-    if (!self.customCenterView) {
-        [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
-        [actionTableViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[actionTableView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(actionTableView)]];
-        [actionBezelContentView addConstraints:actionTableViewConstraints];
-    }
-    
-    [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[footerView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView)]];
-    [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionBezelContentView)]];
-    // 这个条件判断需不需要footerView，不满足条件footerView的高度就给0
-    if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) && self.actions.count)) {
-        [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
-    } else {
-        // 不满足条件，高度置为0，注意给0和不给高度是两回事，给0至少footerView有一个高度约束，不给的话就没有高度约束，这会导致tableView的底部间距设置无效，从而导致tableView不显示
-        [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:0]];
-    }
-    [actionBezelView addConstraints:footerViewConstraints];
-    
-    NSArray *footerActionViews = footerView.subviews;
-    if (footerActionViews.count && ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert))) {
-        [footerActionViews enumerateObjectsUsingBlock:^(SPAlertControllerActionCell *footerActionView, NSUInteger idx, BOOL * _Nonnull stop) {
-            // 设置footerActionView的上下间距
-            [footerActionViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[footerActionView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerActionView)]];
-            // 第一个footerActionView的左间距
-            if (idx == 0) {
-                [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:footerView attribute:NSLayoutAttributeLeft multiplier:1.f constant:0]];
-            }
-            // 最后一个itemView的右间距
-            if (idx == footerActionViews.count-1) {
-                [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:footerView attribute:NSLayoutAttributeRight multiplier:1.f constant:-0]];
-            }
-            
-            if (idx > 0) {
-                // 子控件之间的水平间距
-                [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:footerActionViews[idx - 1] attribute:NSLayoutAttributeRight multiplier:1.f constant:0.5]];
-                // 等宽
-                [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:footerActionViews[idx - 1] attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
-            }
-            // 在这里，这个cell的contentView没有任何作用，但是为了消除控制台打印的contentView应该给一个高度的警告，这里给一个0
-            [footerActionView.contentView addConstraint:[NSLayoutConstraint constraintWithItem:footerActionView.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0]];
-        }];
+    if (!self.customFooterView) { // 不是自定义的footerView
+        [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[footerView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView)]];
+        [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionBezelContentView)]];
+        // 这个条件判断需不需要footerView，不满足条件footerView的高度就给0
+        if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) && self.actions.count)) {
+            [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:actionHeight]];
+        } else {
+            // 不满足条件，高度置为0，注意给0和不给高度是两回事，给0至少footerView有一个高度约束，不给的话就没有高度约束，这会导致tableView的底部间距设置无效，从而导致tableView不显示
+            [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:0]];
+        }
+        [actionBezelView addConstraints:footerViewConstraints];
         
-        [footerView addConstraints:footerActionViewConstraints];
+        NSArray *footerActionViews = footerView.subviews;
+        if (footerActionViews.count && ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelAction) || (self.preferredStyle == SPAlertControllerStyleAlert && self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert))) {
+            [footerActionViews enumerateObjectsUsingBlock:^(SPAlertControllerActionCell *footerActionView, NSUInteger idx, BOOL * _Nonnull stop) {
+                // 设置footerActionView的上下间距
+                [footerActionViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[footerActionView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerActionView)]];
+                // 第一个footerActionView的左间距
+                if (idx == 0) {
+                    [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:footerView attribute:NSLayoutAttributeLeft multiplier:1.f constant:0]];
+                }
+                // 最后一个itemView的右间距
+                if (idx == footerActionViews.count-1) {
+                    [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:footerView attribute:NSLayoutAttributeRight multiplier:1.f constant:-0]];
+                }
+                
+                if (idx > 0) {
+                    // 子控件之间的水平间距
+                    [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:footerActionViews[idx - 1] attribute:NSLayoutAttributeRight multiplier:1.f constant:0.5]];
+                    // 等宽
+                    [footerActionViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerActionView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:footerActionViews[idx - 1] attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
+                }
+                // 在这里，这个cell的contentView没有任何作用，但是为了消除控制台打印的contentView应该给一个高度的警告，这里给一个0
+                [footerActionView.contentView addConstraint:[NSLayoutConstraint constraintWithItem:footerActionView.contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0]];
+            }];
+            
+            [footerView addConstraints:footerActionViewConstraints];
+        }
+    } else { // 是自定义的footerView
+        // 自定义titleView时，这里的titleView就是customTitleView
+        [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:_customFooterViewSize.width]];
+        actionBezelView.backgroundColor = [UIColor redColor];
+        actionBezelContentView.backgroundColor = [UIColor greenColor];
+        if (!self.actions.count) { // 一个action都没有，也就是actionBezelContentView高度为0
+            [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0.5-[footerView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView)]];
+        } else { // 有action，也就是actionBezelContentView必须要有高度，因此这里footerView要给高度，系统才能计算出actionBezelContentView的剩余空间
+            [footerViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[actionBezelContentView]-%f-[footerView]-0-|",footerTopMargin] options:0 metrics:nil views:NSDictionaryOfVariableBindings(footerView,actionBezelContentView)]];
+            [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:_customFooterViewSize.height]];
+        }
+        [footerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:actionBezelView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+
+        [actionBezelView addConstraints:footerViewConstraints];
     }
     
     // 强制布局，立刻产生frame
@@ -862,7 +875,6 @@
     }
     
     self.headerBezelViewConstraints = headerBezelViewConstraints;
-    self.headerScrollViewConstraints = headerScrollViewConstraints;
     self.headerScrollContentViewConstraints  = headerScrollContentViewConstraints;
     self.titleViewConstraints  = titleViewConstraints;
     self.titleLabelConstraints = titleLabelConstraints;
@@ -870,7 +882,6 @@
     self.textFieldConstraints = textFieldConstraints;
     self.actionBezelViewConstraints = actionBezelViewConstraints;
     self.actionBezelContentViewConstraints = actionBezelContentViewConstraints;
-    self.actionTableViewConstraints = actionTableViewConstraints;
     self.footerViewConstraints = footerViewConstraints;
     self.footerActionViewConstraints = footerActionViewConstraints;
     
@@ -899,37 +910,53 @@
     // 计算actionBezelview的高度
     if (self.actions.count) {
         if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
-            if (self.cancelAction) {
+            if (self.cancelAction) { // 有取消按钮肯定没有自定义footerView
                 if (self.actions.count > 1) {
                     actionBezelHeight = self.actions.count*actionHeight+footerTopMargin;
                 } else {
                     if (self.customCenterView) { // 当有自定义的customCenterView时，最多只会有1个action，在addAction:方法里做了处理
-                        actionBezelHeight = actionHeight+footerTopMargin+_customCenterViewH;
+                        actionBezelHeight = actionHeight+footerTopMargin+_customCenterViewSize.height;
                     } else {
                         actionBezelHeight = actionHeight+footerTopMargin;
                     }
                 }
             } else {
                 if (self.customCenterView) {
-                    actionBezelHeight = _customCenterViewH;
+                    actionBezelHeight = _customCenterViewSize.height;
                 } else {
-                    actionBezelHeight = self.actions.count*actionHeight;
+                    if (self.customFooterView) {
+                        actionBezelHeight = self.actions.count*actionHeight+_customFooterViewSize.height;
+                    } else {
+                        actionBezelHeight = self.actions.count*actionHeight;
+                    }
                 }
             }
         } else if (self.preferredStyle == SPAlertControllerStyleAlert) {
             if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
-                if (!self.customCenterView) { // 当有自定义的customCenterView时，最多只会有_maxNumberOfActionHorizontalArrangementForAlert个action，在addAction:方法里做了处理
-                    actionBezelHeight = actionHeight;
-                } else { // _maxNumberOfActionHorizontalArrangementForAlert个以下action且有自定义scrollView
-                    actionBezelHeight = _customCenterViewH + actionHeight;
+                if (!self.customCenterView) { // 当没有自定义的customCenterView时，最多只会有_maxNumberOfActionHorizontalArrangementForAlert个action，在addAction:方法里做了处理
+                    if (self.customFooterView) {
+                        actionBezelHeight = _customFooterViewSize.height + actionHeight;
+                    } else {
+                        actionBezelHeight = actionHeight;
+                    }
+                } else { // _maxNumberOfActionHorizontalArrangementForAlert个以上action且customCenterView有值
+                    actionBezelHeight = _customCenterViewSize.height + actionHeight;
                 }
             } else {
-                actionBezelHeight = self.actions.count*actionHeight;
+                if (self.customFooterView) {
+                    actionBezelHeight = _customFooterViewSize.height+self.actions.count*actionHeight;
+                } else {
+                    actionBezelHeight = self.actions.count*actionHeight;
+                }
             }
         }
     } else {
         if (self.customCenterView) {
-            actionBezelHeight = _customCenterViewH;
+            actionBezelHeight = _customCenterViewSize.height;
+        } else {
+            if (self.customFooterView) {
+                actionBezelHeight = _customFooterViewSize.height;
+            }
         }
     }
     return actionBezelHeight;
@@ -959,6 +986,10 @@
                 minActionHeight = self.actions.count * actionHeight;
             }
         }
+    }
+    // 如果是自定义的footerView，高度还要在上面计算的基础上加上footerView的高度
+    if (self.customFooterView) {
+        minActionHeight = minActionHeight+_customFooterViewSize.height;
     }
     return minActionHeight;
 }
@@ -1014,12 +1045,10 @@
         self.alertEffectView = nil;
     } else {
         
-        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
         UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:effect];
         alertEffectView.frame = self.alertView.bounds;
         alertEffectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-//        UIView *effectFilterView = [alertEffectView valueForKeyPath:@"_grayscaleSubview"];
-//        effectFilterView.backgroundColor = [UIColor colorWithWhite:0.97 alpha:0.8];
         [self.alertView insertSubview:alertEffectView atIndex:0];
     }
 }
@@ -1038,7 +1067,37 @@
     if (self.customView) {
         [self layoutCustomView];
     } else {
+        // 检查一下customTitleViewSize和customCenterView的宽度是否大于了新的对话框的宽度
+        if (self.preferredStyle == SPAlertControllerStyleAlert) {
+            if (_customTitleViewSize.width >= ScreenWidth-2*maxMarginForAlert) {
+                _customTitleViewSize.width = ScreenWidth-2*maxMarginForAlert;
+            }
+            if (_customCenterViewSize.width >= ScreenWidth-2*maxMarginForAlert) {
+                _customCenterViewSize.width = ScreenWidth-2*maxMarginForAlert;
+            }
+            if (_customFooterViewSize.width >= ScreenWidth-2*maxMarginForAlert) {
+                _customFooterViewSize.width = ScreenWidth-2*maxMarginForAlert;
+            }
+        } else {
+            if (_customTitleViewSize.width >= ScreenWidth) {
+                _customTitleViewSize.width = ScreenWidth;
+            }
+            if (_customCenterViewSize.width >= ScreenWidth) {
+                _customCenterViewSize.width = ScreenWidth;
+            }
+            if (_customFooterViewSize.width >= ScreenWidth) {
+                _customFooterViewSize.width = ScreenWidth;
+            }
+        }
+        
         [self layoutViewConstraints];
+    }
+}
+
+- (void)setMaxNumberOfActionHorizontalArrangementForAlert:(NSInteger)maxNumberOfActionHorizontalArrangementForAlert {
+    _maxNumberOfActionHorizontalArrangementForAlert = maxNumberOfActionHorizontalArrangementForAlert;
+    if (self.customFooterView) {
+        _maxNumberOfActionHorizontalArrangementForAlert = -1;
     }
 }
 
@@ -1050,14 +1109,14 @@
     }
 }
 
-- (void)setOffsetY:(CGFloat)offsetY {
-    _offsetY = offsetY;
+- (void)setOffsetYForAlert:(CGFloat)offsetYForAlert {
+    _offsetYForAlert = offsetYForAlert;
 }
 
 - (void)setCustomView:(UIView *)customView {
     _customView = customView;
     [customView layoutIfNeeded];
-    _customViewH = customView.frame.size.height;
+    _customViewSize = customView.frame.size;
     customView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.alertView addSubview:customView];
     [self layoutCustomView];
@@ -1066,6 +1125,13 @@
 - (void)setCustomTitleView:(UIView *)customTitleView {
     _customTitleView = customTitleView;
     [customTitleView layoutIfNeeded];
+    _customTitleViewSize = customTitleView.bounds.size;
+    if (_customTitleViewSize.width <= 0 || _customTitleViewSize.width >= ScreenWidth-2*_maxMarginForAlert) {
+        _customTitleViewSize.width = ScreenWidth-2*_maxMarginForAlert;
+    }
+    if (_customTitleViewSize.height <= 0) {
+        NSLog(@"你的customTitleView高度为小于等于0,请设置一个高度");
+    }
     customTitleView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.headerScrollContentView addSubview:customTitleView];
 }
@@ -1073,9 +1139,29 @@
 - (void)setCustomCenterView:(UIView *)customCenterView {
     _customCenterView = customCenterView;
     [customCenterView layoutIfNeeded];
-    _customCenterViewH = _customCenterView.bounds.size.height;
+    _customCenterViewSize = customCenterView.bounds.size;
+    if (_customCenterViewSize.width <= 0 || _customCenterViewSize.width >= ScreenWidth-2*_maxMarginForAlert) {
+        _customCenterViewSize.width = ScreenWidth-2*_maxMarginForAlert;
+    }
+    if (_customCenterViewSize.height <= 0) {
+        NSLog(@"你的customCenterView高度为小于等于0,请设置一个高度");
+    }
     customCenterView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.actionBezelView addSubview:customCenterView];
+}
+
+- (void)setCustomFooterView:(UIView *)customFooterView {
+    _customFooterView = customFooterView;
+    [customFooterView layoutIfNeeded];
+    _customFooterViewSize = customFooterView.bounds.size;
+    if (_customFooterViewSize.width <= 0 || _customFooterViewSize.width >= ScreenWidth-2*_maxMarginForAlert) {
+        _customFooterViewSize.width = ScreenWidth-2*_maxMarginForAlert;
+    }
+    if (_customFooterViewSize.height <= 0) {
+        NSLog(@"你的customFooterView高度为小于等于0,请设置一个高度");
+    }
+    customFooterView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.actionBezelView addSubview:customFooterView];
 }
 
 #pragma mark - getter
@@ -1133,7 +1219,7 @@
         
         CGFloat diff = fabs((self.view.center.y-keyboardEndY*0.5));
         // 改变alertView的中心y值，以至于不被键盘遮挡
-        self.offsetY = diff;
+        self.offsetYForAlert = -diff;
     }
     self.keyboardShow = YES;
 }
@@ -1163,7 +1249,7 @@
 #pragma mark ---------------------------- SPAlertPresentationController begin --------------------------------
 
 @interface SPAlertPresentationController()
-@property (nonatomic, strong) UIView *maskView;
+@property (nonatomic, strong) UIView *overlayView;
 @property (nonatomic, strong) NSMutableArray *presentedViewConstraints;
 @end
 
@@ -1193,28 +1279,33 @@
         self.presentedViewConstraints = nil;
     }
     UIView *customView = alertController.customView;
-    if (!customView) {
+    if (!customView) { // 非自定义
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[presentedView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(presentedView)]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ScreenWidth]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
             if (alertController.animationType == SPAlertAnimationTypeDropDown) {
                 [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[presentedView]-(>=alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             } else {
                 [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             }
         } else if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
-            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[presentedView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:(MIN(ScreenWidth, ScreenHeight)-2*maxMarginForAlert)]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
             [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
             [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
             [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
-            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:-alertController.offsetY]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:alertController.offsetYForAlert]];
+            NSLog(@"--- %f",alertController.offsetYForAlert);
         }
-    } else {
-        CGFloat alertH = alertController.customViewH;
+    } else { // 自定义
+        CGFloat alertH = alertController.customViewSize.height;
+        CGFloat alertW = alertController.customViewSize.width;
         if (alertH > (self.containerView.bounds.size.height-maxTopMarginForActionSheet)) {
             alertH = (self.containerView.bounds.size.height-(topMarginForAlert+bottomMarginForAlert));
         }
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[presentedView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(presentedView)]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertW]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
             if (alertController.animationType == SPAlertAnimationTypeDropDown) {
                 [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==maxTopMarginForActionSheet)-[presentedView]-(>=alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             } else {
@@ -1222,11 +1313,12 @@
             }
             
         } else {
-            [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==maxMarginForAlert)-[presentedView]-(==maxMarginForAlert)-|" options:0 metrics:@{@"maxMarginForAlert":@(maxMarginForAlert)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertW]];
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
             [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert]];
             [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeBottom multiplier:1.0f constant:-bottomMarginForAlert]];
             [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0f constant:0]];
-            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:-alertController.offsetY]];
+            [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0f constant:alertController.offsetYForAlert]];
         }
         [presentedViewConstraints addObject:[NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertH]];
     }
@@ -1238,15 +1330,25 @@
 - (void)presentationTransitionWillBegin {
     [super presentationTransitionWillBegin];
     
-    UIView *maskView = [[UIView alloc] init];
-    maskView.frame = self.containerView.bounds;
-    maskView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    maskView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
-    maskView.alpha = 0;
-    [self.containerView addSubview:maskView];
-    _maskView = maskView;
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapMaskView)];
-    [maskView addGestureRecognizer:tap];
+    UIView *overlayView = [[UIView alloc] init];
+    overlayView.frame = self.containerView.bounds;
+    overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    overlayView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.4];
+    overlayView.alpha = 0;
+    [self.containerView addSubview:overlayView];
+    _overlayView = overlayView;
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOverlayView)];
+    [overlayView addGestureRecognizer:tap];
+    
+    SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
+    for (int i = 0; i < alertController.textFields.count; i++) {
+        UITextField *textField = alertController.textFields[i];
+        [alertController.textFieldView addSubview:textField];
+        if (i == 0) {
+            [textField becomeFirstResponder];
+        }
+    }
+    [alertController layoutViewConstraints];
 }
 
 - (void)presentationTransitionDidEnd:(BOOL)completed {
@@ -1261,8 +1363,8 @@
 - (void)dismissalTransitionDidEnd:(BOOL)completed {
     [super dismissalTransitionDidEnd:completed];
     if (completed) {
-        [_maskView removeFromSuperview];
-        _maskView = nil;
+        [_overlayView removeFromSuperview];
+        _overlayView = nil;
     }
 }
 
@@ -1270,7 +1372,7 @@
     return self.presentedView.frame;
 }
 
-- (void)tapMaskView {
+- (void)tapOverlayView {
     [self.presentedViewController dismissViewControllerAnimated:YES completion:^{}];
 }
 
@@ -1317,37 +1419,39 @@
     
     // 获取presentationController，注意不是presentedController
     SPAlertPresentationController *presentedController = (SPAlertPresentationController *)alertController.presentationController;
-    UIView *maskView = presentedController.maskView;
+    UIView *overlayView = presentedController.overlayView;
 
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
             [self raiseUpWhenPresentForController:alertController
                                        transition:transitionContext
-                                  controlViewSize:controlViewSize maskView:maskView];
+                                  controlViewSize:controlViewSize
+                                      overlayView:overlayView];
             break;
         case SPAlertAnimationTypeDropDown:
             [self dropDownWhenPresentForController:alertController
                                         transition:transitionContext
-                                   controlViewSize:controlViewSize maskView:maskView];
+                                   controlViewSize:controlViewSize
+                                       overlayView:overlayView];
 
             break;
         case SPAlertAnimationTypeAlpha:
             [self alphaWhenPresentForController:alertController
                                      transition:transitionContext
                                 controlViewSize:controlViewSize
-                                       maskView:maskView];
+                                    overlayView:overlayView];
             break;
         case SPAlertAnimationTypeExpand:
             [self expandWhenPresentForController:alertController
                                       transition:transitionContext
                                  controlViewSize:controlViewSize
-                                        maskView:maskView];
+                                     overlayView:overlayView];
             break;
         case SPAlertAnimationTypeShrink:
             [self shrinkWhenPresentForController:alertController
                                       transition:transitionContext
                                  controlViewSize:controlViewSize
-                                        maskView:maskView];
+                                     overlayView:overlayView];
             break;
         default:
             break;
@@ -1360,39 +1464,39 @@
     CGSize controlViewSize = alertController.view.bounds.size;
     // 获取presentationController，注意不是presentedController
     SPAlertPresentationController *presentedController = (SPAlertPresentationController *)alertController.presentationController;
-    UIView *maskView = presentedController.maskView;
+    UIView *overlayView = presentedController.overlayView;
     
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
             [self dismissCorrespondingRaiseUpForController:alertController
                                                 transition:transitionContext
                                            controlViewSize:controlViewSize
-                                                  maskView:maskView];
+                                               overlayView:overlayView];
             break;
         case SPAlertAnimationTypeDropDown:
             [self dismissCorrespondingDropDownForController:alertController
                                                  transition:transitionContext
                                             controlViewSize:controlViewSize
-                                                   maskView:maskView];
+                                                overlayView:overlayView];
             break;
 
         case SPAlertAnimationTypeAlpha:
             [self dismissCorrespondingAlphaForController:alertController
                                               transition:transitionContext
                                          controlViewSize:controlViewSize
-                                                maskView:maskView];
+                                             overlayView:overlayView];
             break;
         case SPAlertAnimationTypeExpand:
             [self dismissCorrespondingExpandForController:alertController
                                                transition:transitionContext
                                           controlViewSize:controlViewSize
-                                                 maskView:maskView];
+                                              overlayView:overlayView];
             break;
         case SPAlertAnimationTypeShrink:
             [self dismissCorrespondingShrinkForController:alertController
                                                transition:transitionContext
                                           controlViewSize:controlViewSize
-                                                 maskView:maskView];
+                                              overlayView:overlayView];
             break;
         default:
             break;
@@ -1403,7 +1507,7 @@
 // 从底部忘上弹的present动画
 - (void)raiseUpWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                        controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     
     CGRect controlViewFrame = alertController.view.frame;
     controlViewFrame.origin.y = ScreenHeight;
@@ -1416,7 +1520,7 @@
         CGRect controlViewFrame = alertController.view.frame;
         controlViewFrame.origin.y = ScreenHeight-controlViewSize.height;
         alertController.view.frame = controlViewFrame;
-        maskView.alpha = 1.0;
+        overlayView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1426,13 +1530,13 @@
 // 从底部往上弹对应的dismiss动画
 - (void)dismissCorrespondingRaiseUpForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                        controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         CGRect controlViewFrame = alertController.view.frame;
         controlViewFrame.origin.y = ScreenHeight;
         alertController.view.frame = controlViewFrame;
-        maskView.alpha = 0.0;
+        overlayView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1442,7 +1546,7 @@
 // 从顶部往下弹的present动画
 - (void)dropDownWhenPresentForController:(SPAlertController *)alertController
                               transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                         controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                         controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     
     CGRect controlViewFrame = alertController.view.frame;
     controlViewFrame.origin.y = -controlViewSize.height;
@@ -1455,7 +1559,7 @@
         CGRect controlViewFrame = alertController.view.frame;
         controlViewFrame.origin.y = 0;
         alertController.view.frame = controlViewFrame;
-        maskView.alpha = 1.0;
+        overlayView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1465,13 +1569,13 @@
 // 从顶部往下弹对应的dismiss动画
 - (void)dismissCorrespondingDropDownForController:(SPAlertController *)alertController
                                       transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                 controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                                 controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         CGRect controlViewFrame = alertController.view.frame;
         controlViewFrame.origin.y = -controlViewSize.height;
         alertController.view.frame = controlViewFrame;
-        maskView.alpha = 0.0;
+        overlayView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1480,7 +1584,7 @@
 // alpha值从0到1变化的present动画
 - (void)alphaWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                        controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     
     alertController.view.alpha = 0;
     
@@ -1489,7 +1593,7 @@
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.alpha = 1.0;
-        maskView.alpha = 1.0;
+        overlayView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1499,13 +1603,13 @@
 // alpha值从0到1变化对应的的dismiss动画
 - (void)dismissCorrespondingAlphaForController:(SPAlertController *)alertController
                                        transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                  controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                                  controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.alpha = 0;
-        maskView.alpha = 0.0;
+        overlayView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1515,7 +1619,7 @@
 // 发散的prensent动画
 - (void)expandWhenPresentForController:(SPAlertController *)alertController
                            transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                      controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                      controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
 
     alertController.view.transform = CGAffineTransformMakeScale(0.5, 0.5);
     
@@ -1524,7 +1628,7 @@
 
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 usingSpringWithDamping:0.6 initialSpringVelocity:20 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformIdentity;
-        maskView.alpha = 1.0;
+        overlayView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1533,13 +1637,13 @@
 // 发散对应的dismiss动画
 - (void)dismissCorrespondingExpandForController:(SPAlertController *)alertController
                                     transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                               controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                               controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformMakeScale(0, 0);
-        maskView.alpha = 0.0;
+        overlayView.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
         
@@ -1549,7 +1653,7 @@
 // 收缩的present动画
 - (void)shrinkWhenPresentForController:(SPAlertController *)alertController
                             transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                       controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                       controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
    
     alertController.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
     
@@ -1559,7 +1663,7 @@
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformIdentity;
-        maskView.alpha = 1.0;
+        overlayView.alpha = 1.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
     }];
@@ -1568,9 +1672,9 @@
 // 收缩对应的的dismiss动画
 - (void)dismissCorrespondingShrinkForController:(SPAlertController *)alertController
                                      transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                controlViewSize:(CGSize)controlViewSize maskView:(UIView *)maskView {
+                                controlViewSize:(CGSize)controlViewSize overlayView:(UIView *)overlayView {
     // 与发散对应的dismiss动画相同
-    [self dismissCorrespondingExpandForController:alertController transition:transitionContext controlViewSize:controlViewSize maskView:maskView ];
+    [self dismissCorrespondingExpandForController:alertController transition:transitionContext controlViewSize:controlViewSize overlayView:overlayView ];
 }
 
 @end
