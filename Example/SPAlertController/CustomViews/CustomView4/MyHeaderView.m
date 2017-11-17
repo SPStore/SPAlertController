@@ -6,9 +6,9 @@
 //  Copyright © 2017年 iDress. All rights reserved.
 //
 
-#import "MyTitleView.h"
+#import "MyHeaderView.h"
 
-@interface MyTitleView()
+@interface MyHeaderView()
 
 @property (nonatomic, weak) UIImageView *imageView;
 @property (nonatomic, weak) UILabel *label;
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation MyTitleView
+@implementation MyHeaderView
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
@@ -86,6 +86,7 @@
 }
 
 @end
+
 
 
 

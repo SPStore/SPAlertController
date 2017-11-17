@@ -7,9 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PassWordView.h"
 
 @interface MyView : UIView
 
 + (instancetype)shareMyView;
+
+@property (weak, nonatomic) IBOutlet PassWordView *passwordView;
+@property (weak, nonatomic) IBOutlet UIButton *cancelButton;
 
 @end

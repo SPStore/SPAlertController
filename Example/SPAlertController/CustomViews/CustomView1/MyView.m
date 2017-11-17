@@ -8,15 +8,25 @@
 
 #import "MyView.h"
 
+@interface MyView()
+@end
+
 @implementation MyView
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super initWithCoder:aDecoder]) {
+    }
+    return self;
+}
 
 - (void)awakeFromNib {
     [super awakeFromNib];
 }
 
+
 + (instancetype)shareMyView {
     return [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:nil options:nil] lastObject];
 }
+
 
 @end

@@ -1,11 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="15G1421" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13174"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -26,10 +27,10 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="cell" id="jNc-Lx-wdm">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jNc-Lx-wdm" id="FQl-O6-Ceg">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -39,16 +40,38 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="Wlj-Us-RJ8"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Edb-hu-BYZ">
+                                <rect key="frame" x="295" y="587" width="50" height="50"/>
+                                <color key="backgroundColor" red="1" green="0.57637232540000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Edb-hu-BYZ" secondAttribute="height" multiplier="1:1" id="dSr-4d-seR"/>
+                                    <constraint firstAttribute="width" constant="50" id="sem-cX-qDt"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="换"/>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="25"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="changeBackgroundImage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Crz-0k-F1l"/>
+                                </connections>
+                            </button>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="Uhz-jQ-1lB" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="07v-bZ-7ow"/>
+                            <constraint firstAttribute="trailing" secondItem="Edb-hu-BYZ" secondAttribute="trailing" constant="30" id="G3A-Vm-Bw5"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Edb-hu-BYZ" secondAttribute="bottom" constant="30" id="GAp-ZB-B9R"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="Uhz-jQ-1lB" secondAttribute="bottom" id="MPW-0g-kPW"/>
                             <constraint firstAttribute="trailing" secondItem="Uhz-jQ-1lB" secondAttribute="trailing" id="hWi-mj-bVS"/>
                             <constraint firstItem="Uhz-jQ-1lB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="pr2-jE-g4V"/>
+                            <constraint firstItem="Uhz-jQ-1lB" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="uHg-M8-hMw"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="changeButton" destination="Edb-hu-BYZ" id="mHl-De-Ah9"/>
                         <outlet property="tableView" destination="Uhz-jQ-1lB" id="QK6-t7-Xmu"/>
                     </connections>
                 </viewController>
