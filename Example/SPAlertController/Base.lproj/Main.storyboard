@@ -70,6 +70,7 @@
                             <constraint firstItem="Uhz-jQ-1lB" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="uHg-M8-hMw"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="Fdv-dh-C89"/>
                     <connections>
                         <outlet property="changeButton" destination="Edb-hu-BYZ" id="mHl-De-Ah9"/>
                         <outlet property="tableView" destination="Uhz-jQ-1lB" id="QK6-t7-Xmu"/>
@@ -77,6 +78,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="476" y="133.5832083958021"/>
         </scene>
     </scenes>
 </document>

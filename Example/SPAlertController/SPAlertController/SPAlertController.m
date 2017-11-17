@@ -1603,13 +1603,13 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 #pragma mark ---------------------------- SPAlertController end --------------------------------
 
-@interface SPView: UIView
+@interface SPOverlayView: UIView
 @property (nonatomic, strong) UIView *presentedView;
 @property (nonatomic, assign) CGFloat cornerRadius;
 - (void)redrawWithView:(UIView *)view cornerRadius:(CGFloat)cornerRadius;
 @end
 
-@implementation SPView
+@implementation SPOverlayView
 
 - (void)redrawWithView:(UIView *)view cornerRadius:(CGFloat)cornerRadius {
     _presentedView = view;
@@ -1624,7 +1624,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:rectIntersection
                                                           cornerRadius:_cornerRadius];
     CGContextSetFillColorWithColor(ctx, [[UIColor clearColor] CGColor]);
-    CGContextAddPath(UIGraphicsGetCurrentContext(), bezierPath.CGPath);
+    CGContextAddPath(ctx, bezierPath.CGPath);
     CGContextSetBlendMode(ctx, kCGBlendModeClear);
     CGContextFillPath(ctx);
 }
@@ -1638,7 +1638,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 #pragma mark ---------------------------- SPAlertPresentationController begin --------------------------------
 
 @interface SPAlertPresentationController()
-@property (nonatomic, weak) SPView *overlayView;
+@property (nonatomic, weak) SPOverlayView *overlayView;
 @property (nonatomic, strong) NSMutableArray *presentedViewConstraints;
 @end
 
@@ -1650,46 +1650,27 @@ static NSString * const FOOTERCELL = @"footerCell";
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(willChangeStatusBarOrientation:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeStatusBarOrientation:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-
     }
     return self;
 }
 
 - (void)willChangeStatusBarOrientation:(NSNotification *)notification {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
 
-    if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
-        CGFloat cornerRadius = 0;
-        if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
-            cornerRadius = alertController.cornerRadiusForAlert;
-        }
-        [self.overlayView redrawWithView:self.presentedView cornerRadius:alertController.cornerRadiusForAlert];
-    } else {
-        if(orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
-        CGFloat cornerRadius = 0;
-        if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
-            cornerRadius = alertController.cornerRadiusForAlert;
-        }
-        [self.overlayView redrawWithView:self.presentedView cornerRadius:alertController.cornerRadiusForAlert];
-        }
-    }
-    
+    // 将要旋转时立即将镂空的地方补齐,这是为了防止旋转的过程中,镂空的洞是可见的,体验不好
+    [self.overlayView redrawWithView:nil cornerRadius:0];
 }
 
 - (void)didChangeStatusBarOrientation:(NSNotification *)notification {
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    // 重绘
-    if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
-            CGFloat cornerRadius = 0;
-            if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
-                cornerRadius = alertController.cornerRadiusForAlert;
-            }
-            [self.overlayView redrawWithView:self.presentedView cornerRadius:alertController.cornerRadiusForAlert];
-        });
-    }
+
+    // 延迟0.3秒再镂空,之所以延迟，是因为实际上界面还没有最终切换到横(竖)屏,就开始走这个方法,也就意味着界面还没有旋转停止下来就开始镂空，这样又可以看到镂出来的洞
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
+        CGFloat cornerRadius = 0;
+        if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
+            cornerRadius = alertController.cornerRadiusForAlert;
+        }
+        [self.overlayView redrawWithView:self.presentedView cornerRadius:alertController.cornerRadiusForAlert];
+    });
     
 }
 
@@ -1707,19 +1688,18 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (void)presentationTransitionWillBegin {
     [super presentationTransitionWillBegin];
-    SPView *overlayView = [[SPView alloc] init];
+    SPOverlayView *overlayView = [[SPOverlayView alloc] init];
     overlayView.frame = self.containerView.bounds;
     overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     overlayView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
     overlayView.alpha = 0;
     [self.containerView addSubview:overlayView];
     _overlayView = overlayView;
-    
+
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOverlayView)];
-    [overlayView addGestureRecognizer:tap];
+    [_overlayView addGestureRecognizer:tap];
     
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
-
     for (int i = 0; i < alertController.textFields.count; i++) {
         UITextField *textField = alertController.textFields[i];
         [alertController.textFieldView addSubview:textField];
@@ -1728,14 +1708,13 @@ static NSString * const FOOTERCELL = @"footerCell";
         }
     }
     [alertController layoutViewConstraints];
-   
 }
 
 - (void)presentationTransitionDidEnd:(BOOL)completed {
     [super presentationTransitionDidEnd:completed];
     
-
 }
+
 
 - (void)dismissalTransitionWillBegin {
     [super dismissalTransitionWillBegin];
@@ -1826,8 +1805,14 @@ static NSString * const FOOTERCELL = @"footerCell";
     self.presentedViewConstraints = presentedViewConstraints;
 }
 
+
+
 - (void)tapOverlayView {
     [self.presentedViewController dismissViewControllerAnimated:YES completion:^{}];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
@@ -1873,7 +1858,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     
     // 获取presentationController，注意不是presentedController
     SPAlertPresentationController *presentedController = (SPAlertPresentationController *)alertController.presentationController;
-    SPView *overlayView = presentedController.overlayView;
+    SPOverlayView *overlayView = presentedController.overlayView;
 
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
@@ -1918,7 +1903,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     CGSize controlViewSize = alertController.view.bounds.size;
     // 获取presentationController，注意不是presentedController
     SPAlertPresentationController *presentedController = (SPAlertPresentationController *)alertController.presentationController;
-    SPView *overlayView = presentedController.overlayView;
+    SPOverlayView *overlayView = presentedController.overlayView;
     
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
@@ -1961,7 +1946,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 从底部忘上弹的present动画
 - (void)raiseUpWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                        controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     
     CGRect controlViewFrame = alertController.view.frame;
     controlViewFrame.origin.y = ScreenHeight;
@@ -1984,7 +1969,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 从底部往上弹对应的dismiss动画
 - (void)dismissCorrespondingRaiseUpForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                        controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     [overlayView redrawWithView:nil cornerRadius:0];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
@@ -2001,7 +1986,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 从顶部往下弹的present动画
 - (void)dropDownWhenPresentForController:(SPAlertController *)alertController
                               transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                         controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                         controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     
     CGRect controlViewFrame = alertController.view.frame;
     controlViewFrame.origin.y = -controlViewSize.height;
@@ -2024,7 +2009,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 从顶部往下弹对应的dismiss动画
 - (void)dismissCorrespondingDropDownForController:(SPAlertController *)alertController
                                       transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                 controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                                 controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     [overlayView redrawWithView:nil cornerRadius:0];
 
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
@@ -2040,7 +2025,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // alpha值从0到1变化的present动画
 - (void)alphaWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                        controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                        controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     
     alertController.view.alpha = 0;
     
@@ -2059,7 +2044,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // alpha值从0到1变化对应的的dismiss动画
 - (void)dismissCorrespondingAlphaForController:(SPAlertController *)alertController
                                        transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                  controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                                  controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     [overlayView redrawWithView:nil cornerRadius:0];
     
     UIView *containerView = [transitionContext containerView];
@@ -2076,7 +2061,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 发散的prensent动画
 - (void)expandWhenPresentForController:(SPAlertController *)alertController
                            transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                      controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                      controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
 
     alertController.view.transform = CGAffineTransformMakeScale(0.5, 0.5);
     
@@ -2095,7 +2080,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 发散对应的dismiss动画
 - (void)dismissCorrespondingExpandForController:(SPAlertController *)alertController
                                     transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                               controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                               controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     [overlayView redrawWithView:nil cornerRadius:0];
     
     UIView *containerView = [transitionContext containerView];
@@ -2113,7 +2098,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 收缩的present动画
 - (void)shrinkWhenPresentForController:(SPAlertController *)alertController
                             transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                       controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                       controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
    
     alertController.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
     
@@ -2133,13 +2118,13 @@ static NSString * const FOOTERCELL = @"footerCell";
 // 收缩对应的的dismiss动画
 - (void)dismissCorrespondingShrinkForController:(SPAlertController *)alertController
                                      transition:(id<UIViewControllerContextTransitioning>)transitionContext
-                                controlViewSize:(CGSize)controlViewSize overlayView:(SPView *)overlayView {
+                                controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     // 与发散对应的dismiss动画相同
     [self dismissCorrespondingExpandForController:alertController transition:transitionContext controlViewSize:controlViewSize overlayView:overlayView ];
 }
 
 // 镂空overlayView
-- (void)hollowOutOverlayView:(SPView *)overlayView alertController:(SPAlertController *)alertController  {
+- (void)hollowOutOverlayView:(SPOverlayView *)overlayView alertController:(SPAlertController *)alertController  {
     // 对overlay镂空处理
     if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
         [overlayView redrawWithView:alertController.view cornerRadius:0];
