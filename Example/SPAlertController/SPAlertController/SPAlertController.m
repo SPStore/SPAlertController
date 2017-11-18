@@ -21,8 +21,8 @@
 #define actionHeight 49.0
 #define lineWidth 0.5
 
-#define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812)
-#define alertBottomMargin isIPhoneX ? 34 : 0 // 适配iPhoneX
+#define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812 || [UIScreen mainScreen].bounds.size.width==812)
+#define alertBottomMargin (isIPhoneX ? 34 : 0) // 适配iPhoneX
 
 static NSString * const FOOTERCELL = @"footerCell";
 
@@ -282,6 +282,8 @@ static NSString * const FOOTERCELL = @"footerCell";
 // alert样式下的垂直中心约束
 @property (nonatomic, strong) NSLayoutConstraint *alertConstraintCenterY;
 
+@property (nonatomic, assign) SPBackgroundViewAppearanceStyle backgroundViewAppearanceStyle;
+@property (nonatomic, assign) CGFloat backgroundViewAlpha;
 @end
 
 @implementation SPAlertController
@@ -441,6 +443,11 @@ static NSString * const FOOTERCELL = @"footerCell";
     [self layoutViewConstraints];
 }
 
+- (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha {
+    _backgroundViewAppearanceStyle = style;
+    _backgroundViewAlpha = alpha;
+}
+
 #pragma mark TableView DataSource & Delagete
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.dataSource.count;
@@ -515,7 +522,9 @@ static NSString * const FOOTERCELL = @"footerCell";
         // 添加子控件
         [self setupViewsWithCustomView:customView customHeaderView:customHeaderView customCenterView:customCenterView customFooterView:customFooterView];
         
-        self.needBlur = YES;
+        self.needDialogBlur = YES;
+        self.backgroundViewAlpha = -1;
+        self.tapBackgroundViewDismiss = YES;
         self.cornerRadiusForAlert = 5;
         self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 0;
         self.maxMarginForAlert = 20.0;
@@ -1345,16 +1354,16 @@ static NSString * const FOOTERCELL = @"footerCell";
     self.detailTitleLabel.font = messageFont;
 }
 
-- (void)setNeedBlur:(BOOL)needBlur {
-    _needBlur = needBlur;
-    if (!needBlur) {
+- (void)setNeedDialogBlur:(BOOL)needDialogBlur {
+    _needDialogBlur = needDialogBlur;
+    if (!needDialogBlur) {
         self.alertView.backgroundColor = [UIColor whiteColor];
         [self.alertEffectView removeFromSuperview];
         self.alertEffectView = nil;
         
     } else {
-        UIBlurEffect *alertEffect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-        UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:alertEffect];
+        UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+        UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:blur];
         alertEffectView.layer.masksToBounds = YES;
         alertEffectView.frame = self.alertView.bounds;
         alertEffectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
@@ -1605,32 +1614,83 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 @interface SPOverlayView: UIView
 @property (nonatomic, strong) UIView *presentedView;
-@property (nonatomic, assign) CGFloat cornerRadius;
-- (void)redrawWithView:(UIView *)view cornerRadius:(CGFloat)cornerRadius;
+@property (nonatomic, assign) SPAlertController *alertController;
+@property (nonatomic, strong) UIVisualEffectView *effectView;
+@property (nonatomic, assign) CGFloat cornerRadiusForAlert;
+- (void)redrawWithView:(UIView *)view alertController:(SPAlertController *)alertController;
 @end
 
 @implementation SPOverlayView
 
-- (void)redrawWithView:(UIView *)view cornerRadius:(CGFloat)cornerRadius {
+- (instancetype)initWithFrame:(CGRect)frame {
+    if (self = [super initWithFrame:frame]) {
+
+    }
+    return self;
+}
+- (void)setAppearanceStyle:(SPBackgroundViewAppearanceStyle)appearanceStyle alpha:(CGFloat)alpha {
+    switch (appearanceStyle) {
+        case SPBackgroundViewAppearanceStyleTranslucent: {
+            [self.effectView removeFromSuperview];
+            self.effectView = nil;
+            if (alpha < 0) {
+                alpha = 0.5;
+            }
+            self.backgroundColor = [UIColor colorWithWhite:0 alpha:alpha];
+            self.alpha = 0;
+        }
+            break;
+        case SPBackgroundViewAppearanceStyleBlurExtraLight: {
+            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+            [self createVisualEffectViewWithBlur:blur alpha:alpha];
+        }
+            break;
+        case SPBackgroundViewAppearanceStyleBlurLight: {
+            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+            [self createVisualEffectViewWithBlur:blur alpha:alpha];
+        }
+            break;
+        case SPBackgroundViewAppearanceStyleBlurDark: {
+            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+            [self createVisualEffectViewWithBlur:blur alpha:alpha];
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)createVisualEffectViewWithBlur:(UIBlurEffect *)blur alpha:(CGFloat)alpha {
+    self.backgroundColor = [UIColor clearColor];
+    UIVisualEffectView *effectView = [[UIVisualEffectView alloc] initWithEffect:blur];
+    effectView.frame = self.bounds;
+    effectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    effectView.userInteractionEnabled = NO;
+    effectView.alpha = alpha;
+    [self addSubview:effectView];
+    _effectView = effectView;
+}
+
+- (void)redrawWithView:(UIView *)view alertController:(SPAlertController *)alertController {
     _presentedView = view;
-    _cornerRadius = cornerRadius;
+    _alertController = alertController;
     [self setNeedsDisplay];
 }
 
 - (void)drawRect:(CGRect)rect {
-
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-    CGRect rectIntersection = CGRectIntersection(self.frame, self.presentedView.frame);
-    UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:rectIntersection
-                                                          cornerRadius:_cornerRadius];
-    CGContextSetFillColorWithColor(ctx, [[UIColor clearColor] CGColor]);
-    CGContextAddPath(ctx, bezierPath.CGPath);
-    CGContextSetBlendMode(ctx, kCGBlendModeClear);
-    CGContextFillPath(ctx);
-}
-
-- (void)layoutSubviews {
-    [super layoutSubviews];
+    [super drawRect:rect];
+    // 黑色带透明时进行镂空
+    if (self.alertController.backgroundViewAppearanceStyle == SPBackgroundViewAppearanceStyleTranslucent && self.alertController.needDialogBlur) {
+        _cornerRadiusForAlert = (self.alertController.preferredStyle==SPAlertControllerStyleActionSheet)? 0 : self.alertController.cornerRadiusForAlert;
+        CGContextRef ctx = UIGraphicsGetCurrentContext();
+        CGRect rectIntersection = CGRectIntersection(self.frame, self.presentedView.frame);
+        UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:rectIntersection
+                                                              cornerRadius:_cornerRadiusForAlert];
+        CGContextSetFillColorWithColor(ctx, [[UIColor clearColor] CGColor]);
+        CGContextAddPath(ctx, bezierPath.CGPath);
+        CGContextSetBlendMode(ctx, kCGBlendModeClear);
+        CGContextFillPath(ctx);
+    }
 }
 
 @end
@@ -1657,19 +1717,19 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)willChangeStatusBarOrientation:(NSNotification *)notification {
 
     // 将要旋转时立即将镂空的地方补齐,这是为了防止旋转的过程中,镂空的洞是可见的,体验不好
-    [self.overlayView redrawWithView:nil cornerRadius:0];
+    [self.overlayView redrawWithView:nil alertController:nil];
 }
 
 - (void)didChangeStatusBarOrientation:(NSNotification *)notification {
 
-    // 延迟0.3秒再镂空,之所以延迟，是因为实际上界面还没有最终切换到横(竖)屏,就开始走这个方法,也就意味着界面还没有旋转停止下来就开始镂空，这样又可以看到镂出来的洞
+    // 延迟0.3秒再镂空,之所以延迟，是因为实际上界面还没有最终切换到肉眼所看到的横(竖)屏,就开始走这个方法,也就意味着界面还没有旋转停止下来就开始镂空，这样又可以看到镂出来的洞
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
         CGFloat cornerRadius = 0;
         if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
             cornerRadius = alertController.cornerRadiusForAlert;
         }
-        [self.overlayView redrawWithView:self.presentedView cornerRadius:alertController.cornerRadiusForAlert];
+        [self.overlayView redrawWithView:self.presentedView alertController:alertController];
     });
     
 }
@@ -1688,18 +1748,20 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (void)presentationTransitionWillBegin {
     [super presentationTransitionWillBegin];
+    SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
+
     SPOverlayView *overlayView = [[SPOverlayView alloc] init];
     overlayView.frame = self.containerView.bounds;
     overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    overlayView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.4];
-    overlayView.alpha = 0;
+    [overlayView setAppearanceStyle:alertController.backgroundViewAppearanceStyle alpha:alertController.backgroundViewAlpha];
     [self.containerView addSubview:overlayView];
     _overlayView = overlayView;
 
-    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOverlayView)];
-    [_overlayView addGestureRecognizer:tap];
+    if (alertController.tapBackgroundViewDismiss) {
+        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOverlayView)];
+        [_overlayView addGestureRecognizer:tap];
+    }
     
-    SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
     for (int i = 0; i < alertController.textFields.count; i++) {
         UITextField *textField = alertController.textFields[i];
         [alertController.textFieldView addSubview:textField];
@@ -1753,7 +1815,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ScreenWidth]];
             [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
             if (alertController.animationType == SPAlertAnimationTypeDropDown) {
-                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[presentedView]-(>=alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==maxTopMarginForActionSheet)-[presentedView]-(>=alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             } else {
                 [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==alertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"alertBottomMargin":@(alertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             }
@@ -1824,6 +1886,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 @interface SPAlertAnimation()
 @property (nonatomic, assign) BOOL presenting;
+@property (nonatomic, assign) CGFloat delayTime;
 @end
 
 @implementation SPAlertAnimation
@@ -1831,6 +1894,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (instancetype)initWithPresenting:(BOOL)isPresenting {
     if (self = [super init]) {
         self.presenting = isPresenting;
+        _delayTime = 0.22;
     }
     return self;
 }
@@ -1955,14 +2019,16 @@ static NSString * const FOOTERCELL = @"footerCell";
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
-        controlViewFrame.origin.y = ScreenHeight-controlViewSize.height;
+        controlViewFrame.origin.y = ScreenHeight-controlViewSize.height-alertBottomMargin;
         alertController.view.frame = controlViewFrame;
-        overlayView.alpha = 1.0;
+        overlayView.alpha = 1;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
-        [self hollowOutOverlayView:overlayView alertController:alertController];
     }];
 }
 
@@ -1970,7 +2036,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)dismissCorrespondingRaiseUpForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
                         controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
-    [overlayView redrawWithView:nil cornerRadius:0];
+    [overlayView redrawWithView:nil alertController:nil];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         CGRect controlViewFrame = alertController.view.frame;
@@ -1994,15 +2060,18 @@ static NSString * const FOOTERCELL = @"footerCell";
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
 
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
-        controlViewFrame.origin.y = 0;
+        controlViewFrame.origin.y = alertController.maxTopMarginForActionSheet;
         alertController.view.frame = controlViewFrame;
-        overlayView.alpha = 1.0;
+        overlayView.alpha = 1;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
-        [self hollowOutOverlayView:overlayView alertController:alertController];
     }];
 }
 
@@ -2010,7 +2079,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)dismissCorrespondingDropDownForController:(SPAlertController *)alertController
                                       transition:(id<UIViewControllerContextTransitioning>)transitionContext
                                  controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
-    [overlayView redrawWithView:nil cornerRadius:0];
+    [overlayView redrawWithView:nil alertController:nil];
 
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         CGRect controlViewFrame = alertController.view.frame;
@@ -2032,12 +2101,15 @@ static NSString * const FOOTERCELL = @"footerCell";
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
+    
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        alertController.view.alpha = 1.0;
-        overlayView.alpha = 1.0;
+        alertController.view.alpha = 1;
+        overlayView.alpha = 1;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
-        [self hollowOutOverlayView:overlayView alertController:alertController];
     }];
 }
 
@@ -2045,7 +2117,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)dismissCorrespondingAlphaForController:(SPAlertController *)alertController
                                        transition:(id<UIViewControllerContextTransitioning>)transitionContext
                                   controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
-    [overlayView redrawWithView:nil cornerRadius:0];
+    [overlayView redrawWithView:nil alertController:nil];
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
@@ -2067,13 +2139,16 @@ static NSString * const FOOTERCELL = @"footerCell";
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
 
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 usingSpringWithDamping:0.6 initialSpringVelocity:20 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformIdentity;
-        overlayView.alpha = 1.0;
+        overlayView.alpha = 1;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
-        [self hollowOutOverlayView:overlayView alertController:alertController];
     }];
 }
 
@@ -2081,7 +2156,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)dismissCorrespondingExpandForController:(SPAlertController *)alertController
                                     transition:(id<UIViewControllerContextTransitioning>)transitionContext
                                controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
-    [overlayView redrawWithView:nil cornerRadius:0];
+    [overlayView redrawWithView:nil alertController:nil];
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
@@ -2105,13 +2180,15 @@ static NSString * const FOOTERCELL = @"footerCell";
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformIdentity;
-        overlayView.alpha = 1.0;
+        overlayView.alpha = 1;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:YES];
-        [self hollowOutOverlayView:overlayView alertController:alertController];
     }];
 }
 
@@ -2121,16 +2198,6 @@ static NSString * const FOOTERCELL = @"footerCell";
                                 controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
     // 与发散对应的dismiss动画相同
     [self dismissCorrespondingExpandForController:alertController transition:transitionContext controlViewSize:controlViewSize overlayView:overlayView ];
-}
-
-// 镂空overlayView
-- (void)hollowOutOverlayView:(SPOverlayView *)overlayView alertController:(SPAlertController *)alertController  {
-    // 对overlay镂空处理
-    if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-        [overlayView redrawWithView:alertController.view cornerRadius:0];
-    } else {
-        [overlayView redrawWithView:alertController.view cornerRadius:alertController.cornerRadiusForAlert];
-    }
 }
 
 @end

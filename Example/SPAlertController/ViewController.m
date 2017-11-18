@@ -91,18 +91,10 @@
     SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第3个");
     }];
-    SPAlertAction *action4 = [SPAlertAction actionWithTitle:@"第4个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第4个");
-    }];
-    SPAlertAction *action5 = [SPAlertAction actionWithTitle:@"第5个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了第5个");
-    }];
     // 注:在addAction之后设置action的文字颜色和字体同样有效
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
-    [alertController addAction:action4];
-    [alertController addAction:action5];
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -147,14 +139,29 @@
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第2个");
     }];
-    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
+    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第3个");
+    }];
+    action3.titleColor = SPColorRGBA(30, 170, 40, 1);
+    SPAlertAction *action4 = [SPAlertAction actionWithTitle:@"第4个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第4个");
+    }];
+    action4.titleColor = [UIColor magentaColor];
+    SPAlertAction *action5 = [SPAlertAction actionWithTitle:@"第5个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第5个");
+    }];
+    action5.titleColor = [UIColor orangeColor];
+    SPAlertAction *action6 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了取消");
     }];
-    // 注:在addAction之后设置action的文字颜色和字体同样有效
+
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
-    
+    [alertController addAction:action4];
+    [alertController addAction:action5];
+    [alertController addAction:action6];
+
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -580,6 +587,58 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+// 示例24:去除对话框的毛玻璃(默认0.5透明)
+- (void)dialogRemoveBlurTest24 {
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
+    
+    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了Default");
+    }];
+    
+    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"Destructive" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了Destructive");
+    }];
+    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了Cancel");
+    }];
+    [alertController addAction:action1];
+    [alertController addAction:action2];
+    [alertController addAction:action3];
+    
+    // 设置对话框不需要毛玻璃
+    alertController.needDialogBlur = NO;
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例25:背景外观样式
+- (void)backgroundAppearanceStyleTest25:(SPBackgroundViewAppearanceStyle)appearanceStyle {
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
+    
+    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了Default");
+    }];
+    
+    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"Destructive" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了Destructive");
+    }];
+    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了Cancel");
+    }];
+    [alertController addAction:action1];
+    [alertController addAction:action2];
+    [alertController addAction:action3];
+    
+    if (appearanceStyle == SPBackgroundViewAppearanceStyleTranslucent) {
+        // 0.5是半透明(默认),设置1为不透明,0为全透明
+        [alertController setBackgroundViewAppearanceStyle:appearanceStyle alpha:0.5];
+    } else {
+        [alertController setBackgroundViewAppearanceStyle:appearanceStyle alpha:1];
+    }
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
 #pragma mark - 文本输入框的代理方法
 
 - (void)textFieldDidChanged:(UITextField *)textField {
@@ -629,7 +688,7 @@
     if (!sender.selected) {
         
         NSInteger c = 1+(arc4random() % 4);
-        self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"背景%zd.jpg",c]]];
+        self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"背景%li.jpg",c]]];
     } else {
         self.tableView.backgroundView = nil;
     }
@@ -645,8 +704,8 @@
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
-    self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况"];
-    self.dataSource = @[@[@"actionSheet 默认动画(从底部弹出)",@"actionSheet '从天而降'",@"actionSheet 没有取消样式按钮",@"actionSheet 有多个取消样式按钮",@"actionSheet 无标题"],@[@"alert 默认动画(alpha渐变)",@"alert 从小变大动画",@"alert 从大变小动画",@"alert 没有按钮",@"alert 有一个按钮",@"alert 垂直排列2个按钮",@"alert 水平排列2个以上的按钮",@"alert 无标题",@"alert 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"]];
+    self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况",@"毛玻璃"];
+    self.dataSource = @[@[@"actionSheet 默认动画(从底部弹出)",@"actionSheet '从天而降'",@"actionSheet 没有取消样式按钮",@"actionSheet 有多个取消样式按钮",@"actionSheet 无标题"],@[@"alert 默认动画(alpha渐变)",@"alert 从小变大动画",@"alert 从大变小动画",@"alert 没有按钮",@"alert 有一个按钮",@"alert 垂直排列2个按钮",@"alert 水平排列2个以上的按钮",@"alert 无标题",@"alert 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"背景黑色带透明样式(默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -667,9 +726,6 @@
         cell.textLabel.textColor = [UIColor blackColor];
         cell.backgroundColor = [UIColor whiteColor];
     }
-    self.view.backgroundColor = [UIColor greenColor];
-    self.tableView.backgroundColor = [UIColor clearColor];
-    cell.backgroundColor = [UIColor clearColor];
     cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];
     return cell;
 }
@@ -779,7 +835,23 @@
                 break;
         }
     } else {
-       
+        switch (indexPath.row) {
+            case 0:
+                [self dialogRemoveBlurTest24];
+                break;
+            case 1:
+                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleTranslucent];
+                break;
+            case 2:
+                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleBlurDark];
+                break;
+            case 3:
+                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleBlurExtraLight];
+                break;
+            case 4:
+                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleBlurLight];
+                break;
+        }
     }
     
 }

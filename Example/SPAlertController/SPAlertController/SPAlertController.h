@@ -10,15 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
+    SPAlertControllerStyleActionSheet = 0, // 从底部或顶部弹出,具体从哪里弹出取决于动画类型
+    SPAlertControllerStyleAlert,           // 从中间弹出
+};
+
 typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
     SPAlertActionStyleDefault = 0,  // 默认样式
     SPAlertActionStyleCancel,       // 取消样式
     SPAlertActionStyleDestructive   // 红色字体样式
-};
-
-typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
-    SPAlertControllerStyleActionSheet = 0, // 从底部或顶部弹出,具体从哪里弹出取决于动画类型
-    SPAlertControllerStyleAlert,           // 从中间弹出
 };
 
 typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
@@ -28,6 +28,13 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
     SPAlertAnimationTypeAlpha,       // 透明度从0到1，一般用于alert
     SPAlertAnimationTypeExpand,      // 发散动画，一般用于alert
     SPAlertAnimationTypeShrink       // 收缩动画，一般用于alert
+};
+
+typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
+    SPBackgroundViewAppearanceStyleTranslucent = 0,  // 无毛玻璃效果,黑色带透明(默认是0.5透明)
+    SPBackgroundViewAppearanceStyleBlurDark,
+    SPBackgroundViewAppearanceStyleBlurExtraLight,
+    SPBackgroundViewAppearanceStyleBlurLight,
 };
 
 // ================================ action类 ================================
@@ -143,13 +150,18 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
  */
 @property (nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert;
 
-/** 是否需要毛玻璃效果,默认为YES */
-@property (nonatomic, assign) BOOL needBlur;
+/** 是否需要对话框拥有毛玻璃,默认为YES----Dialog单词是对话框的意思 */
+@property (nonatomic, assign) BOOL needDialogBlur;
+
+/** 是否单击背景退出对话框,默认为YES */
+@property (nonatomic, assign) BOOL tapBackgroundViewDismiss;
+
+/** 设置蒙层的外观样式,可通过alpha调整透明度,如果设置了毛玻璃样式,设置alpha<1可能会有警告,警告是正常的 */
+- (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;
 
 @end
 
 
-// 下面2个类外界不用关心
 @interface SPAlertPresentationController : UIPresentationController
 @end
 
