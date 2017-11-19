@@ -672,9 +672,10 @@
     
     SPAlertController *alertVc = [SPAlertController alertControllerWithPreferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha customHeaderView:headerView];
     alertVc.maxMarginForAlert = 75;
-    [self presentViewController:alertVc animated:YES completion:nil];
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self presentViewController:alertVc animated:YES completion:nil];
+    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self dismissViewControllerAnimated:YES completion:nil];
     });
 }
@@ -720,10 +721,8 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     if (_lookBlur) {
-        cell.textLabel.textColor = [UIColor whiteColor];
         cell.backgroundColor = [UIColor clearColor];
     } else {
-        cell.textLabel.textColor = [UIColor blackColor];
         cell.backgroundColor = [UIColor whiteColor];
     }
     cell.textLabel.text = self.dataSource[indexPath.section][indexPath.row];

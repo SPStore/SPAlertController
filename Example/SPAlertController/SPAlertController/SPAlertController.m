@@ -21,8 +21,8 @@
 #define actionHeight 49.0
 #define lineWidth 0.5
 
-#define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812 || [UIScreen mainScreen].bounds.size.width==812)
-#define alertBottomMargin (isIPhoneX ? 34 : 0) // 适配iPhoneX
+#define isIPhoneX ([UIScreen mainScreen].bounds.size.height==812)
+#define alertBottomMargin (([UIScreen mainScreen].bounds.size.height==812)||([UIScreen mainScreen].bounds.size.width==812) ? 34 : 0) // 适配iPhoneX
 
 static NSString * const FOOTERCELL = @"footerCell";
 
@@ -1680,7 +1680,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     // 黑色带透明时进行镂空
-    if (self.alertController.backgroundViewAppearanceStyle == SPBackgroundViewAppearanceStyleTranslucent && self.alertController.needDialogBlur) {
+    if (self.alertController.backgroundViewAppearanceStyle == SPBackgroundViewAppearanceStyleTranslucent && self.alertController.needDialogBlur && !self.alertController.textFields.count) {
         _cornerRadiusForAlert = (self.alertController.preferredStyle==SPAlertControllerStyleActionSheet)? 0 : self.alertController.cornerRadiusForAlert;
         CGContextRef ctx = UIGraphicsGetCurrentContext();
         CGRect rectIntersection = CGRectIntersection(self.frame, self.presentedView.frame);
