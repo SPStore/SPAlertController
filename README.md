@@ -122,7 +122,7 @@ action2.titleColor = [UIColor redColor];
 
 ## 效果图
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/F6C0259AFBAD7E5F651CB1FD41796DEF.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/06A97B9DBDE3F07D2207BAA2085D25C6.jpg)  
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/A76E51AC536052790CD80C184E803432.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/9C6F94D5ECF90CE6A94D90D507DB18EC.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/A76E51AC536052790CD80C184E803432.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/9C6F94D5ECF90CE6A94D90D507DB18EC.jpg)  
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/4DB2CAFA218FEE08E36578C94F2A5B71.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/03A721F9F6A4F39346134F7EEE49FA2E.jpg)
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3DB1CF20C14DFE9103B827F06BE5ACE5.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1A20B204D250B3DBFE973A4EC0C5209F.jpg)  
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/57DDD7273486D292452471FAFDDC9F18.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/CDD1F2ADE694932980AB1509921FB628.jpg)  
