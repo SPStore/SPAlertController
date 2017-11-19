@@ -121,7 +121,17 @@ action2.titleColor = [UIColor redColor];
 *当你自定义view时，无论是customView、customTitleView还是customCenterView，外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的子控件的布局尽量写在layoutSubViews里，或者用autoLayout，这样子控件才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY，offsetY指的是垂直中心的偏移*
 
 ## 效果图
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/F6C0259AFBAD7E5F651CB1FD41796DEF.jpg).........![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/06A97B9DBDE3F07D2207BAA2085D25C6.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/F6C0259AFBAD7E5F651CB1FD41796DEF.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/06A97B9DBDE3F07D2207BAA2085D25C6.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/A76E51AC536052790CD80C184E803432.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/9C6F94D5ECF90CE6A94D90D507DB18EC.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/4DB2CAFA218FEE08E36578C94F2A5B71.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/03A721F9F6A4F39346134F7EEE49FA2E.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3DB1CF20C14DFE9103B827F06BE5ACE5.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1A20B204D250B3DBFE973A4EC0C5209F.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/57DDD7273486D292452471FAFDDC9F18.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/CDD1F2ADE694932980AB1509921FB628.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/EAEFB2EAA7932E456E7D85238E2C73C7.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/2DB32E8A0446B214C5EDC97998B127BA.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/19E17ECCD0C1A8CE7D0499CD8AF06A2F.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/30D02B422FC9CA27F5CBA37FF85BADE6.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/36186FEFDD89D2356EFEF140093A28A7.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3E8019BA57F447785BD2561ECF95D234.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/91B2F76B900C0EA9B5E34B8AE64CAB36.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1776B8F36B3C3051C2C2FE3AE12D843F.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1FE9B512B50D7E139B30E0BDB5B3FF6E.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/86C4035CB7097B99FA89706E3668055E.jpg)
+
 
 
 [回到顶部](#目录) 
