@@ -121,6 +121,7 @@ action2.titleColor = [UIColor redColor];
 *当你自定义view时，无论是customView、customTitleView还是customCenterView，外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的子控件的布局尽量写在layoutSubViews里，或者用autoLayout，这样子控件才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY，offsetY指的是垂直中心的偏移*
 
 ## 效果图
+![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/F6C0259AFBAD7E5F651CB1FD41796DEF.jpg).........![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/06A97B9DBDE3F07D2207BAA2085D25C6.jpg)
 
 
 [回到顶部](#目录) 
