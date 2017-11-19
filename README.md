@@ -7,9 +7,9 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SPStore/SPAlertController)
 [![codecov](https://codecov.io/gh/SPStore/SPAlertController/branch/master/graph/badge.svg)](https://codecov.io/gh/SPStore/SPAlertController)
 # 目录
-* [如何导入](#如何导入)
-* [Gif演示图](#gif演示图)  
+* [如何导入](#如何导入) 
 * [如何使用](#如何使用)
+* [效果图](#效果图) 
 
 ## 如何导入
 ##### 版本1.0.1
@@ -27,11 +27,6 @@ target 'MyApp' do
 end
 ```
 然后在终端输入命令:pod install 
-
-## Gif演示图
-（友情提示：如果您的网络较慢，gif图可能会延迟加载，您可以先把宝贵的时间浏览其它信息）
-
-<br>![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/SPAlertController.gif)
 
 ## 如何使用
 * 第一步：创建SPAlertController
@@ -123,5 +118,9 @@ action2.titleColor = [UIColor redColor];
 有时看见过这样的对话框，顶部是一个title，最底部有2个action，中间是一个tableView；这里自定义centerView就是解决这个需求。
 当自定义centerView时，如果是SPAlertControllerStyleAlert样式，action的个数最多只能是2个，超过2个将不显示，只显示最前面2个添加的；如果是SPAlertControllerStyleActionSheet样式，只有取消（SPAlertActionStyleCancel）样式才会显示，其余样式的action均不会显示
 ```
-## 当你自定义view时，无论是customView、customTitleView还是customCenterView，外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的子控件的布局尽量写在layoutSubViews里，或者用autoLayout，这样子控件才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY，offsetY指的是垂直中心的偏移
+*当你自定义view时，无论是customView、customTitleView还是customCenterView，外界对这些自定义的view设置的x、y、宽均无效，只有高度有效，SPAlertController内部会自动修改x、y、宽，所以，当你自定义这些view时，这些view的子控件的布局尽量写在layoutSubViews里，或者用autoLayout，这样子控件才能适应SPAlertController所做的改变。如果你想改变这些自定义view的宽度，或者垂直位置，你可以设置相关边距(margin)，SPAlertController提供了几个边距属性和offsetY，offsetY指的是垂直中心的偏移*
+
+## 效果图
+
+
 [回到顶部](#目录) 
