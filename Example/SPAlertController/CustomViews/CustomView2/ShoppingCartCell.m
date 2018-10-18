@@ -27,29 +27,28 @@
 - (void)setItem:(ShoppingCartItem *)item {
     _item = item;
     self.foodNmaeLabel.text = item.foodName;
-    self.priceLabel.text = [NSString stringWithFormat:@"¥%@",item.price];
+    self.priceLabel.text = [self finallyFoodPrice:item.price];
 }
 
 - (IBAction)reduce:(UIButton *)sender {
     NSInteger i = [self.countLabel.text integerValue];
     i--;
-    if (i <= 0) {
+    if (i < 1) {
         i = 1;
+    } else {
+        self.item.price = self.item.price - self.item.price / (i+1);
     }
-    float price = [self.item.price floatValue];
-    price = price * i;
     self.countLabel.text = [NSString stringWithFormat:@"%zd",i];
-    self.priceLabel.text = [self finallyFoodPrice:price];
+    self.priceLabel.text = [self finallyFoodPrice:self.item.price];
+
 }
 
 - (IBAction)add:(UIButton *)sender {
     NSInteger i = [self.countLabel.text integerValue];
     i++;
-    float price = [self.item.price floatValue];
-    price = price * i;
+    self.item.price = self.item.price + self.item.price / (i-1);
     self.countLabel.text = [NSString stringWithFormat:@"%zd",i];
-    self.priceLabel.text = [NSString stringWithFormat:@"¥%.1f",price];
-    self.priceLabel.text = [self finallyFoodPrice:price];
+    self.priceLabel.text = [self finallyFoodPrice:self.item.price];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

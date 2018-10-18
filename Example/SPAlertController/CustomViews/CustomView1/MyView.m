@@ -9,6 +9,7 @@
 #import "MyView.h"
 
 @interface MyView()
+
 @end
 
 @implementation MyView
@@ -28,5 +29,8 @@
     return [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([self class]) owner:nil options:nil] lastObject];
 }
 
+//- (CGSize)intrinsicContentSize {
+//    return CGSizeMake(0, 400);
+//}
 
 @end

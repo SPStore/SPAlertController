@@ -37,6 +37,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
     SPBackgroundViewAppearanceStyleBlurLight,
 };
 
+
 // ================================ action类 ================================
 
 @interface SPAlertAction : NSObject <NSCopying>
@@ -59,6 +60,20 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 @property (nonatomic, strong) UIColor *titleColor;
 /* action的标题字体 */
 @property (nonatomic, strong) UIFont *titleFont;
+
+@end
+
+@class SPAlertController;
+@protocol SPAlertControllerDelegate <NSObject>
+@optional;
+// 将要出现
+- (void)sp_alertControllerWillShow:(SPAlertController *)alertController;
+// 已经出现
+- (void)sp_alertControllerDidShow:(SPAlertController *)alertController;
+// 将要隐藏
+- (void)sp_alertControllerWillHide:(SPAlertController *)alertController;
+// 已经隐藏
+- (void)sp_alertControllerDidHide:(SPAlertController *)alertController;
 
 @end
 
@@ -155,6 +170,9 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 
 /** 是否单击背景退出对话框,默认为YES */
 @property (nonatomic, assign) BOOL tapBackgroundViewDismiss;
+
+@property (nonatomic, weak) id<SPAlertControllerDelegate> delegate;
+
 
 /** 设置蒙层的外观样式,可通过alpha调整透明度,如果设置了毛玻璃样式,设置alpha<1可能会有警告,警告是正常的 */
 - (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;

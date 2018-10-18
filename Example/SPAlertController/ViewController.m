@@ -68,12 +68,13 @@
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第2个");
     }];
-    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"第3个" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第3个");
     }];
     [alertController addAction:action1];
     [alertController addAction:action2];
     [alertController addAction:action3];
+
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -168,7 +169,7 @@
 // 示例6:alert 默认样式(alpha渐变)
 - (void)alertTest6 {
     
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"hahahhahha" message:@"这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"确定" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了确定");
     }];
@@ -179,7 +180,6 @@
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了取消");
     }];
-
     // 设置第2个action的颜色
     action2.titleColor = [UIColor redColor];
     [alertController addAction:action1];
@@ -366,7 +366,7 @@
 - (void)customTest15 {
     
     MyView *myView = [MyView shareMyView];
-    myView.frame = CGRectMake(0, 0, ScreenWidth-40, 240);
+    myView.frame = CGRectMake(0, 0, ScreenWidth-40, 400);
     myView.passwordView.delegate = self;
     [myView.cancelButton addTarget:self action:@selector(cancelButtonInCustomHeaderViewClicked) forControlEvents:UIControlEventTouchUpInside];
     
@@ -501,7 +501,10 @@
     SPAlertAction *action14 = [SPAlertAction actionWithTitle:@"第14个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第14个");
     }];
-    SPAlertAction *action15 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
+    SPAlertAction *action15 = [SPAlertAction actionWithTitle:@"第15个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+        NSLog(@"点击了第15个");
+    }];
+    SPAlertAction *action16 = [SPAlertAction actionWithTitle:@"取消" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了取消");
     }];
     
@@ -520,6 +523,7 @@
     [alertController addAction:action13];
     [alertController addAction:action14];
     [alertController addAction:action15];
+    [alertController addAction:action16];
 
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -531,7 +535,6 @@
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
-    
     // SPAlertActionStyleDestructive默认文字为红色(可修改)
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第2个");
@@ -706,7 +709,7 @@
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
     self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况",@"毛玻璃"];
-    self.dataSource = @[@[@"actionSheet 默认动画(从底部弹出)",@"actionSheet '从天而降'",@"actionSheet 没有取消样式按钮",@"actionSheet 有多个取消样式按钮",@"actionSheet 无标题"],@[@"alert 默认动画(alpha渐变)",@"alert 从小变大动画",@"alert 从大变小动画",@"alert 没有按钮",@"alert 有一个按钮",@"alert 垂直排列2个按钮",@"alert 水平排列2个以上的按钮",@"alert 无标题",@"alert 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"背景黑色带透明样式(默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
+    self.dataSource = @[@[@"actionSheet样式 默认动画(从底部弹出)",@"actionSheet样式从顶部弹出",@"actionSheet样式 没有取消样式按钮",@"actionSheet样式 有多个取消样式按钮",@"actionSheet样式 无标题"],@[@"alert样式 默认动画(alpha渐变)",@"alert样式 从小变大动画",@"alert样式 从大变小动画",@"alert样式 没有按钮",@"alert样式 有一个按钮",@"alert样式 垂直排列2个按钮",@"alert样式 水平排列2个以上的按钮",@"alert样式 无标题",@"alert样式 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"背景黑色带透明样式(默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

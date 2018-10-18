@@ -10,5 +10,5 @@
 
 @interface ShoppingCartItem : NSObject
 @property (nonatomic, copy) NSString *foodName;
-@property (nonatomic, copy) NSString *price;
+@property (nonatomic, assign) double price;
 @end

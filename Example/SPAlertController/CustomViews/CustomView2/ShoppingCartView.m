@@ -107,43 +107,43 @@
 - (NSArray *)getData {
     NSArray *dataArr = @[@{
                              @"foodName":@"鱼香肉丝",
-                             @"price":@"21.5",
+                             @"price":@(21.5),
                              },
                          @{
                              @"foodName":@"辣椒炒肉",
-                             @"price":@"18",
+                             @"price":@(18),
                              },
                          @{
                              @"foodName":@"梅干菜",
-                             @"price":@"20",
+                             @"price":@(20.1),
                              },
                          @{
                              @"foodName":@"西红柿蛋汤",
-                             @"price":@"12",
+                             @"price":@(12.306),
                              },
                          @{
                              @"foodName":@"红烧鲫鱼",
-                             @"price":@"35",
+                             @"price":@(35.8),
                              },
                          @{
                              @"foodName":@"啤酒鸭",
-                             @"price":@"29",
+                             @"price":@(29),
                              },
                          @{
                              @"foodName":@"宫爆鸡丁",
-                             @"price":@"28",
+                             @"price":@(28),
                              },
                          @{
                              @"foodName":@"外婆菜",
-                             @"price":@"17.025",
+                             @"price":@(17.025),
                              },
                          @{
                              @"foodName":@"王老吉",
-                             @"price":@"8",
+                             @"price":@(8),
                              },
                          @{
                              @"foodName":@"米饭",
-                             @"price":@"2",
+                             @"price":@(2),
                              },
                          ];
     
