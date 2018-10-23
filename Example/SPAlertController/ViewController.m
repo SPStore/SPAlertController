@@ -169,7 +169,7 @@
 // 示例6:alert 默认样式(alpha渐变)
 - (void)alertTest6 {
     
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"hahahhahha" message:@"这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"确定" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了确定");
     }];
@@ -345,7 +345,7 @@
     
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         NSLog(@"第1个文本输入框回调");
-        _phoneNumberTextField = textField;
+        self.phoneNumberTextField = textField;
         // 这个block只会回调一次，因此可以在这里自由定制textFiled，如设置textField的相关属性，设置代理，添加addTarget，监听通知等
         textField.placeholder = @"请输入手机号码";
         textField.clearButtonMode = UITextFieldViewModeAlways;
@@ -353,7 +353,7 @@
     }];
     [alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         NSLog(@"第2个文本输入框回调");
-        _passwordTextField = textField;
+        self.passwordTextField = textField;
         textField.placeholder = @"请输入密码";
         textField.secureTextEntry = YES;
         textField.clearButtonMode = UITextFieldViewModeAlways;
@@ -366,7 +366,6 @@
 - (void)customTest15 {
     
     MyView *myView = [MyView shareMyView];
-    myView.frame = CGRectMake(0, 0, ScreenWidth-40, 400);
     myView.passwordView.delegate = self;
     [myView.cancelButton addTarget:self action:@selector(cancelButtonInCustomHeaderViewClicked) forControlEvents:UIControlEventTouchUpInside];
     
@@ -531,7 +530,6 @@
 // 示例22:当文字和按钮同时过多时，文字占据更多位置
 - (void)specialtest22 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
-    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
