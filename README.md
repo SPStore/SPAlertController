@@ -11,18 +11,11 @@
 * [效果图](#效果图) 
 
 ## 如何导入
-##### 版本1.0.1
+##### 版本2.1.0
 ```
 platform:ios,'8.0'
 target 'MyApp' do
-  pod 'SPAlertController', '~> 1.0.1'
-end
-```
-##### 版本1.7.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 1.7.0'
+  pod 'SPAlertController', '~> 2.1.0'
 end
 ```
 ##### 版本2.0
@@ -32,7 +25,20 @@ target 'MyApp' do
   pod 'SPAlertController', '~> 2.0'
 end
 ```
-然后在终端输入命令:pod install 
+##### 版本1.7.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 1.7.0'
+end
+```
+##### 版本1.0.1
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 1.0.1'
+end
+```
 
 ## 如何使用
 * 第一步：创建SPAlertController
