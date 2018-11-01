@@ -11,6 +11,13 @@
 * [效果图](#效果图) 
 
 ## 如何导入
+##### 版本2.1.1
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.1.1'
+end
+```
 ##### 版本2.1.0
 ```
 platform:ios,'8.0'
