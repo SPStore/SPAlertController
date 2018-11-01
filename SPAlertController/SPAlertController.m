@@ -117,7 +117,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
 
         if (@available(iOS 11.0, *)) {
-            self.insetsLayoutMarginsFromSafeArea = NO;
+            self.insetsLayoutMarginsFromSafeArea = NO; // iOS11开始引入了安全区域的概念，当弹出模式从顶部弹出时，在安全区域的作用下，弹出来的view会跟屏幕顶端有间距，这里关闭安全区域
         }
         self.backgroundColor = [UIColor clearColor];
         // 取消选中高亮
