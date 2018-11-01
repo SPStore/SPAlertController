@@ -542,10 +542,14 @@ static NSString * const FOOTERCELL = @"footerCell";
         self.backgroundViewAlpha = -1;
         self.tapBackgroundViewDismiss = YES;
         self.cornerRadiusForAlert = 5;
-        self.maxTopMarginForActionSheet = 0;
         self.maxMarginForAlert = 20.0;
         self.maxNumberOfActionHorizontalArrangementForAlert = 2;
-        
+        if (animationType == SPAlertAnimationTypeDropDown) {
+            self.maxTopMarginForActionSheet = 0;
+        } else {
+            self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 20;
+        }
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
     }
     return self;
@@ -883,8 +887,13 @@ static NSString * const FOOTERCELL = @"footerCell";
         [headerScrollContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerScrollContentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:headerScrollView attribute:NSLayoutAttributeWidth multiplier:1.f constant:0]];
         if (_titleLabel.text.length || _detailTitleLabel.text.length) {
             // label需要给一个最大预估宽度，否则当文字比较多的时候，后面用systemLayoutSizeFittingSize:方法计算出来的结果是不准确的
-            _titleLabel.preferredMaxLayoutWidth = SPScreenWidth-_maxMarginForAlert*2-margin*2;
-            _detailTitleLabel.preferredMaxLayoutWidth = SPScreenWidth-_maxMarginForAlert*2-margin*2;
+            if (self.preferredStyle == SPAlertControllerStyleAlert) {
+                _titleLabel.preferredMaxLayoutWidth = SPScreenWidth-_maxMarginForAlert*2-margin*2;
+                _detailTitleLabel.preferredMaxLayoutWidth = SPScreenWidth-_maxMarginForAlert*2-margin*2;
+            } else {
+                _titleLabel.preferredMaxLayoutWidth = SPScreenWidth-margin*2;
+                _detailTitleLabel.preferredMaxLayoutWidth = SPScreenWidth-margin*2;
+            }
             // 保证headerScrollContentView的高度最小为60
             [headerScrollContentViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerScrollContentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:60]];
         }
@@ -1502,6 +1511,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         if (fittingSize.height > 0) { // 如果fittingSize.height大于0，有2种情况：1、customView垂直方向上能够由内部子控件自动撑起来，2、非自动布局的情况下手动设置了frame，如果是第一种情况：设置的frame将不被采取，因为此时fittingSize由内部子控件自动计算，如果customView内部实现了- intrinsicContentSize方法，则fittingSize等于intrinsicContentSize；如果是第2种情况：fittingSize就等于customView.frame.size
             _customViewSize = fittingSize;
         } else { // 如果不大于0，说明customView垂直方向上不能由内部子控件自动撑起来，此时customView自身必须有大小，如果是xib，customView有默认的frame，如果外界手动设置了frame，就取手动设置的
+            [customView layoutIfNeeded];
             _customViewSize = customView.frame.size;
         }
 
@@ -1509,7 +1519,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             _customViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
         }
         if (_customViewSize.height <= 0) {
-            NSLog(@"你的customView高度小于等于0,请设置一个高度");
+            NSLog(@"warning:你的customView高度小于等于0,请设置一个高度");
         }
         customView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.alertView addSubview:customView];
@@ -1525,6 +1535,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     if (fittingSize.height > 0) {
         _customHeaderViewSize = fittingSize;
     } else {
+        [customHeaderView layoutIfNeeded];
         _customHeaderViewSize = customHeaderView.frame.size;
     }
 
@@ -1532,7 +1543,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         _customHeaderViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
     }
     if (_customHeaderViewSize.height <= 0) {
-        NSLog(@"你的customHeaderView高度小于等于0,请设置一个高度");
+        NSLog(@"warning:你的customHeaderView高度小于等于0,请设置一个高度");
     }
     customHeaderView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.headerBezelView addSubview:customHeaderView];
@@ -1547,6 +1558,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     if (fittingSize.height > 0) {
         _customCenterViewSize = fittingSize;
     } else {
+        [customCenterView layoutIfNeeded];
         _customCenterViewSize = customCenterView.frame.size;
     }
 
@@ -1554,7 +1566,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         _customCenterViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
     }
     if (_customCenterViewSize.height <= 0) {
-        NSLog(@"你的customCenterView高度小于等于0,请设置一个高度");
+        NSLog(@"warning:你的customCenterView高度小于等于0,请设置一个高度");
     }
     customCenterView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.actionBezelView addSubview:customCenterView];
@@ -1568,6 +1580,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     if (fittingSize.height > 0) {
         _customFooterViewSize = fittingSize;
     } else {
+        [customFooterView layoutIfNeeded];
         _customFooterViewSize = customFooterView.frame.size;
     }
 
@@ -1575,7 +1588,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         _customFooterViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
     }
     if (_customFooterViewSize.height <= 0) {
-        NSLog(@"你的customFooterView高度小于等于0,请设置一个高度");
+        NSLog(@"warning:你的customFooterView高度小于等于0,请设置一个高度");
     }
     customFooterView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.footerBezelView addSubview:customFooterView];
