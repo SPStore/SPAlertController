@@ -1519,7 +1519,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             _customViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
         }
         if (_customViewSize.height <= 0) {
-            NSLog(@"你的customView高度小于等于0,请设置一个高度");
+            NSLog(@"warning:你的customView高度小于等于0,请设置一个高度");
         }
         customView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.alertView addSubview:customView];
@@ -1543,7 +1543,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         _customHeaderViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
     }
     if (_customHeaderViewSize.height <= 0) {
-        NSLog(@"你的customHeaderView高度小于等于0,请设置一个高度");
+        NSLog(@"warning:你的customHeaderView高度小于等于0,请设置一个高度");
     }
     customHeaderView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.headerBezelView addSubview:customHeaderView];
@@ -1566,7 +1566,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         _customCenterViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
     }
     if (_customCenterViewSize.height <= 0) {
-        NSLog(@"你的customCenterView高度小于等于0,请设置一个高度");
+        NSLog(@"warning:你的customCenterView高度小于等于0,请设置一个高度");
     }
     customCenterView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.actionBezelView addSubview:customCenterView];
@@ -1588,7 +1588,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         _customFooterViewSize.width = SPScreenWidth-2*_maxMarginForAlert;
     }
     if (_customFooterViewSize.height <= 0) {
-        NSLog(@"你的customFooterView高度小于等于0,请设置一个高度");
+        NSLog(@"warning:你的customFooterView高度小于等于0,请设置一个高度");
     }
     customFooterView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.footerBezelView addSubview:customFooterView];
