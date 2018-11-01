@@ -169,7 +169,7 @@
 // 示例6:alert 默认样式(alpha渐变)
 - (void)alertTest6 {
     
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是小标题这是小标题这是小标题这是这是小标题这是小标题这是小标题这是" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"确定" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了确定");
     }];
