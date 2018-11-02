@@ -539,7 +539,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         self.needDialogBlur = YES;
         self.backgroundViewAlpha = -1;
         self.tapBackgroundViewDismiss = YES;
-        self.cornerRadiusForAlert = 5;
+        self.cornerRadiusForAlert = 5.0;
         self.maxMarginForAlert = 20.0;
         self.maxNumberOfActionHorizontalArrangementForAlert = 2;
         if (animationType == SPAlertAnimationTypeRaiseUp || animationType == SPAlertAnimationTypeFromBottom) {
@@ -1408,10 +1408,13 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (void)setNeedDialogBlur:(BOOL)needDialogBlur {
     _needDialogBlur = needDialogBlur;
     if (!needDialogBlur) {
-        self.alertView.backgroundColor = [UIColor whiteColor];
         [self.alertEffectView removeFromSuperview];
         self.alertEffectView = nil;
-        
+        if (!self.customView) {
+            self.alertView.backgroundColor = [UIColor whiteColor];
+        } else {
+            self.alertView.backgroundColor = [UIColor clearColor];
+        }
     } else {
         UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:blur];
@@ -1795,7 +1798,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     [super drawRect:rect];
     // 黑色带透明时进行镂空
     if (self.alertController.backgroundViewAppearanceStyle == SPBackgroundViewAppearanceStyleTranslucent && self.alertController.needDialogBlur && !self.alertController.textFields.count) {
-        _cornerRadiusForAlert = (self.alertController.preferredStyle==SPAlertControllerStyleActionSheet)? 0 : self.alertController.cornerRadiusForAlert;
+        _cornerRadiusForAlert = (self.alertController.preferredStyle==SPAlertControllerStyleActionSheet) ? 0 : self.alertController.cornerRadiusForAlert;
         CGContextRef ctx = UIGraphicsGetCurrentContext();
         CGRect rectIntersection = CGRectIntersection(self.frame, self.presentedView.frame);
         UIBezierPath *bezierPath = [UIBezierPath bezierPathWithRoundedRect:rectIntersection
@@ -1839,10 +1842,6 @@ static NSString * const FOOTERCELL = @"footerCell";
     // 延迟0.3秒再镂空,之所以延迟，是因为实际上界面还没有最终切换到肉眼所看到的横(竖)屏,就开始走这个方法,也就意味着界面还没有旋转停止下来就开始镂空，这样又可以看到镂出来的洞
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
-        CGFloat cornerRadius = 0;
-        if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
-            cornerRadius = alertController.cornerRadiusForAlert;
-        }
         [self.overlayView redrawWithView:self.presentedView alertController:alertController];
     });
     

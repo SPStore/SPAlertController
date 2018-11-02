@@ -32,6 +32,8 @@
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     if (self = [super initWithCoder:aDecoder]) {
         [self initialize];
+        
+        [UIBezierPath ];
     }
     return self;
 }
@@ -40,7 +42,7 @@
     
     [self addSubview:self.tableView];
     [self addSubview:self.topView];
-
+    
     NSArray *dataArr = [self getData];
     
     for (int i = 0; i < dataArr.count; i++) {
@@ -48,6 +50,10 @@
         [item setValuesForKeysWithDictionary:dataArr[i]];
         [self.dataSource addObject:item];
     }
+}
+
+- (void)hideTopView {
+    self.topView.hidden = YES;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {

@@ -372,14 +372,14 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-
 // 示例16:自定义整个对话框(actionSheet样式从底部弹出)
 - (void)customTest16 {
     
     ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*2/3)];
-    shoppingCartView.backgroundColor = [UIColor whiteColor];
+    [shoppingCartView hideTopView];
     
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeRaiseUp customView:shoppingCartView];
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeFromBottom customView:shoppingCartView];
+    alertController.needDialogBlur = NO;
     [self presentViewController:alertController animated:YES completion:nil];
 }
 

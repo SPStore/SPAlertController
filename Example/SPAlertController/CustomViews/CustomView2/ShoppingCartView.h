@@ -10,4 +10,6 @@
 
 @interface ShoppingCartView : UIView
 
+- (void)hideTopView;
+
 @end
