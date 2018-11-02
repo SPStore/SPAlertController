@@ -11,23 +11,28 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
-    SPAlertControllerStyleActionSheet = 0, // 从底部或顶部弹出,具体从哪里弹出取决于动画类型
+    SPAlertControllerStyleActionSheet = 0, // 从四周的某一侧弹出(顶/左/底/右),具体从哪侧弹出取决于动画类型
     SPAlertControllerStyleAlert,           // 从中间弹出
+};
+
+typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
+    SPAlertAnimationTypeDefault = 0, // 默认动画，如果是SPAlertControllerStyleActionSheet样式,默认动画等效于SPAlertAnimationTypeFromBottom，如果是SPAlertControllerStyleAlert样式,默认动画等效于SPAlertAnimationTypeAlpha
+    SPAlertAnimationTypeFromBottom,  // 从底部弹出，常用于SPAlertControllerStyleActionSheet样式
+    SPAlertAnimationTypeFromTop,     // 从顶部弹出，常用于SPAlertControllerStyleActionSheet样式且自定义对话框
+    SPAlertAnimationTypeFromRight,   // 从右边弹出，常用于SPAlertControllerStyleActionSheet样式且自定义对话框
+    SPAlertAnimationTypeFromLeft,    // 从左边弹出，常用于SPAlertControllerStyleActionSheet样式且自定义对话框
+    SPAlertAnimationTypeAlpha,       // 透明度从0到1，常用于SPAlertControllerStyleAlert样式
+    SPAlertAnimationTypeExpand,      // 发散动画，常用于SPAlertControllerStyleAlert样式
+    SPAlertAnimationTypeShrink,      // 收缩动画，常用于SPAlertControllerStyleAlert样式
+    
+    SPAlertAnimationTypeRaiseUp,     // 从底部弹出，一般用于SPAlertControllerStyleActionSheet样式
+    SPAlertAnimationTypeDropDown,    // 从顶部弹出，一般用于SPAlertControllerStyleActionSheet样式且自定义对话框
 };
 
 typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
     SPAlertActionStyleDefault = 0,  // 默认样式
     SPAlertActionStyleCancel,       // 取消样式
     SPAlertActionStyleDestructive   // 红色字体样式
-};
-
-typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
-    SPAlertAnimationTypeDefault = 0, // 默认动画，如果是SPAlertControllerStyleActionSheet样式,默认动画等效于SPAlertAnimationTypeRaiseUp，如果是SPAlertControllerStyleAlert样式,默认动画等效于SPAlertAnimationTypeAlpha
-    SPAlertAnimationTypeRaiseUp,     // 从下往上弹，一般用于actionSheet
-    SPAlertAnimationTypeDropDown,    // 从上往下弹，一般用于actionSheet
-    SPAlertAnimationTypeAlpha,       // 透明度从0到1，一般用于alert
-    SPAlertAnimationTypeExpand,      // 发散动画，一般用于alert
-    SPAlertAnimationTypeShrink       // 收缩动画，一般用于alert
 };
 
 typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
@@ -92,7 +97,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 
 /*
- 1.以下4个类方法均用于自定义,除了最后一个参数不一致之外,其余参数均一致;如果最后一个参数传nil,就跟第一个类方法等效.
+ 1.以下4个类方法均用于自定义,除了最后一个参数不一致之外,其余参数均一致;如果最后一个参数传nil,就跟上面那个类方法等效.
  2.SPAlertControllerStyleAlert样式下对话框的默认宽度恒为屏幕宽-40,高度最大为屏幕高-40,如果想设置对话框的宽度以及修改最大高度,可以通过调整maxMarginForAlert属性来设置,高度上只要没有超出最大高度，会自适应内容.
  3.SPAlertControllerStyleActionSheet样式下对话框的默认宽度恒为屏幕宽,高度最大为屏幕高,外界无法通过任何属性修改宽度,最大高度可通过maxTopMarginForActionSheet属性来修改,高度上只要没超出最大高度,会自适应内容.
  4.当自定义以下4个view时,如果宽度小于等于0,或者大于等于对话框的宽度,内部会自动处理为等宽于对话框,除此之外,自定义view的高度在对话框最大高度范围内的情况下:自定义view的大小是多大,显示出来就是多大;从这里也可以看出,如果自定义view时想用对话框的默认宽度,宽度设置为0或者足够大就行了. 稍微要注意的是假如你采用的是自动布局/xib/storyboard,宽度设置为0可能会有约束警告.
@@ -146,8 +151,8 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 /** 副标题字体 */
 @property (nonatomic, strong) UIFont *messageFont;
 
-/** actionSheet样式下,最大的顶部间距,默认为0,iPhoneX下默认44
-    如果是从顶部弹出来，该属性则充当底部间距
+/** actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;
+    注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
  */
 @property (nonatomic, assign) CGFloat maxTopMarginForActionSheet;
 
