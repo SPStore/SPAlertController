@@ -470,7 +470,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (isIPhoneX) {
         if (!self.cancelActions.count && self.preferredStyle == SPAlertControllerStyleActionSheet) {
-            if (self.animationType != SPAlertAnimationTypeDropDown) {
+            if (self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
                 if (indexPath.row == self.dataSource.count-1) {
                     return SPActionHeight+SPExtraHeight;
                 }
@@ -523,14 +523,12 @@ static NSString * const FOOTERCELL = @"footerCell";
         _title = title;
         _message = message;
         self.preferredStyle = preferredStyle;
-        // 如果是默认动画，preferredStyle为alert时动画默认为fade，preferredStyle为actionShee时动画默认为raiseUp
+        // 如果是默认动画，preferredStyle为alert时动画默认为alpha，preferredStyle为actionShee时动画默认为fromBottom
         if (animationType == SPAlertAnimationTypeDefault) {
             if (self.preferredStyle == SPAlertControllerStyleAlert) {
-                animationType= SPAlertAnimationTypeAlpha;
-            } else if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
-                animationType = SPAlertAnimationTypeRaiseUp;
+                animationType = SPAlertAnimationTypeAlpha;
             } else {
-                animationType = SPAlertAnimationTypeRaiseUp;
+                animationType = SPAlertAnimationTypeFromBottom;
             }
         }
         self.animationType = animationType;
@@ -544,10 +542,10 @@ static NSString * const FOOTERCELL = @"footerCell";
         self.cornerRadiusForAlert = 5;
         self.maxMarginForAlert = 20.0;
         self.maxNumberOfActionHorizontalArrangementForAlert = 2;
-        if (animationType == SPAlertAnimationTypeDropDown) {
-            self.maxTopMarginForActionSheet = 0;
-        } else {
+        if (animationType == SPAlertAnimationTypeRaiseUp || animationType == SPAlertAnimationTypeFromBottom) {
             self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 20;
+        } else {
+            self.maxTopMarginForActionSheet = 0;
         }
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
@@ -616,7 +614,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         } else {
             self.automaticallyAdjustsScrollViewInsets = NO;
         }
-        if (self.animationType == SPAlertAnimationTypeDropDown) {
+        if (self.animationType == SPAlertAnimationTypeDropDown || self.animationType == SPAlertAnimationTypeFromTop) {
             headerScrollView.contentInset = UIEdgeInsetsMake(SPStatusHeight, 0, 0, 0);
         }
         [headerView addSubview:headerScrollView];
@@ -958,7 +956,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 
         CGFloat contentH = self.textFields.count ? textFieldViewHeight+titleViewH : titleViewH;
         // 设置headerView的高度(这个高度同样可以通过计算titleLabel和detailTitleLabel的文字高度计算出来,但是那样计算出来的高度会有零点几的误差,只要差了一点,有可能scrollView即便内容没有超过contentSize,仍然能够滑动)
-        if (self.animationType == SPAlertAnimationTypeDropDown) {
+        if (self.animationType == SPAlertAnimationTypeDropDown || self.animationType == SPAlertAnimationTypeFromTop) {
             headerBezelViewContsraintHeight.constant = contentH+SPStatusHeight; // 从上往下弹的时候，如果没有标题的话，头部会有一个SPStatusHeight高度
         } else {
             headerBezelViewContsraintHeight.constant = contentH;
@@ -1126,7 +1124,7 @@ static NSString * const FOOTERCELL = @"footerCell";
                 [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:_customFooterViewSize.height]];
             }
         } else { // actionSheet样式
-            if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown) {
+            if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
                 [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPActionHeight*self.cancelActions.count+SPExtraHeight]];
             } else {
                 [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPActionHeight*self.cancelActions.count]];
@@ -1205,7 +1203,7 @@ static NSString * const FOOTERCELL = @"footerCell";
                         [footerCellConstraints addObject:[NSLayoutConstraint constraintWithItem:footerCell attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.footerLines[idx - 1] attribute:NSLayoutAttributeBottom multiplier:1.f constant:0]];
 
                         if (idx == footerCells.count-1) {
-                            if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown) {
+                            if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
                                 [footerCellConstraints addObject:[NSLayoutConstraint constraintWithItem:footerCell attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:footerCells[idx - 1] attribute:NSLayoutAttributeHeight multiplier:1.f constant:SPExtraHeight]];
                             } else {
                                 // cell等高
@@ -1259,7 +1257,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
             if (self.cancelActions.count) { // 有取消按钮肯定没有自定义footerView
                 if (self.actions.count > 1) {
-                    if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown) {
+                    if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
                         actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin+SPExtraHeight;
                     } else {
                         actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin;
@@ -1278,7 +1276,7 @@ static NSString * const FOOTERCELL = @"footerCell";
                     if (self.customFooterView) {
                         actionBezelHeight = self.actions.count*SPActionHeight+_customFooterViewSize.height;
                     } else {
-                        if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown) {
+                        if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
                             actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin+SPExtraHeight;
                         } else {
                             actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin;
@@ -1927,11 +1925,22 @@ static NSString * const FOOTERCELL = @"footerCell";
     UIView *customView = alertController.customView;
     if (!customView) { // 非自定义
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPScreenWidth]];
-            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-            if (alertController.animationType == SPAlertAnimationTypeDropDown) {
-                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==maxTopMarginForActionSheet)-[presentedView]-(>=SPAlertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"SPAlertBottomMargin":@(SPAlertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
-            } else {
+            if (alertController.animationType == SPAlertAnimationTypeDropDown || alertController.animationType == SPAlertAnimationTypeFromTop) { // 从顶部弹出
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPScreenWidth]];
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==0)-[presentedView]-(>=maxTopMarginForActionSheet)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"SPAlertBottomMargin":@(SPAlertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else if (alertController.animationType == SPAlertAnimationTypeFromRight) { // 从右边弹出
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPScreenWidth-alertController.maxTopMarginForActionSheet]];
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==0)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(presentedView)]];
+
+            } else if (alertController.animationType ==SPAlertAnimationTypeFromLeft) { // 从左边弹出
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPScreenWidth-alertController.maxTopMarginForActionSheet]];
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==0)-[presentedView]-(>=maxTopMarginForActionSheet)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else { // 从底部弹出
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPScreenWidth]];
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
                 [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==SPAlertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"SPAlertBottomMargin":@(SPAlertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             }
         } else {
@@ -1949,19 +1958,39 @@ static NSString * const FOOTERCELL = @"footerCell";
     } else { // 自定义
         CGFloat alertH = alertController.customViewSize.height;
         CGFloat alertW = alertController.customViewSize.width;
-        if (alertH > (self.containerView.bounds.size.height-maxTopMarginForActionSheet)) {
-            alertH = (self.containerView.bounds.size.height-(topMarginForAlert+bottomMarginForAlert));
-        }
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertW]];
-            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-            if (alertController.animationType == SPAlertAnimationTypeDropDown) {
-                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==maxTopMarginForActionSheet)-[presentedView]-(>=SPAlertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"SPAlertBottomMargin":@(SPAlertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
-            } else {
+            if (alertController.animationType == SPAlertAnimationTypeDropDown || alertController.animationType == SPAlertAnimationTypeFromTop) { // 从顶部弹出
+                if (alertH > (self.containerView.bounds.size.height-maxTopMarginForActionSheet)) {
+                    alertH = self.containerView.bounds.size.height-maxTopMarginForActionSheet;
+                }
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(==0)-[presentedView]-(>=maxTopMarginForActionSheet)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else if (alertController.animationType == SPAlertAnimationTypeFromRight) { // 从右边弹出
+                if (alertW > (self.containerView.bounds.size.width-maxTopMarginForActionSheet)) {
+                    alertW = self.containerView.bounds.size.width-maxTopMarginForActionSheet;
+                }
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==0)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else if (alertController.animationType == SPAlertAnimationTypeFromLeft) { // 从左边弹出
+                if (alertW > (self.containerView.bounds.size.width-maxTopMarginForActionSheet)) {
+                    alertW = self.containerView.bounds.size.width-maxTopMarginForActionSheet;
+                }
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+                [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(==0)-[presentedView]-(>=maxTopMarginForActionSheet)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet)} views:NSDictionaryOfVariableBindings(presentedView)]];
+            } else { // 从底部弹出
+                if (alertH > (self.containerView.bounds.size.height-maxTopMarginForActionSheet)) {
+                    alertH = self.containerView.bounds.size.height-maxTopMarginForActionSheet;
+                }
+                [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+
                 [presentedViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(>=maxTopMarginForActionSheet)-[presentedView]-(==SPAlertBottomMargin)-|" options:0 metrics:@{@"maxTopMarginForActionSheet":@(maxTopMarginForActionSheet),@"SPAlertBottomMargin":@(SPAlertBottomMargin)} views:NSDictionaryOfVariableBindings(presentedView)]];
             }
-            
+            [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertW]];
+
         } else {
+            if (alertH > (self.containerView.bounds.size.height-(topMarginForAlert+bottomMarginForAlert))) {
+                alertH = (self.containerView.bounds.size.height-(topMarginForAlert+bottomMarginForAlert));
+            }
             [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertW]];
             [presentedViewConstraints addObject: [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.containerView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
             NSLayoutConstraint *topConstraints = [NSLayoutConstraint constraintWithItem:presentedView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.containerView attribute:NSLayoutAttributeTop multiplier:1.0f constant:topMarginForAlert];
@@ -2041,17 +2070,32 @@ static NSString * const FOOTERCELL = @"footerCell";
 
     switch (alertController.animationType) {
         case SPAlertAnimationTypeRaiseUp:
+        case SPAlertAnimationTypeFromBottom:
             [self raiseUpWhenPresentForController:alertController
                                        transition:transitionContext
                                   controlViewSize:controlViewSize
                                       overlayView:overlayView];
             break;
+        case SPAlertAnimationTypeFromRight:
+            [self fromRightWhenPresentForController:alertController
+                                       transition:transitionContext
+                                  controlViewSize:controlViewSize
+                                      overlayView:overlayView];
+            break;
         case SPAlertAnimationTypeDropDown:
+        case SPAlertAnimationTypeFromTop:
             [self dropDownWhenPresentForController:alertController
                                         transition:transitionContext
                                    controlViewSize:controlViewSize
                                        overlayView:overlayView];
 
+            break;
+        case SPAlertAnimationTypeFromLeft:
+            [self fromLeftWhenPresentForController:alertController
+                                        transition:transitionContext
+                                   controlViewSize:controlViewSize
+                                       overlayView:overlayView];
+            
             break;
         case SPAlertAnimationTypeAlpha:
             [self alphaWhenPresentForController:alertController
@@ -2087,12 +2131,26 @@ static NSString * const FOOTERCELL = @"footerCell";
             SPOverlayView *overlayView = presentedController.overlayView;
                 switch (alertController.animationType) {
                     case SPAlertAnimationTypeRaiseUp:
+                    case SPAlertAnimationTypeFromBottom:
                         [self dismissCorrespondingRaiseUpForController:alertController
                                                             transition:transitionContext
                                                        controlViewSize:controlViewSize
                                                            overlayView:overlayView];
                         break;
+                    case SPAlertAnimationTypeFromRight:
+                        [self dismissCorrespondingFromRightForController:alertController
+                                                            transition:transitionContext
+                                                       controlViewSize:controlViewSize
+                                                           overlayView:overlayView];
+                        break;
+                    case SPAlertAnimationTypeFromLeft:
+                        [self dismissCorrespondingFromLeftForController:alertController
+                                                             transition:transitionContext
+                                                        controlViewSize:controlViewSize
+                                                            overlayView:overlayView];
+                        break;
                     case SPAlertAnimationTypeDropDown:
+                    case SPAlertAnimationTypeFromTop:
                         [self dismissCorrespondingDropDownForController:alertController
                                                              transition:transitionContext
                                                         controlViewSize:controlViewSize
@@ -2124,7 +2182,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         }
 }
 
-// 从底部忘上弹的present动画
+// 从底部弹出的present动画
 - (void)raiseUpWhenPresentForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
                         controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
@@ -2149,7 +2207,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     }];
 }
 
-// 从底部往上弹对应的dismiss动画
+// 从底部弹出对应的dismiss动画
 - (void)dismissCorrespondingRaiseUpForController:(SPAlertController *)alertController
                              transition:(id<UIViewControllerContextTransitioning>)transitionContext
                         controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
@@ -2165,8 +2223,89 @@ static NSString * const FOOTERCELL = @"footerCell";
     }];
 }
 
+// 从右边弹出的present动画
+- (void)fromRightWhenPresentForController:(SPAlertController *)alertController
+                             transition:(id<UIViewControllerContextTransitioning>)transitionContext
+                        controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
+    
+    CGRect controlViewFrame = alertController.view.frame;
+    controlViewFrame.origin.x = SPScreenWidth;
+    alertController.view.frame = controlViewFrame;
+    
+    UIView *containerView = [transitionContext containerView];
+    [containerView addSubview:alertController.view];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.x = SPScreenWidth-controlViewSize.width;
+        alertController.view.frame = controlViewFrame;
+        overlayView.alpha = 1;
+    } completion:^(BOOL finished) {
+        [transitionContext completeTransition:YES];
+    }];
+}
 
-// 从顶部往下弹的present动画
+// 从右边弹出对应的dismiss动画
+- (void)dismissCorrespondingFromRightForController:(SPAlertController *)alertController
+                                      transition:(id<UIViewControllerContextTransitioning>)transitionContext
+                                 controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
+    [overlayView redrawWithView:nil alertController:nil];
+    
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.x = SPScreenWidth;
+        alertController.view.frame = controlViewFrame;
+        overlayView.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        [transitionContext completeTransition:YES];
+    }];
+}
+
+// 从左边弹出的present动画
+- (void)fromLeftWhenPresentForController:(SPAlertController *)alertController
+                               transition:(id<UIViewControllerContextTransitioning>)transitionContext
+                          controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
+    
+    CGRect controlViewFrame = alertController.view.frame;
+    controlViewFrame.origin.x = -controlViewSize.width;
+    alertController.view.frame = controlViewFrame;
+    
+    UIView *containerView = [transitionContext containerView];
+    [containerView addSubview:alertController.view];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_delayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [overlayView redrawWithView:alertController.view alertController:alertController];
+    });
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.x = 0;
+        alertController.view.frame = controlViewFrame;
+        overlayView.alpha = 1;
+    } completion:^(BOOL finished) {
+        [transitionContext completeTransition:YES];
+    }];
+}
+
+// 从左边弹出对应的dismiss动画
+- (void)dismissCorrespondingFromLeftForController:(SPAlertController *)alertController
+                                        transition:(id<UIViewControllerContextTransitioning>)transitionContext
+                                   controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
+    [overlayView redrawWithView:nil alertController:nil];
+    
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
+        CGRect controlViewFrame = alertController.view.frame;
+        controlViewFrame.origin.x = -controlViewSize.width;
+        alertController.view.frame = controlViewFrame;
+        overlayView.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        [transitionContext completeTransition:YES];
+    }];
+}
+
+// 从顶部弹出的present动画
 - (void)dropDownWhenPresentForController:(SPAlertController *)alertController
                               transition:(id<UIViewControllerContextTransitioning>)transitionContext
                          controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {
@@ -2184,7 +2323,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
-        controlViewFrame.origin.y = alertController.maxTopMarginForActionSheet;
+        controlViewFrame.origin.y = SPAlertBottomMargin;
         alertController.view.frame = controlViewFrame;
         overlayView.alpha = 1;
     } completion:^(BOOL finished) {
@@ -2192,7 +2331,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     }];
 }
 
-// 从顶部往下弹对应的dismiss动画
+// 从顶部弹出对应的dismiss动画
 - (void)dismissCorrespondingDropDownForController:(SPAlertController *)alertController
                                       transition:(id<UIViewControllerContextTransitioning>)transitionContext
                                  controlViewSize:(CGSize)controlViewSize overlayView:(SPOverlayView *)overlayView {

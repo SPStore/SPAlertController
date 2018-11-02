@@ -10,9 +10,13 @@
 #import "ShoppingCartCell.h"
 #import "ShoppingCartItem.h"
 
+#define isIPhoneX MAX([UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height) >= 812
+#define StatusHeight (isIPhoneX ? 44 : 20)
+
 @interface ShoppingCartView() <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) NSMutableArray *dataSource;
+@property (nonatomic, strong) UIView *topView;
 @end
 
 @implementation ShoppingCartView
@@ -35,7 +39,8 @@
 - (void)initialize {
     
     [self addSubview:self.tableView];
-    
+    [self addSubview:self.topView];
+
     NSArray *dataArr = [self getData];
     
     for (int i = 0; i < dataArr.count; i++) {
@@ -83,11 +88,18 @@
         _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
         _tableView.dataSource = self;
         _tableView.delegate = self;
-        _tableView.bounces = NO;
         _tableView.showsVerticalScrollIndicator = NO;
         [_tableView registerNib:[UINib nibWithNibName:NSStringFromClass([ShoppingCartCell class]) bundle:nil] forCellReuseIdentifier:@"shoppingCartCell"];
     }
     return _tableView;
+}
+
+- (UIView *)topView {
+    if (!_topView) {
+        _topView = [[UIView alloc] init];
+        _topView.backgroundColor = [UIColor whiteColor];
+    }
+    return _topView;
 }
 
 - (NSMutableArray *)dataSource {
@@ -102,6 +114,7 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.tableView.frame = self.bounds;
+    self.topView.frame = CGRectMake(0, 0, self.bounds.size.width, StatusHeight);
 }
 
 - (NSArray *)getData {
@@ -134,8 +147,16 @@
                              @"price":@(28),
                              },
                          @{
-                             @"foodName":@"外婆菜",
-                             @"price":@(17.025),
+                             @"foodName":@"湖南一碗香",
+                             @"price":@(37.5),
+                             },
+                         @{
+                             @"foodName":@"鸡汤",
+                             @"price":@(16),
+                             },
+                         @{
+                             @"foodName":@"鸡汤",
+                             @"price":@(16),
                              },
                          @{
                              @"foodName":@"王老吉",

@@ -58,10 +58,9 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例2:actionSheet“从天而降”
+// 示例2:actionSheet从顶部弹出
 - (void)actionSheetTest2 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:nil message:nil preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDropDown];
-    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -377,16 +376,35 @@
 // 示例16:自定义整个对话框(actionSheet样式从底部弹出)
 - (void)customTest16 {
     
-    ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 300)];
+    ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*2/3)];
     shoppingCartView.backgroundColor = [UIColor whiteColor];
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeRaiseUp customView:shoppingCartView];
-    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例17:自定义整个对话框(actionSheet样式从顶部弹出)
+// 示例17:自定义整个对话框(actionSheet样式从右边弹出)
 - (void)customTest17 {
+    
+    ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-70, ScreenHeight)];
+    shoppingCartView.backgroundColor = [UIColor whiteColor];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeFromRight customView:shoppingCartView];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例18:自定义整个对话框(actionSheet样式从左边弹出)
+- (void)customTest18 {
+    
+    ShoppingCartView *shoppingCartView = [[ShoppingCartView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-70, ScreenHeight)];
+    shoppingCartView.backgroundColor = [UIColor whiteColor];
+    
+    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeFromLeft customView:shoppingCartView];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// 示例19:自定义整个对话框(actionSheet样式从顶部弹出)
+- (void)customTest19 {
     CommodityListView *commodityListView = [[CommodityListView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 200)];
     commodityListView.backgroundColor = [UIColor whiteColor];
     
@@ -395,8 +413,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例18:自定义headerView
-- (void)customTest18 {
+// 示例20:自定义headerView
+- (void)customTest20 {
     MyHeaderView *myHeaderView = [[MyHeaderView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
     SPAlertController *alertController = [SPAlertController alertControllerWithPreferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customHeaderView:myHeaderView];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -416,8 +434,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例19:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于maxNumberOfActionHorizontalArrangementForAlert,超过maxNumberOfActionHorizontalArrangementForAlert的action将不显示,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
-- (void)customTest19 {
+// 示例21:自定义中间的view，这种自定义下:如果是SPAlertControllerStyleAlert样式，action个数不能大于maxNumberOfActionHorizontalArrangementForAlert,超过maxNumberOfActionHorizontalArrangementForAlert的action将不显示,如果是SPAlertControllerStyleActionSheet样式,action必须为取消样式才会显示
+- (void)customTest21 {
     MyCenterView *centerView = [[MyCenterView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth-40, 200)];
     
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customCenterView:centerView];
@@ -439,9 +457,9 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例20:自定义footerView
+// 示例22:自定义footerView
 // 宽度如果设置为0，内部自动会把宽度等宽于对话框
-- (void)customTest20 {
+- (void)customTest22 {
     MyFooterView *footerView = [MyFooterView shareMyFooterView];
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"苹果logo" message:nil preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customFooterView:footerView];
     SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"我是一个按钮" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
@@ -451,8 +469,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例21:当按钮过多时
-- (void)specialtest21 {
+// 示例23:当按钮过多时
+- (void)specialtest23 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     alertController.maxTopMarginForActionSheet = 100;
     
@@ -527,8 +545,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例22:当文字和按钮同时过多时，文字占据更多位置
-- (void)specialtest22 {
+// 示例24:当文字和按钮同时过多时，文字占据更多位置
+- (void)specialtest24 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
@@ -561,8 +579,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例23:含有文本输入框，且文字过多,默认会滑动到第一个文本输入框的位置
-- (void)specialtest23 {
+// 示例25:含有文本输入框，且文字过多,默认会滑动到第一个文本输入框的位置
+- (void)specialtest25 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"请滑动查看更多内容" message:@"谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢谢" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -588,8 +606,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例24:去除对话框的毛玻璃(默认0.5透明)
-- (void)dialogRemoveBlurTest24 {
+// 示例26:去除对话框的毛玻璃(默认0.5透明)
+- (void)dialogRemoveBlurTest26 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -612,8 +630,8 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-// 示例25:背景外观样式
-- (void)backgroundAppearanceStyleTest25:(SPBackgroundViewAppearanceStyle)appearanceStyle {
+// 示例27:背景外观样式
+- (void)backgroundAppearanceStyleTest27:(SPBackgroundViewAppearanceStyle)appearanceStyle {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
@@ -707,7 +725,7 @@
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
     self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况",@"毛玻璃"];
-    self.dataSource = @[@[@"actionSheet样式 默认动画(从底部弹出)",@"actionSheet样式从顶部弹出",@"actionSheet样式 没有取消样式按钮",@"actionSheet样式 有多个取消样式按钮",@"actionSheet样式 无标题"],@[@"alert样式 默认动画(alpha渐变)",@"alert样式 从小变大动画",@"alert样式 从大变小动画",@"alert样式 没有按钮",@"alert样式 有一个按钮",@"alert样式 垂直排列2个按钮",@"alert样式 水平排列2个以上的按钮",@"alert样式 无标题",@"alert样式 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"背景黑色带透明样式(默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
+    self.dataSource = @[@[@"actionSheet样式 默认动画(从底部弹出)",@"actionSheet样式从顶部弹出",@"actionSheet样式 没有取消样式按钮",@"actionSheet样式 有多个取消样式按钮",@"actionSheet样式 无标题"],@[@"alert样式 默认动画(alpha渐变)",@"alert样式 从小变大动画",@"alert样式 从大变小动画",@"alert样式 没有按钮",@"alert样式 有一个按钮",@"alert样式 垂直排列2个按钮",@"alert样式 水平排列2个以上的按钮",@"alert样式 无标题",@"alert样式 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(右)）",@"自定义整个对话框(actionSheet样式(左)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"背景黑色带透明样式(默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -817,19 +835,25 @@
             case 5:
                 [self customTest20];
                 break;
+            case 6:
+                [self customTest21];
+                break;
+            case 7:
+                [self customTest22];
+                break;
             default:
                 break;
         }
     } else if (indexPath.section == 3) {
         switch (indexPath.row) {
             case 0:
-                [self specialtest21];
+                [self specialtest23];
                 break;
             case 1:
-                [self specialtest22];
+                [self specialtest24];
                 break;
             case 2:
-                [self specialtest23];
+                [self specialtest25];
                 break;
             default:
                 break;
@@ -837,24 +861,23 @@
     } else {
         switch (indexPath.row) {
             case 0:
-                [self dialogRemoveBlurTest24];
+                [self dialogRemoveBlurTest26];
                 break;
             case 1:
-                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleTranslucent];
+                [self backgroundAppearanceStyleTest27:SPBackgroundViewAppearanceStyleTranslucent];
                 break;
             case 2:
-                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleBlurDark];
+                [self backgroundAppearanceStyleTest27:SPBackgroundViewAppearanceStyleBlurDark];
                 break;
             case 3:
-                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleBlurExtraLight];
+                [self backgroundAppearanceStyleTest27:SPBackgroundViewAppearanceStyleBlurExtraLight];
                 break;
             case 4:
-                [self backgroundAppearanceStyleTest25:SPBackgroundViewAppearanceStyleBlurLight];
+                [self backgroundAppearanceStyleTest27:SPBackgroundViewAppearanceStyleBlurLight];
                 break;
         }
     }
     
 }
-
 
 @end
