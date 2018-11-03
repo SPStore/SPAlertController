@@ -25,8 +25,8 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
     SPAlertAnimationTypeExpand,      // 发散动画，常用于SPAlertControllerStyleAlert样式
     SPAlertAnimationTypeShrink,      // 收缩动画，常用于SPAlertControllerStyleAlert样式
     
-    SPAlertAnimationTypeRaiseUp,     // 从底部弹出，一般用于SPAlertControllerStyleActionSheet样式
-    SPAlertAnimationTypeDropDown,    // 从顶部弹出，一般用于SPAlertControllerStyleActionSheet样式且自定义对话框
+    SPAlertAnimationTypeRaiseUp NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "该枚举值相当于SPAlertAnimationTypeFromBottom"),     // 从底部弹出，一般用于SPAlertControllerStyleActionSheet样式
+    SPAlertAnimationTypeDropDown NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "该枚举值相当于SPAlertAnimationTypeFromTop"),    // 从顶部弹出，一般用于SPAlertControllerStyleActionSheet样式且自定义对话框
 };
 
 typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
@@ -68,6 +68,8 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 
 @end
 
+
+
 @class SPAlertController;
 @protocol SPAlertControllerDelegate <NSObject>
 @optional;
@@ -97,10 +99,14 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 
 /*
- 1.以下4个类方法均用于自定义,除了最后一个参数不一致之外,其余参数均一致;如果最后一个参数传nil,就跟上面那个类方法等效.
- 2.SPAlertControllerStyleAlert样式下对话框的默认宽度恒为屏幕宽-40,高度最大为屏幕高-40,如果想设置对话框的宽度以及修改最大高度,可以通过调整maxMarginForAlert属性来设置,高度上只要没有超出最大高度，会自适应内容.
- 3.SPAlertControllerStyleActionSheet样式下对话框的默认宽度恒为屏幕宽,高度最大为屏幕高,外界无法通过任何属性修改宽度,最大高度可通过maxTopMarginForActionSheet属性来修改,高度上只要没超出最大高度,会自适应内容.
- 4.当自定义以下4个view时,如果宽度小于等于0,或者大于等于对话框的宽度,内部会自动处理为等宽于对话框,除此之外,自定义view的高度在对话框最大高度范围内的情况下:自定义view的大小是多大,显示出来就是多大;从这里也可以看出,如果自定义view时想用对话框的默认宽度,宽度设置为0或者足够大就行了. 稍微要注意的是假如你采用的是自动布局/xib/storyboard,宽度设置为0可能会有约束警告.
+ 以下4个类方法均用于自定义,除了最后一个参数不一致之外,其余参数均一致;如果最后一个参数传nil,就跟上面那个类方法等效.
+ 1.SPAlertControllerStyleAlert样式下非自定义时对话框的默认宽度恒为屏幕宽-40,高度最大为屏幕高-40,如果想设置对话框的宽度以及修改最大高度,可以通过调整maxMarginForAlert属性来设置,高度上只要没有超出最大高度，会自适应内容.自定义时大小取决于自定义view的大小
+ 2.SPAlertControllerStyleActionSheet样式下非自定义时对话框的默认宽度为屏幕宽,高度最大为屏幕高,最大高度可通过maxTopMarginForActionSheet属性来修改,高度上只要没超出最大高度,会自适应内容.自定义时大小取决于自定义view的大小
+ 
+ 关于自定义的view的宽高如何让给定？
+ 1、如果自定义的view本身采用的是自动布局，如果自定义的view的大小是由内部子控件自动撑起，那么SPAlertController内部会获取到这个撑起后的大小去设置，此时自定义的view如果另行设置frame是无效也是无意义的；如果自定义的view的大小不是由子控件撑起，内部会调用layoutIfNeed计算自动布局后的frame, 如果是xib布的局不手动设置frame的话，那么SPAlertController会获取xib中默认的frame
+ 2、如果采用的是非自动布局,那么外界应该对自定义的view手动设置frame
+ 3、如果自定义的view重写了intrinsicContentSize，那么SPAlertController将会用intrinsicContentSize去设置自定义view的大小，也就是intrinsicContentSize优先级最高，无论哪种布局，都会以它为先
  */
 
 // 自定义整个对话框
@@ -151,6 +157,9 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 /** 副标题字体 */
 @property (nonatomic, strong) UIFont *messageFont;
 
+/** action的高度，在添加action之前设置性能会更佳 */
+@property (nonatomic, assign) CGFloat actionHeight;
+
 /** actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;
     注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
  */
@@ -165,7 +174,8 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 /** alert样式下，弹窗的中心y值，为正向下偏移，为负向上偏移 */
 @property (nonatomic, assign) CGFloat offsetYForAlert;
 
-/** alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2.
+
+/** alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2；在添加action之前设置性能会更佳
     由于水平排列的action都是排布在footerView上,所以如果自定义了footerView，该属性将失去效用
  */
 @property (nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert;
