@@ -16,7 +16,6 @@
 #define SPNormalColor [[UIColor whiteColor] colorWithAlphaComponent:0.65]
 #define SPSelectedColor [UIColor colorWithWhite:1 alpha:0.2]
 
-#define SPActionHeight 49.0
 #define SPLineWidth 1.0 / [UIScreen mainScreen].scale
 
 #define isIPhoneX MAX(SPScreenWidth, SPScreenHeight) >= 812
@@ -28,6 +27,9 @@
 static NSString * const FOOTERCELL = @"footerCell";
 
 #pragma mark ---------------------------- SPAlertAction begin --------------------------------
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @interface SPAlertAction()
 
@@ -106,6 +108,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 @interface SPAlertControllerActionCell : UITableViewCell
 @property (nonatomic, strong) SPAlertAction *action;
+@property (nonatomic, assign) CGFloat actionHeight;
 @property (nonatomic, weak) UILabel *titleLabel;
 @property (nonatomic, strong) NSMutableArray *titleLabelConstraints;
 @property (nonatomic, strong) NSMutableArray *lineConstraints;
@@ -117,7 +120,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
 
         if (@available(iOS 11.0, *)) {
-            self.insetsLayoutMarginsFromSafeArea = NO; // iOS11开始引入了安全区域的概念，当弹出模式从顶部弹出时，在安全区域的作用下，弹出来的view会跟屏幕顶端有间距，这里关闭安全区域
+            self.insetsLayoutMarginsFromSafeArea = NO; // iOS11开始引入了安全区域的概念，如果旋转到横屏，cell的内容会被控制在安全区域内，导致侧边缘的颜色与中间区域的颜色有些不一致，因此这里关闭安全区域
         }
         self.backgroundColor = [UIColor clearColor];
         // 取消选中高亮
@@ -144,6 +147,11 @@ static NSString * const FOOTERCELL = @"footerCell";
         [self setNeedsUpdateConstraints];
     }
     return self;
+}
+
+- (void)setActionHeight:(CGFloat)actionHeight {
+    _actionHeight = actionHeight;
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)setAction:(SPAlertAction *)action {
@@ -196,7 +204,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:titleLabel.superview attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"H:|-(>=0)-[titleLabel]-(>=0)-|"] options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleLabel)]];
     [titleLabelConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:[NSString stringWithFormat:@"V:|-0-[titleLabel]"] options:0 metrics:nil views:NSDictionaryOfVariableBindings(titleLabel)]];
-    [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeHeight multiplier:1.0 constant:SPActionHeight]];
+    [titleLabelConstraints addObject:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeHeight multiplier:1.0 constant:_actionHeight]];
 
     [titleLabel.superview addConstraints:titleLabelConstraints];
 
@@ -381,7 +389,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             [self createFooterCellWithAction:action];
             // 当只有_maxNumberOfActionHorizontalArrangementForAlert个action时，不需要tableView，这里没有移除tableView，而是清空数据源，如果直接移除tableView，当大于_maxNumberOfActionHorizontalArrangementForAlert个action时又得加回来
             self.dataSource = nil;
-        } else {
+        } else { // action的个数超过了_maxNumberOfActionHorizontalArrangementForAlert
             if (self.customCenterView) {
                 NSLog(@"当自定义centerView时，SPAlertControllerStyleAlert下，action的个数最多只能是_maxNumberOfActionHorizontalArrangementForAlert个，超过_maxNumberOfActionHorizontalArrangementForAlert个的action将不显示");
                 [array removeObject:action];
@@ -400,6 +408,7 @@ static NSString * const FOOTERCELL = @"footerCell";
                 NSInteger index = [weakSelf.cancelActions indexOfObject:action];
                 // 注意这个cell是与tableView没有任何瓜葛的
                 SPAlertControllerActionCell *footerCell = [weakSelf.footerCells objectAtIndex:index];
+                footerCell.actionHeight = self.actionHeight;
                 footerCell.action = action;
             } else {
                 // 刷新tableView
@@ -409,6 +418,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             if (weakSelf.actions.count <= maxNumberOfActionHorizontalArrangementForAlert) {
                 NSInteger index = [weakSelf.actions indexOfObject:action];
                 SPAlertControllerActionCell *footerCell = weakSelf.footerCells[index];
+                footerCell.actionHeight = self.actionHeight;
                 footerCell.action = action;
             } else {
                 [weakSelf.actionTableView reloadData];
@@ -462,6 +472,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     SPAlertControllerActionCell *cell = [tableView dequeueReusableCellWithIdentifier:NSStringFromClass([SPAlertControllerActionCell class]) forIndexPath:indexPath];
+    cell.actionHeight = self.actionHeight;
     SPAlertAction *action = self.dataSource[indexPath.row];
     cell.action = action;
     return cell;
@@ -472,25 +483,22 @@ static NSString * const FOOTERCELL = @"footerCell";
         if (!self.cancelActions.count && self.preferredStyle == SPAlertControllerStyleActionSheet) {
             if (self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
                 if (indexPath.row == self.dataSource.count-1) {
-                    return SPActionHeight+SPExtraHeight;
+                    return _actionHeight+SPExtraHeight;
                 }
             }
         }
     }
-    return SPActionHeight;
+    return _actionHeight;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     // 设置cell分割线整宽
-    // Remove seperator inset
     if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
         [cell setSeparatorInset:UIEdgeInsetsZero];
     }
-    // Prevent the cell from inheriting the Table View's margin settings
     if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
         [cell setPreservesSuperviewLayoutMargins:NO];
     }
-    // Explictly set your cell's layout margins
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
         [cell setLayoutMargins:UIEdgeInsetsZero];
     }
@@ -533,6 +541,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         }
         self.animationType = animationType;
         
+        _actionHeight = 49.0;
         // 添加子控件
         [self setupViewsWithCustomView:customView customHeaderView:customHeaderView customCenterView:customCenterView customFooterView:customFooterView];
         
@@ -541,7 +550,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         self.tapBackgroundViewDismiss = YES;
         self.cornerRadiusForAlert = 5.0;
         self.maxMarginForAlert = 20.0;
-        self.maxNumberOfActionHorizontalArrangementForAlert = 2;
+        _maxNumberOfActionHorizontalArrangementForAlert = 2;
         if (animationType == SPAlertAnimationTypeRaiseUp || animationType == SPAlertAnimationTypeFromBottom) {
             self.maxTopMarginForActionSheet = isIPhoneX ? 44 : 20;
         } else {
@@ -733,6 +742,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     [footerCell.contentView removeFromSuperview]; // 移除后contentView仍然存在，还要将其置为nil，由于是只读的，故用KVC访问
     // 利用KVC去掉cell的contentView,如果不去掉，控制台会打印警告，意思是说contentView的高度不该为0，应该给一个合适的高度
     [footerCell setValue:nil forKey:@"_contentView"];
+    footerCell.actionHeight = self.actionHeight;
     footerCell.action = action;
     [self.footerBezelView addSubview:footerCell];
     [self.footerCells addObject:footerCell];
@@ -867,8 +877,8 @@ static NSString * const FOOTERCELL = @"footerCell";
     [headerBezelViewConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[headerBezelView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(headerBezelView)]];
     [headerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerBezelView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:headerActionLine attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
     [headerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerBezelView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:alertView attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
-    // headerBezelView的高度最大为SPScreenHeight-SPActionHeight
-    [headerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPScreenHeight-SPActionHeight]];
+    // headerBezelView的高度最大为SPScreenHeight-_actionHeight
+    [headerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:headerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPScreenHeight-_actionHeight]];
     // 暂时先初始化headerView的高度约束
     NSLayoutConstraint *headerBezelViewContsraintHeight = [NSLayoutConstraint constraintWithItem:headerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:0];
     /// 设置优先级
@@ -1119,15 +1129,15 @@ static NSString * const FOOTERCELL = @"footerCell";
     if ((self.preferredStyle == SPAlertControllerStyleActionSheet && self.cancelActions.count) || (self.preferredStyle == SPAlertControllerStyleAlert && (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) && self.actions.count)) { // 需要footerBezelView
         if (self.preferredStyle == SPAlertControllerStyleAlert) { // alert样式
             if (!self.customFooterView) { // 不是自定义的footerView
-                [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPActionHeight]];
+                [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:_actionHeight]];
             } else { // 是自定义的footerView
                 [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:_customFooterViewSize.height]];
             }
         } else { // actionSheet样式
             if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
-                [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPActionHeight*self.cancelActions.count+SPExtraHeight]];
+                [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:_actionHeight*self.cancelActions.count+SPExtraHeight]];
             } else {
-                [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:SPActionHeight*self.cancelActions.count]];
+                [footerBezelViewConstraints addObject:[NSLayoutConstraint constraintWithItem:footerBezelView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:_actionHeight*self.cancelActions.count]];
             }
         }
     } else { // 不需要footerView
@@ -1258,15 +1268,15 @@ static NSString * const FOOTERCELL = @"footerCell";
             if (self.cancelActions.count) { // 有取消按钮肯定没有自定义footerView
                 if (self.actions.count > 1) {
                     if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
-                        actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin+SPExtraHeight;
+                        actionBezelHeight = self.actions.count*_actionHeight+footerTopMargin+SPExtraHeight;
                     } else {
-                        actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin;
+                        actionBezelHeight = self.actions.count*_actionHeight+footerTopMargin;
                     }
                 } else {
                     if (self.customCenterView) { // 当有自定义的customCenterView时，最多只会有1个action，在addAction:方法里做了处理
-                        actionBezelHeight = SPActionHeight+footerTopMargin+_customCenterViewSize.height;
+                        actionBezelHeight = _actionHeight+footerTopMargin+_customCenterViewSize.height;
                     } else {
-                        actionBezelHeight = SPActionHeight+footerTopMargin;
+                        actionBezelHeight = _actionHeight+footerTopMargin;
                     }
                 }
             } else {
@@ -1274,12 +1284,12 @@ static NSString * const FOOTERCELL = @"footerCell";
                     actionBezelHeight = _customCenterViewSize.height;
                 } else {
                     if (self.customFooterView) {
-                        actionBezelHeight = self.actions.count*SPActionHeight+_customFooterViewSize.height;
+                        actionBezelHeight = self.actions.count*_actionHeight+_customFooterViewSize.height;
                     } else {
                         if (isIPhoneX && self.animationType != SPAlertAnimationTypeDropDown && self.animationType != SPAlertAnimationTypeFromTop) {
-                            actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin+SPExtraHeight;
+                            actionBezelHeight = self.actions.count*_actionHeight+footerTopMargin+SPExtraHeight;
                         } else {
-                            actionBezelHeight = self.actions.count*SPActionHeight+footerTopMargin;
+                            actionBezelHeight = self.actions.count*_actionHeight+footerTopMargin;
                         }
                     }
                 }
@@ -1288,18 +1298,18 @@ static NSString * const FOOTERCELL = @"footerCell";
             if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
                 if (!self.customCenterView) { // 当没有自定义的customCenterView时，最多只会有_maxNumberOfActionHorizontalArrangementForAlert个action，在addAction:方法里做了处理
                     if (self.customFooterView) {
-                        actionBezelHeight = _customFooterViewSize.height + SPActionHeight;
+                        actionBezelHeight = _customFooterViewSize.height + _actionHeight;
                     } else {
-                        actionBezelHeight = SPActionHeight;
+                        actionBezelHeight = _actionHeight;
                     }
                 } else { // _maxNumberOfActionHorizontalArrangementForAlert个以上action且customCenterView有值
-                    actionBezelHeight = _customCenterViewSize.height + SPActionHeight;
+                    actionBezelHeight = _customCenterViewSize.height + _actionHeight;
                 }
             } else {
                 if (self.customFooterView) {
-                    actionBezelHeight = _customFooterViewSize.height+self.actions.count*SPActionHeight;
+                    actionBezelHeight = _customFooterViewSize.height+self.actions.count*_actionHeight;
                 } else {
-                    actionBezelHeight = self.actions.count*SPActionHeight;
+                    actionBezelHeight = self.actions.count*_actionHeight;
                 }
             }
         }
@@ -1320,24 +1330,24 @@ static NSString * const FOOTERCELL = @"footerCell";
     if (self.cancelActions.count) {
         if ((self.actions.count-self.cancelActions.count) > 3) { // 有取消按钮且其余按钮个数在3个或3个以上
             // 让其余按钮至少显示2个半
-            minActionHeight = self.cancelActions.count*SPActionHeight+2.5*SPActionHeight+footerTopMargin;
+            minActionHeight = self.cancelActions.count*_actionHeight+2.5*_actionHeight+footerTopMargin;
         } else {
-            minActionHeight = self.actions.count * SPActionHeight + footerTopMargin;
+            minActionHeight = self.actions.count * _actionHeight + footerTopMargin;
         }
     } else {
         if (self.actions.count > 3) { // 没有取消按钮，其余按钮在3个或3个以上
             if (self.actions.count <= _maxNumberOfActionHorizontalArrangementForAlert) {
                 minActionHeight = minActionHeight;
             } else {
-                minActionHeight = 3.5 * SPActionHeight;
+                minActionHeight = 3.5 * _actionHeight;
             }
         } else {
             if (self.preferredStyle == SPAlertControllerStyleAlert) {
                 if (self.actions.count) {
-                    minActionHeight = SPActionHeight;
+                    minActionHeight = _actionHeight;
                 }
             } else {
-                minActionHeight = self.actions.count * SPActionHeight;
+                minActionHeight = self.actions.count * _actionHeight;
             }
         }
     }
@@ -1405,6 +1415,14 @@ static NSString * const FOOTERCELL = @"footerCell";
     self.detailTitleLabel.font = messageFont;
 }
 
+- (void)setActionHeight:(CGFloat)actionHeight {
+    _actionHeight = actionHeight;
+    if (!self.actions.count) return; // 如果是在添加action之前就设置好了actionHeight,则不需要重新布局
+    // 调用maxNumberOfActionHorizontalArrangementForAlert的setter方法，移除所有action，重新添加，这样可以保证设置actionHeight跟添加action的顺序无关
+    self.maxNumberOfActionHorizontalArrangementForAlert = self.maxNumberOfActionHorizontalArrangementForAlert;
+    [self layoutViewConstraints];
+}
+
 - (void)setNeedDialogBlur:(BOOL)needDialogBlur {
     _needDialogBlur = needDialogBlur;
     if (!needDialogBlur) {
@@ -1416,6 +1434,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             self.alertView.backgroundColor = [UIColor clearColor];
         }
     } else {
+        self.alertView.backgroundColor = [UIColor clearColor];
         UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
         UIVisualEffectView *alertEffectView = [[UIVisualEffectView alloc] initWithEffect:blur];
         alertEffectView.layer.masksToBounds = YES;
@@ -1423,7 +1442,6 @@ static NSString * const FOOTERCELL = @"footerCell";
         alertEffectView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         [self.alertView insertSubview:alertEffectView atIndex:0];
         _alertEffectView = alertEffectView;
-        
     }
 }
 
@@ -1482,6 +1500,23 @@ static NSString * const FOOTERCELL = @"footerCell";
     _maxNumberOfActionHorizontalArrangementForAlert = maxNumberOfActionHorizontalArrangementForAlert;
     if (self.customFooterView) {
         _maxNumberOfActionHorizontalArrangementForAlert = -1;
+    }
+    if (!self.actions.count) {return;} // 说明是在添加action之前就设置的maxNumberOfActionHorizontalArrangementForAlert属性
+    for (UIView *subView in self.footerBezelView.subviews) {
+        if ([subView isKindOfClass:[SPAlertControllerActionCell class]]) {
+            [subView removeFromSuperview];
+        }
+    }
+    [self.footerCells removeAllObjects];
+    [self.footerLines removeAllObjects];
+    NSMutableArray *array = [self.actions mutableCopy]; // 保存一份
+    NSMutableArray *arr1 = [self.actions mutableCopy]; // 目的是清空self.actions
+    [arr1 removeAllObjects];
+    self.actions = arr1;
+    [self.cancelActions removeAllObjects];
+
+    for (SPAlertAction *action in array) {
+        [self addAction:action];
     }
 }
 
@@ -2456,6 +2491,7 @@ static NSString * const FOOTERCELL = @"footerCell";
 }
 
 @end
+#pragma clang diagnostic pop
 
 #pragma mark ---------------------------- SPAlertAnimation end --------------------------------
 
