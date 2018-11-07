@@ -733,7 +733,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         
         UIView *footerView = [[UIView alloc] init];
         footerView.frame = footerBezelView.bounds;
-        footerBezelView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         footerView.backgroundColor = SPNormalColor;
         [footerBezelView addSubview:footerView];
         _footerView = footerView;
@@ -1874,7 +1874,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
     
     // 获取屏幕快照,afterUpdates参数表示是否在所有效果应用在视图上了以后再获取快照，一般地，弹出对话框时屏幕通常都会渲染完毕
-    self.snapshotView = [self.presentingViewController.view snapshotViewAfterScreenUpdates:NO];
+    self.snapshotView = [[UIScreen mainScreen] snapshotViewAfterScreenUpdates:NO];
     self.snapshotView.translatesAutoresizingMaskIntoConstraints = NO;
     // 添加毛玻璃
     _alertEffectView.frame = self.snapshotView.bounds;
