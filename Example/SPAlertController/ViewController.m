@@ -217,6 +217,7 @@
     [alertController addAction:action3];
     
     [self presentViewController:alertController animated:YES completion:nil];
+    
 }
 
 // 示例8:alert从小大变小动画
