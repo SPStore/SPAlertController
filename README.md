@@ -3,6 +3,7 @@
 [![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
 [![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
 [![Pod Platform](http://img.shields.io/cocoapods/p/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
+![Language](https://img.shields.io/badge/language-Object--C-ff69b4.svg)
 [![Pod License](http://img.shields.io/cocoapods/l/SPAlertController.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SPStore/SPAlertController)
 # 目录
@@ -11,6 +12,24 @@
 * [效果图](#效果图) 
 
 ## 如何导入
+##### 版本2.5.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.0'
+end
+
+此版本在2.2.1版本的基础上主要改动有：
+1、毛玻璃思路另辟蹊径，毛玻璃效果不会受到背景遮罩的影响，同时背景遮罩不再被镂空
+2、增加动画枚举，可以从左右弹出
+3、自定义view时的背景色改为透明色
+4、增加actionHeight属性，修复maxNumberOfActionHorizontalArrangementForAlert属性
+5、去除了中间tableView的最后一条分割线
+6、修改了分割线的颜色，更加接近微信原生
+7、修复centerView上有textView/textField，旋转屏幕后不可见问题
+8、优化代码
+
+```
 ##### 版本2.1.1
 ```
 platform:ios,'8.0'
