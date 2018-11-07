@@ -43,6 +43,7 @@
 - (void)actionSheetTest1 {
     // actionSheet中，SPAlertAnimationTypeDefault 等价于 SPAlertAnimationTypeRaiseUp
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
+    //alertController.needDialogBlur = NO;
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了Default ");
     }];
@@ -60,20 +61,6 @@
 
     [self presentViewController:alertController animated:YES completion:nil];
     
-//    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"大啊" message:@"xioxiaoxiao" preferredStyle:UIAlertControllerStyleActionSheet];
-//    UIAlertAction *action0 = [UIAlertAction actionWithTitle:@"Default" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//        
-//    }];
-//    UIAlertAction *action1 = [UIAlertAction actionWithTitle:@"Destructive" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-//        
-//    }];
-//    UIAlertAction *action2 = [UIAlertAction actionWithTitle:@"canCel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-//        
-//    }];
-//    [alertController addAction:action0];
-//    [alertController addAction:action1];
-//    [alertController addAction:action2];
-//    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 // 示例2:actionSheet从顶部弹出
@@ -119,7 +106,6 @@
 // 示例4:actionSheet有多个取消按钮,取消样式的按钮显示全部在底部显示,最多只能显示5个取消样式的按钮,超过强制崩溃
 - (void)actionSheetTest4 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
-    
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了第1个");
     }];
@@ -474,9 +460,7 @@
     action2.titleColor = [UIColor redColor];
     [alertController addAction:action1];
     [alertController addAction:action2];
-    
-    alertController.actionHeight = 100;
-    
+        
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -748,7 +732,7 @@
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
     self.titles = @[@"ActionSheet样式",@"Alert样式",@"自定义视图",@"特殊情况",@"毛玻璃"];
-    self.dataSource = @[@[@"actionSheet样式 默认动画(从底部弹出)",@"actionSheet样式从顶部弹出",@"actionSheet样式 没有取消样式按钮",@"actionSheet样式 有多个取消样式按钮",@"actionSheet样式 无标题"],@[@"alert样式 默认动画(alpha渐变)",@"alert样式 从小变大动画",@"alert样式 从大变小动画",@"alert样式 没有按钮",@"alert样式 有一个按钮",@"alert样式 垂直排列2个按钮",@"alert样式 水平排列2个以上的按钮",@"alert样式 无标题",@"alert样式 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(右)）",@"自定义整个对话框(actionSheet样式(左)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"背景黑色带透明样式(默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
+    self.dataSource = @[@[@"actionSheet样式 默认动画(从底部弹出)",@"actionSheet样式从顶部弹出",@"actionSheet样式 没有取消样式按钮",@"actionSheet样式 有多个取消样式按钮",@"actionSheet样式 无标题"],@[@"alert样式 默认动画(alpha渐变)",@"alert样式 从小变大动画",@"alert样式 从大变小动画",@"alert样式 没有按钮",@"alert样式 有一个按钮",@"alert样式 垂直排列2个按钮",@"alert样式 水平排列2个以上的按钮",@"alert样式 无标题",@"alert样式 含有文本输入框"],@[@"自定义整个对话框(alert样式)",@"自定义整个对话框(actionSheet样式(底)）",@"自定义整个对话框(actionSheet样式(右)）",@"自定义整个对话框(actionSheet样式(左)）",@"自定义整个对话框(actionSheet样式(顶))",@"自定义headerView",@"自定义centerView",@"自定义footerView"],@[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多"],@[@"去除对话框的毛玻璃",@"透明黑色背景样式(背景无毛玻璃,默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"]];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {

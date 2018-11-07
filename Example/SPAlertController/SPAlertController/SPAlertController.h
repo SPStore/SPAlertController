@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
 };
 
 typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
-    SPBackgroundViewAppearanceStyleTranslucent = 0,  // 无毛玻璃效果,黑色带透明(默认是0.5透明)
+    SPBackgroundViewAppearanceStyleTranslucent = 0,  // 无毛玻璃效果,黑色透明(默认是0.5透明)
     SPBackgroundViewAppearanceStyleBlurDark,
     SPBackgroundViewAppearanceStyleBlurExtraLight,
     SPBackgroundViewAppearanceStyleBlurLight,
