@@ -19,6 +19,15 @@ target 'MyApp' do
   pod 'SPAlertController', '~> 2.5.0'
 end
 
+此版本修改了action的选中效果，以及解决iOS11之后，按钮处于最底部时长按touchDown事件的延时现象
+```
+##### 版本2.5.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.0'
+end
+
 此版本在2.2.1版本的基础上主要改动有：
 1、毛玻璃思路另辟蹊径，毛玻璃效果不会受到背景遮罩的影响，同时背景遮罩不再被镂空
 2、增加动画枚举，可以从左右弹出
