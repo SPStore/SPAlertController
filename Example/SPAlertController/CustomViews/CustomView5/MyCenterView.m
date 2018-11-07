@@ -10,7 +10,6 @@
 
 @interface MyCenterView() <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) UITextView *textView;
 
 @end
 
@@ -31,11 +30,7 @@
 }
 
 - (void)initialize {
-//    [self addSubview:self.tableView];
-    
-    UITextView *textView = [[UITextView alloc] init];
-    [self addSubview:textView];
-    _textView = textView;
+    [self addSubview:self.tableView];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -67,7 +62,6 @@
 - (void)layoutSubviews {
     [super layoutSubviews];
     self.tableView.frame = self.bounds;
-    self.textView.frame = self.bounds;
 }
 
 

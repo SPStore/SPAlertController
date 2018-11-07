@@ -763,6 +763,9 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 // 值得注意的是，如果按钮的位置位于控制器view的最底部，它的touchDown点击事件当长按时会有所延迟，重写这个方法可以解决这个问题。
 - (UIRectEdge)preferredScreenEdgesDeferringSystemGestures {
+    if (isIPhoneX) {
+        return UIRectEdgeNone;
+    }
     return UIRectEdgeBottom;
 }
 
