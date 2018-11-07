@@ -124,7 +124,9 @@ static NSString * const FOOTERCELL = @"footerCell";
         }
         self.backgroundColor = [UIColor clearColor];
         // 取消选中高亮
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
+        UIView *selectedBackgroundView = [UIView new];
+        selectedBackgroundView.backgroundColor = SPSelectedColor;
+        self.selectedBackgroundView = selectedBackgroundView;
         
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -167,24 +169,6 @@ static NSString * const FOOTERCELL = @"footerCell";
     self.userInteractionEnabled = action.enabled;
     [self setNeedsUpdateConstraints];
 }
-
-// 默认走带动画的setHighlighted
-- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
-    [super setHighlighted:highlighted animated:animated];
-    if (highlighted) {
-        // 高亮时设置contentView的白色0.2透明，如果用默认选中cell的样式或者直接设置self.selectedBackgroundView的颜色，则当cell高亮时分割线会跟着一起高亮， 分割线会看不见，所以只能对conntentView设置高亮，因为当有分割线存在时，contentView与cell之间上下是有间距的
-        self.contentView.backgroundColor = SPSelectedColor;
-    } else {
-        // 手指抬起时会来到这里
-        self.backgroundColor = [UIColor clearColor];
-        if (![self.reuseIdentifier isEqualToString:FOOTERCELL]) {
-            self.contentView.backgroundColor = SPNormalColor;
-        } else {
-            self.contentView.backgroundColor = [UIColor whiteColor];
-        }
-    }
-}
-
 
 - (void)updateConstraints {
     [super updateConstraints];
@@ -734,7 +718,7 @@ static NSString * const FOOTERCELL = @"footerCell";
         UIView *footerView = [[UIView alloc] init];
         footerView.frame = footerBezelView.bounds;
         footerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        footerView.backgroundColor = SPNormalColor;
+        footerView.backgroundColor = [UIColor clearColor];
         [footerBezelView addSubview:footerView];
         _footerView = footerView;
         
