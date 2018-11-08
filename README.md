@@ -12,6 +12,15 @@
 * [效果图](#效果图) 
 
 ## 如何导入
+##### 版本2.5.1
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.1'
+end
+
+此版本修改了action的选中效果，以及解决iOS11之后，按钮处于最底部时长按touchDown事件的延时现象
+```
 ##### 版本2.5.0
 ```
 platform:ios,'8.0'
