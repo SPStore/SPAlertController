@@ -393,7 +393,7 @@ static NSString * const FOOTERCELL = @"footerCell";
                 NSInteger index = [weakSelf.cancelActions indexOfObject:action];
                 // 注意这个cell是与tableView没有任何瓜葛的
                 SPAlertControllerActionCell *footerCell = [weakSelf.footerCells objectAtIndex:index];
-                footerCell.actionHeight = self.actionHeight;
+                footerCell.actionHeight = weakSelf.actionHeight;
                 footerCell.action = action;
             } else {
                 // 刷新tableView
@@ -403,7 +403,7 @@ static NSString * const FOOTERCELL = @"footerCell";
             if (weakSelf.actions.count <= maxNumberOfActionHorizontalArrangementForAlert) {
                 NSInteger index = [weakSelf.actions indexOfObject:action];
                 SPAlertControllerActionCell *footerCell = weakSelf.footerCells[index];
-                footerCell.actionHeight = self.actionHeight;
+                footerCell.actionHeight = weakSelf.actionHeight;
                 footerCell.action = action;
             } else {
                 [weakSelf.actionTableView reloadData];
