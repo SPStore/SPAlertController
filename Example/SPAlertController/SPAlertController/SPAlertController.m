@@ -1707,6 +1707,9 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    for(UIGestureRecognizer* gesture in self.view.window.gestureRecognizers){
+        gesture.delaysTouchesBegan = YES;
+    }
     if ([self.delegate respondsToSelector:@selector(sp_alertControllerWillHide:)]) {
         [self.delegate sp_alertControllerWillHide:self];
     }
@@ -1714,9 +1717,6 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    for(UIGestureRecognizer* gesture in self.view.window.gestureRecognizers){
-        gesture.delaysTouchesBegan = YES;
-    }
     if ([self.delegate respondsToSelector:@selector(sp_alertControllerDidHide:)]) {
         [self.delegate sp_alertControllerDidHide:self];
     }
