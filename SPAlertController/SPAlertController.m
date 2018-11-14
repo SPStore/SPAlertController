@@ -749,7 +749,7 @@ static NSString * const FOOTERCELL = @"footerCell";
     button.backgroundColor = [UIColor clearColor];
     [button addTarget:self action:@selector(clickedFooterCell:) forControlEvents:UIControlEventTouchUpInside];
     [button addTarget:self action:@selector(touchDownFooterCell:) forControlEvents:UIControlEventTouchDown | UIControlEventTouchDragInside];
-    [button addTarget:self action:@selector(touchDragExitFooterCell:) forControlEvents:UIControlEventTouchDragExit | UIControlEventTouchUpOutside];
+    [button addTarget:self action:@selector(touchDragExitFooterCell:) forControlEvents:UIControlEventTouchDragExit | UIControlEventTouchUpOutside | UIControlEventTouchCancel];
     [footerCell addSubview:button];
     
     if (self.actions.count > 1) {
@@ -759,14 +759,6 @@ static NSString * const FOOTERCELL = @"footerCell";
         [self.footerBezelView addSubview:line];
         [self.footerLines addObject:line];
     }
-}
-
-// 值得注意的是，如果按钮的位置位于控制器view的最底部，它的touchDown点击事件当长按时会有所延迟，重写这个方法可以解决这个问题。
-- (UIRectEdge)preferredScreenEdgesDeferringSystemGestures {
-    if (isIPhoneX) {
-        return UIRectEdgeNone;
-    }
-    return UIRectEdgeBottom;
 }
 
 #pragma mark - 点击取消样式的action的方法
@@ -1705,6 +1697,9 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    for (UIGestureRecognizer *gesture in self.view.window.gestureRecognizers) {
+        gesture.delaysTouchesBegan = NO; // 解决TouchDown事件延迟
+    }
     if ([self.delegate respondsToSelector:@selector(sp_alertControllerDidShow:)]) {
         [self.delegate sp_alertControllerDidShow:self];
     }
@@ -1719,6 +1714,9 @@ static NSString * const FOOTERCELL = @"footerCell";
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    for(UIGestureRecognizer* gesture in self.view.window.gestureRecognizers){
+        gesture.delaysTouchesBegan = YES;
+    }
     if ([self.delegate respondsToSelector:@selector(sp_alertControllerDidHide:)]) {
         [self.delegate sp_alertControllerDidHide:self];
     }
