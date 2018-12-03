@@ -1,4 +1,6 @@
 
+# 本框架即将采用iOS9.0推出的UIStackView实现，实现原理将重新设计，敬请期待...
+
 # SPAlertController
 [![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
 [![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
