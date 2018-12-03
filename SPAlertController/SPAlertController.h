@@ -11,8 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
-    SPAlertControllerStyleActionSheet = 0, // 从四周的某一侧弹出(顶/左/底/右),具体从哪侧弹出取决于动画类型
-    SPAlertControllerStyleAlert,           // 从中间弹出
+    SPAlertControllerStyleActionSheet = 0, // 弹出后处于屏幕四周的某一侧(顶/左/底/右),具体在哪一侧取决于动画类型
+    SPAlertControllerStyleAlert,           // 弹出后处于屏幕中心位置
 };
 
 typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
