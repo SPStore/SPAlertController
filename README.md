@@ -12,6 +12,15 @@
 * [效果图](#效果图) 
 
 ## 如何导入
+##### 版本2.5.2
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.2'
+end
+
+按钮处于最底部时长按touchDown事件的延时现象采用新方式解决，另外修复了内存泄露问题
+```
 ##### 版本2.5.1
 ```
 platform:ios,'8.0'
