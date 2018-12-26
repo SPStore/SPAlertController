@@ -1,5 +1,5 @@
 
-## 3.0版本已经重构完毕，实现原理有了非常大的变化，效果和微信原生基本0误差，将在2019年初上传，请大家耐心等待...
+# 3.0版本已经重构完毕，这次的变化，一定超越你的想象, 效果和微信原生基本0误差，将在2019年初上传，请大家耐心等待...
 # SPAlertController
 [![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
 [![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
