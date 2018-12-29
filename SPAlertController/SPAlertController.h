@@ -11,27 +11,30 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
-    SPAlertControllerStyleActionSheet = 0, // 弹出后处于屏幕四周的某一侧(顶/左/底/右),具体在哪一侧取决于动画类型
-    SPAlertControllerStyleAlert,           // 弹出后处于屏幕中心位置
+    SPAlertControllerStyleActionSheet = 0, // 从四周的某一侧弹出(顶/左/底/右),从哪边弹出,就往哪边对齐
+    SPAlertControllerStyleAlert,           // 从中间弹出
 };
 
 typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
-    SPAlertAnimationTypeDefault = 0, // 默认动画，如果是SPAlertControllerStyleActionSheet样式,默认动画等效于SPAlertAnimationTypeFromBottom，如果是SPAlertControllerStyleAlert样式,默认动画等效于SPAlertAnimationTypeAlpha
-    SPAlertAnimationTypeFromBottom,  // 从底部弹出，常用于SPAlertControllerStyleActionSheet样式
-    SPAlertAnimationTypeFromTop,     // 从顶部弹出，常用于SPAlertControllerStyleActionSheet样式且自定义对话框
-    SPAlertAnimationTypeFromRight,   // 从右边弹出，常用于SPAlertControllerStyleActionSheet样式且自定义对话框
-    SPAlertAnimationTypeFromLeft,    // 从左边弹出，常用于SPAlertControllerStyleActionSheet样式且自定义对话框
-    SPAlertAnimationTypeAlpha,       // 透明度从0到1，常用于SPAlertControllerStyleAlert样式
-    SPAlertAnimationTypeExpand,      // 发散动画，常用于SPAlertControllerStyleAlert样式
-    SPAlertAnimationTypeShrink,      // 收缩动画，常用于SPAlertControllerStyleAlert样式
+    SPAlertAnimationTypeDefault = 0, // 默认动画，如果是SPAlertControllerStyleActionSheet样式,默认动画等效于SPAlertAnimationTypeFromBottom，如果是SPAlertControllerStyleAlert样式,默认动画等效于SPAlertAnimationTypeShrink
+    SPAlertAnimationTypeFromBottom,  // 从底部弹出
+    SPAlertAnimationTypeFromTop,     // 从顶部弹出
+    SPAlertAnimationTypeFromRight,   // 从右边弹出
+    SPAlertAnimationTypeFromLeft,    // 从左边弹出
     
-    SPAlertAnimationTypeRaiseUp NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "该枚举值相当于SPAlertAnimationTypeFromBottom"),     // 从底部弹出，一般用于SPAlertControllerStyleActionSheet样式
-    SPAlertAnimationTypeDropDown NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "该枚举值相当于SPAlertAnimationTypeFromTop"),    // 从顶部弹出，一般用于SPAlertControllerStyleActionSheet样式且自定义对话框
+    SPAlertAnimationTypeShrink,      // 收缩动画
+    SPAlertAnimationTypeExpand,      // 发散动画
+    SPAlertAnimationTypeFade,        // 渐变动画
+
+    SPAlertAnimationTypeNone,        // 无动画
+    SPAlertAnimationTypeAlpha NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFad instead"), // 渐变动画
+    SPAlertAnimationTypeRaiseUp NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFromBottom instead"), // 从底部弹出
+    SPAlertAnimationTypeDropDown NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFromTop instead"), // 从顶部弹出
 };
 
 typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
     SPAlertActionStyleDefault = 0,  // 默认样式
-    SPAlertActionStyleCancel,       // 取消样式
+    SPAlertActionStyleCancel,       // 取消样式,字体加粗
     SPAlertActionStyleDestructive   // 红色字体样式
 };
 
@@ -42,8 +45,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
     SPBackgroundViewAppearanceStyleBlurLight,
 };
 
-
-// ================================ action类 ================================
+// ===================================================== SPAlertAction =====================================================
 
 @interface SPAlertAction : NSObject <NSCopying>
 /**
@@ -55,155 +57,173 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
  */
 + (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
 
-/* action的标题 */
-@property (nullable, nonatomic, readonly) NSString *title;
-/* 样式 */
-@property (nonatomic, readonly) SPAlertActionStyle style;
-/* 是否能点击,默认为YES,当为NO时，action的文字颜色为浅灰色，字体17号，且无法修改 */
-@property (nonatomic, getter=isEnabled) BOOL enabled;
-/* action的标题颜色 */
-@property (nonatomic, strong) UIColor *titleColor;
-/* action的标题字体 */
-@property (nonatomic, strong) UIFont *titleFont;
+/** action的标题 */
+@property(nullable, nonatomic, copy) NSString *title;
+/** action的富文本标题 */
+@property(nullable, nonatomic, copy) NSAttributedString *attributedTitle;
+/** action的图标，位于title的左边 */
+@property(nullable, nonatomic, copy) UIImage *image;
+/** title跟image之间的间距 */
+@property (nonatomic, assign) CGFloat imageTitleSpacing;
+/** 样式 */
+@property(nonatomic, readonly) SPAlertActionStyle style;
+/** 是否能点击,默认为YES */
+@property(nonatomic, getter=isEnabled) BOOL enabled;
+/** action的标题颜色,这个颜色只是普通文本的颜色，富文本颜色需要用NSForegroundColorAttributeName */
+@property(nonatomic, strong) UIColor *titleColor;
+/** action的标题字体,如果文字太长显示不全，会自动改变字体自适应按钮宽度，最多压缩文字为原来的0.5倍封顶 */
+@property(nonatomic, strong) UIFont *titleFont;
+/** action的标题的内边距，如果在不改变字体的情况下想增大action的高度，可以设置该属性的top和bottom值,默认UIEdgeInsetsMake(0, 15, 0, 15) */
+@property(nonatomic, assign) UIEdgeInsets titleEdgeInsets;
 
 @end
 
+// ===================================================== SPAlertController =====================================================
 
-
-@class SPAlertController;
-@protocol SPAlertControllerDelegate <NSObject>
-@optional;
-// 将要出现
-- (void)sp_alertControllerWillShow:(SPAlertController *)alertController;
-// 已经出现
-- (void)sp_alertControllerDidShow:(SPAlertController *)alertController;
-// 将要隐藏
-- (void)sp_alertControllerWillHide:(SPAlertController *)alertController;
-// 已经隐藏
-- (void)sp_alertControllerDidHide:(SPAlertController *)alertController;
-
-@end
-
-// ================================ 控制器类 ================================
-
+@protocol SPAlertControllerDelegate;
 @interface SPAlertController : UIViewController
 
-/**
- *  创建控制器
- *
- *  @param title    大标题
- *  @param message  副标题
- *  @param preferredStyle  样式
- *  @param animationType   动画类型
- */
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle;
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType; // animationType传SPAlertAnimationTypeDefault则跟第一个类方法等效
 
-/*
- 以下4个类方法均用于自定义,除了最后一个参数不一致之外,其余参数均一致;如果最后一个参数传nil,就跟上面那个类方法等效.
- 1.SPAlertControllerStyleAlert样式下非自定义时对话框的默认宽度恒为屏幕宽-40,高度最大为屏幕高-40,如果想设置对话框的宽度以及修改最大高度,可以通过调整maxMarginForAlert属性来设置,高度上只要没有超出最大高度，会自适应内容.自定义时大小取决于自定义view的大小
- 2.SPAlertControllerStyleActionSheet样式下非自定义时对话框的默认宽度为屏幕宽,高度最大为屏幕高,最大高度可通过maxTopMarginForActionSheet属性来修改,高度上只要没超出最大高度,会自适应内容.自定义时大小取决于自定义view的大小
- 
- 关于自定义的view的宽高如何让给定？
- 1、如果自定义的view本身采用的是自动布局，如果自定义的view的大小是由内部子控件自动撑起，那么SPAlertController内部会获取到这个撑起后的大小去设置，此时自定义的view如果另行设置frame是无效也是无意义的；如果自定义的view的大小不是由子控件撑起，内部会调用layoutIfNeed计算自动布局后的frame, 如果是xib布的局不手动设置frame的话，那么SPAlertController会获取xib中默认的frame
- 2、如果采用的是非自动布局,那么外界应该对自定义的view手动设置frame
- 3、如果自定义的view重写了intrinsicContentSize，那么SPAlertController将会用intrinsicContentSize去设置自定义view的大小，也就是intrinsicContentSize优先级最高，无论哪种布局，都会以它为先
- */
-
-// 自定义整个对话框
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView;
-
-// 自定义headerView
-+ (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customHeaderView:(nullable UIView *)customHeaderView;
-
-// 自定义centerView
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView;
-
-// 自定义footerView
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customFooterView:(nullable UIView *)customFooterView;
-
-/**
- *  添加action
- */
 - (void)addAction:(SPAlertAction *)action;
-
-/** action数组 */
 @property (nonatomic, readonly) NSArray<SPAlertAction *> *actions;
 
-/**
- *  添加文本输入框
- *
- * 一旦添加后就会回调一次(仅回调一次,因此可以在这个block块里面自由定制textFiled,如设置textField的属性,设置代理,添加addTarget,监听通知等); 只有present后,textField才有superView
+/* 添加文本输入框
+ * 一旦添加后就会回调一次(仅回调一次,因此可以在这个block块里面自由定制textFiled,如设置textField的属性,设置代理,添加addTarget,监听通知等);
  */
 - (void)addTextFieldWithConfigurationHandler:(void (^ __nullable)(UITextField *textField))configurationHandler;
+@property(nullable, nonatomic, readonly) NSArray<UITextField *> *textFields;
 
-/** textField的数组 */
-@property (nullable, nonatomic, readonly) NSArray<UITextField *> *textFields;
-
-/** 样式 */
-@property (nonatomic, readonly) SPAlertControllerStyle preferredStyle;
-/** 动画类型 */
-@property (nonatomic, readonly) SPAlertAnimationType animationType;
-
-/** 大标题 */
-@property (nullable, nonatomic, copy) NSString *title;
+/** 主标题 */
+@property(nullable, nonatomic, copy) NSString *title;
 /** 副标题 */
-@property (nullable, nonatomic, copy) NSString *message;
+@property(nullable, nonatomic, copy) NSString *message;
+/** 主标题(富文本) */
+@property(nullable, nonatomic, copy) NSAttributedString *attributedTitle;
+/** 副标题(富文本) */
+@property(nullable, nonatomic, copy) NSAttributedString *attributedMessage;
+/** 头部图标，位置处于title之上,大小取决于图片本身大小 */
+@property(nullable,nonatomic, copy) UIImage *image;
+
 /** 大标题颜色 */
-@property (nonatomic, strong) UIColor *titleColor;
+@property(nonatomic, strong) UIColor *titleColor;
+/** 大标题字体,默认18,加粗 */
+@property(nonatomic, strong) UIFont *titleFont;
 /** 副标题颜色 */
-@property (nonatomic, strong) UIColor *messageColor;
-/** 大标题字体 */
-@property (nonatomic, strong) UIFont *titleFont;
-/** 副标题字体 */
-@property (nonatomic, strong) UIFont *messageFont;
+@property(nonatomic, strong) UIColor *messageColor;
+/** 副标题字体,默认16,未加粗 */
+@property(nonatomic, strong) UIFont *messageFont;
+/** 对齐方式(包括主标题和副标题) */
+@property(nonatomic, assign) NSTextAlignment textAlignment;
+/** 头部图标的限制大小,默认无穷大 */
+@property (nonatomic, assign) CGSize imageLimitSize;
 
-/** action的高度，在添加action之前设置性能会更佳 */
-@property (nonatomic, assign) CGFloat actionHeight;
-
-/** actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;
-    注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
+/*
+ * action水平排列还是垂直排列
+ * actionSheet样式下:默认为UILayoutConstraintAxisVertical(垂直排列), 如果设置为UILayoutConstraintAxisHorizontal(水平排列)，则除去取消样式action之外的其余action将水平排列
+ * alert样式下:当actions的个数大于2，或者某个action的title显示不全时为UILayoutConstraintAxisVertical(垂直排列)，否则默认为UILayoutConstraintAxisHorizontal(水平排列)，此样式下设置该属性可以修改所有action的排列方式
+ * 不论哪种样式，只要外界设置了该属性，永远以外界设置的优先
  */
-@property (nonatomic, assign) CGFloat maxTopMarginForActionSheet;
+@property(nonatomic) UILayoutConstraintAxis actionAxis;
 
-/** alert样式下,四周的最大间距,默认为20 */
-@property (nonatomic, assign) CGFloat maxMarginForAlert;
-
-/** alert样式下，圆角半径 */
-@property (nonatomic, assign) CGFloat cornerRadiusForAlert;
-
-/** alert样式下，弹窗的中心y值，为正向下偏移，为负向上偏移 */
-@property (nonatomic, assign) CGFloat offsetYForAlert;
-
-
-/** alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2；在添加action之前设置性能会更佳
-    由于水平排列的action都是排布在footerView上,所以如果自定义了footerView，该属性将失去效用
+/* 距离屏幕边缘的最小间距
+ * alert样式下该属性是指对话框四边与屏幕边缘之间的距离，此样式下默认值随设备变化，actionSheet样式下是指弹出边的对立边与屏幕之间的距离，比如如果从右边弹出，那么该属性指的就是对话框左边与屏幕之间的距离，此样式下默认值为70
  */
-@property (nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert;
+@property(nonatomic, assign) CGFloat minDistanceToEdges;
+
+/** 圆角半径，只有alert样式有效*/
+@property(nonatomic, assign) CGFloat cornerRadiusForAlert;
+
+/** 对话框的偏移量，y值为正向下偏移，为负向上偏移；x值为正向右偏移，为负向左偏移，该属性只对SPAlertControllerStyleAlert样式有效,键盘的frame改变会自动偏移，如果外界手动设置偏移只会取手动设置的 */
+@property(nonatomic, assign) CGPoint offsetForAlert;
+/** 设置alert样式下的偏移量,动画为NO则跟属性offsetForAlert等效 */
+- (void)setOffsetForAlert:(CGPoint)offsetForAlert animated:(BOOL)animated;
 
 /** 是否需要对话框拥有毛玻璃,默认为YES----Dialog单词是对话框的意思 */
-@property (nonatomic, assign) BOOL needDialogBlur;
+@property(nonatomic, assign) BOOL needDialogBlur;
 
 /** 是否单击背景退出对话框,默认为YES */
-@property (nonatomic, assign) BOOL tapBackgroundViewDismiss;
+@property(nonatomic, assign) BOOL tapBackgroundViewDismiss;
 
-@property (nonatomic, weak) id<SPAlertControllerDelegate> delegate;
+@property(nonatomic, weak) id<SPAlertControllerDelegate> delegate;
 
+@property(nonatomic, readonly) SPAlertControllerStyle preferredStyle;
+@property(nonatomic, readonly) SPAlertAnimationType animationType;
 
-/** 设置蒙层的外观样式,可通过alpha调整透明度,如果设置了毛玻璃样式,设置alpha<1可能会有警告,警告是正常的 */
+/** 设置action与下一个action之间的间距, action仅限于非取消样式，必须在'-addAction:'之后设置，iOS11或iOS11以上才能使用 */
+- (void)setCustomSpacing:(CGFloat)spacing afterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
+- (CGFloat)customSpacingAfterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
+
+/** 设置蒙层的外观样式,可通过alpha调整透明度 */
 - (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;
 
+// 插入一个组件view，位置处于头部和action部分之间，要求头部和action部分同时存在
+- (void)insertComponentView:(nullable UIView *)componentView;
+
+
+// ---------------------------------------------- custom -----------------------------------------------------
+/**
+ 创建控制器(自定义整个对话框)
+ 
+ @param customAlertView 整个对话框的自定义view
+ @param preferredStyle 对话框样式
+ @param animationType 动画类型
+ @return 控制器对象
+ */
++ (instancetype)alertControllerWithCustomAlertView:(nullable UIView *)customAlertView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
+/**
+ 创建控制器(自定义对话框的头部)
+ 
+ @param customHeaderView 头部自定义view
+ @param preferredStyle 对话框样式
+ @param animationType 动画类型
+ @return 控制器对象
+ */
++ (instancetype)alertControllerWithCustomHeaderView:(nullable UIView *)customHeaderView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
+/**
+ 创建控制器(自定义对话框的action部分)
+ 
+ @param customActionSequenceView action部分的自定义view
+ @param title 大标题
+ @param message 副标题
+ @param preferredStyle 对话框样式
+ @param animationType 动画类型
+ @return 控制器对象
+ */
++ (instancetype)alertControllerWithCustomActionSequenceView:(nullable UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
+
+/** 更新自定义view的size，自定义了哪个view，该size指的就是哪个view的size,比如屏幕旋转，自定义view的大小发生了改变，可通过该方法更新 */
+- (void)updateCustomViewSize:(CGSize)size;
+
+@property (nonatomic, assign) CGFloat maxTopMarginForActionSheet NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdgeForAlert instead");  //  actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
+@property(nonatomic, assign) CGFloat maxMarginForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdgeForAlert instead");// alert样式下,四周的最小间距,默认为20，该属性起名有误，应该是最小，而不是最大，3.0版本属性名已改，叫minDistanceToEdgeForAlert
+@property(nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use actionAxis instead");// alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2；在添加action之前设置性能会更佳,由于水平排列的action都是排布在footerView上,所以如果自定义了footerView，该属性将失去效用
+@property(nonatomic, assign) CGFloat offsetYForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use offset instead"); //  对话框垂直方向上的偏移
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomView:preferredStyle:animationType:");
++ (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customHeaderView:(nullable UIView *)customHeaderView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomHeaderView:preferredStyle:animationType:");
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithComponentView:title:message:(nullable NSString *)message preferredStyle:animationType:");
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customFooterView:(nullable UIView *)customFooterView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomActionGroupView:title:message: preferredStyle:animationType:");
 @end
 
+@protocol SPAlertControllerDelegate <NSObject>
+@optional;
+- (void)willPresentAlertController:(SPAlertController *)alertController; // 将要present
+- (void)didPresentAlertController:(SPAlertController *)alertController;  // 已经present
+- (void)willDismissAlertController:(SPAlertController *)alertController; // 将要dismiss
+- (void)didDismissAlertController:(SPAlertController *)alertController;  // 已经dismiss
+
+- (void)sp_alertControllerWillShow:(SPAlertController *)alertController NS_DEPRECATED_IOS(8_0, 8_0,"Use -willPresentAlertController:");
+- (void)sp_alertControllerDidShow:(SPAlertController *)alertController  NS_DEPRECATED_IOS(8_0, 8_0,"Use -DidPresentAlertController:");
+- (void)sp_alertControllerWillHide:(SPAlertController *)alertController NS_DEPRECATED_IOS(8_0, 8_0,"Use -willDismissAlertController:");
+- (void)sp_alertControllerDidHide:(SPAlertController *)alertController  NS_DEPRECATED_IOS(8_0, 8_0,"Use -DidDismissAlertController:");
+@end
 
 @interface SPAlertPresentationController : UIPresentationController
 @end
 
-// ================================ 动画类 ================================
-
 @interface SPAlertAnimation : NSObject <UIViewControllerAnimatedTransitioning>
-
 + (instancetype)animationIsPresenting:(BOOL)presenting;
-
 @end
 
 NS_ASSUME_NONNULL_END
