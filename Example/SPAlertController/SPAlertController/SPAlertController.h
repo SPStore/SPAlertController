@@ -106,9 +106,9 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 /** 头部图标，位置处于title之上,大小取决于图片本身大小 */
 @property(nullable,nonatomic, copy) UIImage *image;
 
-/** 大标题颜色 */
+/** 主标题颜色 */
 @property(nonatomic, strong) UIColor *titleColor;
-/** 大标题字体,默认18,加粗 */
+/** 主标题字体,默认18,加粗 */
 @property(nonatomic, strong) UIFont *titleFont;
 /** 副标题颜色 */
 @property(nonatomic, strong) UIColor *messageColor;

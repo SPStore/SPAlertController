@@ -1004,7 +1004,7 @@
     
     self.titles = @[@"ActionSheet样式",@"Alert样式",@"富文本",@"自定义视图",@"特殊情况",@"毛玻璃"];
     self.dataSource = @[
-                        @[@"actionSheet样式 默认动画(从底部弹出,有取消按钮)",@"actionSheet样式 默认动画(从底部弹出,无取消按钮)",@"actionSheet样式 从顶部弹出(无标题)",@"actionSheet样式 从顶部弹出(有标题)",@"actionSheet样式 水平排列（有取消样式按钮）",@"actionSheet样式 水平排列（无取消样式按钮)",@"actionSheet样式 模拟多分区样式(>=iOS11才支持)"
+                        @[@"actionSheet样式 默认动画(从底部弹出,有取消按钮)",@"actionSheet样式 默认动画(从底部弹出,无取消按钮)",@"actionSheet样式 从顶部弹出(无标题)",@"actionSheet样式 从顶部弹出(有标题)",@"actionSheet样式 水平排列（有取消样式按钮）",@"actionSheet样式 水平排列（无取消样式按钮)",@"actionSheet样式 action含图标",@"actionSheet样式 模拟多分区样式(>=iOS11才支持)"
                           ],
                         @[@"alert样式 默认动画(收缩动画)",@"alert样式 发散动画",@"alert样式 渐变动画",@"alert样式 垂直排列2个按钮",@"alert样式 水平排列2个以上的按钮",@"alert样式 设置头部图标",@"alert样式 含有文本输入框"
                           ],
@@ -1115,6 +1115,9 @@
                 break;
             case 6:
                 [self actionSheetTest7];
+                break;
+            case 7:
+                [self actionSheetTest8];
                 break;
         }
     } else if (indexPath.section == 1) { //  alert样式区
