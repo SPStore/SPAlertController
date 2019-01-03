@@ -8,11 +8,12 @@
 [![Pod License](http://img.shields.io/cocoapods/l/SPAlertController.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SPStore/SPAlertController)
 # 目录
-* [如何导入](#如何导入) 
-* [如何使用](#如何使用)
+* [CocoaPods](#CocoaPods) 
+* [基本使用](#基本使用)
 * [效果图](#效果图) 
+* [历史版本](#历史版本)
 
-## 如何导入
+## CocoaPods
 ##### 版本3.0.1
 ```
 platform:ios,'9.0'
@@ -22,88 +23,8 @@ end
 
 3.0.1版本使背景蒙层动画更加的柔和
 ```
-##### 版本3.0 (从3.0版本开始仅支持iOS9及iOS9以上，请大家谨慎更新)
-```
-platform:ios,'9.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0'
-end
 
-3.0版本进行了全方位的大重构
-```
-##### 版本2.5.2（老版本的终结版）
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.5.2'
-end
-
-按钮处于最底部时长按touchDown事件的延时现象采用新方式解决，另外修复了内存泄露问题
-```
-##### 版本2.5.1
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.5.1'
-end
-
-此版本修改了action的选中效果，以及解决iOS11之后，按钮处于最底部时长按touchDown事件的延时现象
-```
-##### 版本2.5.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.5.0'
-end
-
-此版本在2.2.1版本的基础上主要改动有：
-1、毛玻璃思路另辟蹊径，毛玻璃效果不会受到背景遮罩的影响，同时背景遮罩不再被镂空
-2、增加动画枚举，可以从左右弹出
-3、自定义view时的背景色改为透明色
-4、增加actionHeight属性，修复maxNumberOfActionHorizontalArrangementForAlert属性
-5、去除了中间tableView的最后一条分割线
-6、修改了分割线的颜色，更加接近微信原生
-7、修复centerView上有textView/textField，旋转屏幕后不可见问题
-8、优化代码
-
-```
-##### 版本2.1.1
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.1.1'
-end
-```
-##### 版本2.1.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.1.0'
-end
-```
-##### 版本2.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.0'
-end
-```
-##### 版本1.7.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 1.7.0'
-end
-```
-##### 版本1.0.1
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 1.0.1'
-end
-```
-
-## 如何使用
+## 基本使用
 * 第一步：创建SPAlertController
 ```
 SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
@@ -235,5 +156,85 @@ MyFooterView *footerView = [MyFooterView shareMyFooterView];
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1FE9B512B50D7E139B30E0BDB5B3FF6E.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/86C4035CB7097B99FA89706E3668055E.jpg)
 
 
+## 历史版本
+##### 版本3.0 
+```
+platform:ios,'9.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 3.0'
+end
 
+3.0版本进行了全方位的大重构
+```
+##### 版本2.5.2（老版本的终结版）
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.2'
+end
+
+按钮处于最底部时长按touchDown事件的延时现象采用新方式解决，另外修复了内存泄露问题
+```
+##### 版本2.5.1
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.1'
+end
+
+此版本修改了action的选中效果，以及解决iOS11之后，按钮处于最底部时长按touchDown事件的延时现象
+```
+##### 版本2.5.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.5.0'
+end
+
+此版本在2.2.1版本的基础上主要改动有：
+1、毛玻璃思路另辟蹊径，毛玻璃效果不会受到背景遮罩的影响，同时背景遮罩不再被镂空
+2、增加动画枚举，可以从左右弹出
+3、自定义view时的背景色改为透明色
+4、增加actionHeight属性，修复maxNumberOfActionHorizontalArrangementForAlert属性
+5、去除了中间tableView的最后一条分割线
+6、修改了分割线的颜色，更加接近微信原生
+7、修复centerView上有textView/textField，旋转屏幕后不可见问题
+8、优化代码
+
+```
+##### 版本2.1.1
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.1.1'
+end
+```
+##### 版本2.1.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.1.0'
+end
+```
+##### 版本2.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 2.0'
+end
+```
+##### 版本1.7.0
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 1.7.0'
+end
+```
+##### 版本1.0.1
+```
+platform:ios,'8.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 1.0.1'
+end
+```
 [回到顶部](#目录) 
