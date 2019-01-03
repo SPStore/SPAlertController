@@ -76,14 +76,16 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 
 ### SPAlertControllerd的action配置
 ```
-添加action，actions里面存放的就是添加的所有action
+// 添加action，actions里面存放的就是添加的所有action
+
 - (void)addAction:(SPAlertAction *)action;
 
 @property (nonatomic, readonly) NSArray<SPAlertAction *> *actions;
 ```
 
 ```
-添加文本输入框，textFields存放的就是添加的所有textField
+// 添加文本输入框，textFields存放的就是添加的所有textField
+
 - (void)addTextFieldWithConfigurationHandler:(void (^ __nullable)(UITextField *textField))configurationHandler;
 
 @property(nullable, nonatomic, readonly) NSArray<UITextField *> *textFields;
@@ -92,7 +94,8 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-9ed0416190e155dc.jpg)
 
 ```
-SPAlertControllerStyleActionSheet样式下：默认为UILayoutConstraintAxisVertical(垂直排列), 如果设置为UILayoutConstraintAxisHorizontal(水平排列)，则除去取消样式action之外的其余action将水平排列；SPAlertControllerStyleAlert样式下：当actions的个数大于2，或者某个action的title显示不全时为UILayoutConstraintAxisVertical(垂直排列)，否则默认为UILayoutConstraintAxisHorizontal(水平排列)，此样式下设置该属性可以修改所有action的排列方式；不论哪种样式，只要外界设置了该属性，永远以外界设置的优先
+// SPAlertControllerStyleActionSheet样式下：默认为UILayoutConstraintAxisVertical(垂直排列), 如果设置为UILayoutConstraintAxisHorizontal(水平排列)，则除去取消样式action之外的其余action将水平排列；SPAlertControllerStyleAlert样式下：当actions的个数大于2，或者某个action的title显示不全时为UILayoutConstraintAxisVertical(垂直排列)，否则默认为UILayoutConstraintAxisHorizontal(水平排列)，此样式下设置该属性可以修改所有action的排列方式；不论哪种样式，只要外界设置了该属性，永远以外界设置的优先
+
 @property(nonatomic) UILayoutConstraintAxis actionAxis;
 ```
 * SPAlertControllerStyleActionSheet样式下的垂直排列和水平排列
@@ -104,7 +107,8 @@ SPAlertControllerStyleActionSheet样式下：默认为UILayoutConstraintAxisVert
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-b35b79b657815756.jpg)
 
 ```
-该属性配置的是距离屏幕边缘的最小间距；SPAlertControllerStyleAlert样式下该属性是指对话框四边与屏幕边缘之间的距离，此样式下默认值随设备变化，SPAlertControllerStyleActionSheet样式下是指弹出边的对立边与屏幕之间的距离，比如如果从右边弹出，那么该属性指的就是对话框左边与屏幕之间的距离，此样式下默认值为70
+// 该属性配置的是距离屏幕边缘的最小间距；SPAlertControllerStyleAlert样式下该属性是指对话框四边与屏幕边缘之间的距离，此样式下默认值随设备变化，SPAlertControllerStyleActionSheet样式下是指弹出边的对立边与屏幕之间的距离，比如如果从右边弹出，那么该属性指的就是对话框左边与屏幕之间的距离，此样式下默认值为70
+
 @property(nonatomic, assign) CGFloat minDistanceToEdges;
 ```
 * 图中红色画线都是指minDistanceToEdges 
@@ -112,11 +116,12 @@ SPAlertControllerStyleActionSheet样式下：默认为UILayoutConstraintAxisVert
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-6f3752d49e579460.jpg)
 
 ```
-该属性是制造对话框的毛玻璃效果，3.0版本开始采用的是系统私有类_UIDimmingKnockoutBackdropView所实现
+// 该属性是制造对话框的毛玻璃效果，3.0版本开始采用的是系统私有类_UIDimmingKnockoutBackdropView所实现
+
 @property(nonatomic, assign) BOOL needDialogBlur;
 ```
 ```
-SPAlertControllerStyleAlert下的偏移量配置 ,CGPoint类型，y值为正向下偏移，为负向上偏移；x值为正向右偏移，为负向左偏移，该属性只对SPAlertControllerStyleAlert样式有效,键盘的frame改变会自动偏移，如果外界手动设置偏移只会取手动设置的
+// SPAlertControllerStyleAlert下的偏移量配置 ,CGPoint类型，y值为正向下偏移，为负向上偏移；x值为正向右偏移，为负向左偏移，该属性只对SPAlertControllerStyleAlert样式有效,键盘的frame改变会自动偏移，如果外界手动设置偏移只会取手动设置的
 
 @property(nonatomic, assign) CGPoint offsetForAlert;
 
@@ -124,7 +129,7 @@ SPAlertControllerStyleAlert下的偏移量配置 ,CGPoint类型，y值为正向�
 ```
 
 ```
-该API是设置和获取指定action后面的间距，如图中箭头所指，iOS11及其以上才支持
+// 该API是设置和获取指定action后面的间距，如图中箭头所指，iOS11及其以上才支持
 
 - (void)setCustomSpacing:(CGFloat)spacing afterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
 
@@ -133,16 +138,17 @@ SPAlertControllerStyleAlert下的偏移量配置 ,CGPoint类型，y值为正向�
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-b24cd93757b2f42c.jpg)
 
 ```
- 该API是设置背景蒙层的样式，分为半透明和毛玻璃效果，毛玻璃又细分为Dark，ExtraLight，Light3种样式
+ // 该API是设置背景蒙层的样式，分为半透明和毛玻璃效果，毛玻璃又细分为Dark，ExtraLight，Light3种样式
+ 
 - (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;
 ``` 
  ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-0b23494c3ba2a6fc.jpg)
  
- ```
-  单击背景蒙层是否退出对话框，默认YES
+```
+  // 单击背景蒙层是否退出对话框，默认YES
 
 @property(nonatomic, assign) BOOL tapBackgroundViewDismiss;
-  ``` 
+ ``` 
  ```
 @property(nonatomic, assign) CGFloat cornerRadiusForAlert;
 ```
@@ -150,7 +156,8 @@ SPAlertControllerStyleAlert下的圆角半径
 
 ### 创建action
 ```
-其中，title为action的标题，创建的时候仅支持普通文本，如果要使用富文本，可以另外设置action的属性attributedTitle，设置后会覆盖普通文本
+// 其中，title为action的标题，创建的时候仅支持普通文本，如果要使用富文本，可以另外设置action的属性attributedTitle，设置后会覆盖普通文本
+
 + (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
 ```
 ### 配置action
