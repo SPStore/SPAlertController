@@ -2,8 +2,8 @@
 //  SPAlertController.m
 //  SPAlertController
 //
-//  Created by 乐升平 on 17/10/12. https://github.com/SPStore/SPAlertController
-//  Copyright © 2017年 iDress. All rights reserved.
+//  Created by 乐升平 on 18/10/12. https://github.com/SPStore/SPAlertController
+//  Copyright © 2018年 iDress. All rights reserved.
 //
 
 #import "SPAlertController.h"
@@ -1583,7 +1583,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 }
 
 - (void)dealloc {
-    NSLog(@"SPAlertController控制器被销毁了");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -2103,10 +2102,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     id <UIViewControllerTransitionCoordinator> coordinator = [self.presentedViewController transitionCoordinator];
     if (coordinator) {
         [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            // 当键盘弹出时，键盘动画跟协调器会产生冲突，用模拟器放慢速度可以看到，键盘已经弹出后，overlayView的alpha才开始渐变，猜想这可能是由于2种动画处于同一祯的缘故，因此这里加一个block，异步绘制
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.overlayView.alpha = 1.0;
-            });
+            self.overlayView.alpha = 1.0;
         } completion:nil];
     } else {
         self.overlayView.alpha = 1.0;
@@ -2135,9 +2131,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     id <UIViewControllerTransitionCoordinator> coordinator = [self.presentedViewController transitionCoordinator];
     if (coordinator) {
         [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                self.overlayView.alpha = 0.0;
-            });
+            self.overlayView.alpha = 0.0;
         } completion:nil];
     } else {
         self.overlayView.alpha = 0.0;
@@ -2533,6 +2527,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 - (void)dismissCorrespondingExpandForController:(SPAlertController *)alertController transition:(id<UIViewControllerContextTransitioning>)transitionContext {
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformIdentity;
+        alertController.view.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];
     }];

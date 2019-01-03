@@ -1583,7 +1583,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 }
 
 - (void)dealloc {
-    NSLog(@"SPAlertController控制器被销毁了");
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -2528,6 +2527,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 - (void)dismissCorrespondingExpandForController:(SPAlertController *)alertController transition:(id<UIViewControllerContextTransitioning>)transitionContext {
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         alertController.view.transform = CGAffineTransformIdentity;
+        alertController.view.alpha = 0.0;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];
     }];
