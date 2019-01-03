@@ -10,7 +10,8 @@
 # 目录
 * [CocoaPods](#CocoaPods) 
 * [使用示例](#使用示例)
-* [Topics](#Topics) 
+* [API及属性详解](#API及属性详解) 
+* [自定义各大UIView](#API及属性详解)
 * [历史版本](#历史版本)
 
 ## 功能特点
@@ -50,7 +51,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 [self presentViewController: alert animated:YES completion:^{}];
 ```
 
-## Topics
+## API及属性详解
 ### 创建SPAlertController
 ```
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle;
