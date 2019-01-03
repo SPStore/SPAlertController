@@ -242,8 +242,6 @@
     [alertController addAction:action6];
     [alertController addAction:action7];
     
-    alertController.needDialogBlur = NO;
-
     if (@available(iOS 11.0, *)) {
         [alertController setCustomSpacing:6.0 afterAction:action2]; // 设置第2个action之后的间隙
     }
