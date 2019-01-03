@@ -9,22 +9,22 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SPStore/SPAlertController)
 # 目录
 * [CocoaPods](#CocoaPods) 
-* [基本使用](#基本使用)
+* [使用示例](#使用示例)
 * [效果图](#效果图) 
 * [历史版本](#历史版本)
 
 ## 功能特点
-- [x] 采用VFL布局，3.0版本开始核心控件为UIStackView,不依赖任何其余框架，风格与微信几乎零误差
+- [x] 采用VFL布局，3.0版本开始核心控件为UIStackView，不依赖任何其余框架，风格与微信几乎零误差
 - [x] 3.0版本开始对话框头部新增图片设置
-- [x] 每个action的高度自适应
 - [x] 3.0版本开始action支持图片设置
 - [x] 3.0版本开始，iOS11及其以上系统可单独设置指定action后的间距
-- [x] action的排列可灵活设置垂直排列和水平排列
 - [x] 3.0版本开始支持富文本
+- [x] action的排列可灵活设置垂直排列和水平排列
+- [x] 每个action的高度自适应
 - [x] 支持旋转(横竖屏)
 - [x] 可以自定义各种UIView
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
-- [x] 全面适配iPhoneX,iPhoneXR,iPhoneXS,iPhoneXS MAX
+- [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
 
 ## CocoaPods
 ##### 版本3.0.1
@@ -37,115 +37,29 @@ end
 3.0.1版本使背景蒙层动画更加的柔和
 ```
 
-## 基本使用
-* 第一步：创建SPAlertController
+## 使用示例
 ```
-SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeDefault];
+SPAlertController *alert = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleActionSheet];
 
-说明:
-preferredStyle是提醒对话框的弹出样式，SPAlertControllerStyleActionSheet是从底部或者顶部弹出（顶部还是底部取决于animationType），SPAlertControllerStyleAlert从中间弹出，animationType是动画类型，有从底部往上弹出动画，从顶部往下弹出动画，从中间渐变弹出动画，缩放弹出动画等
+SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {}];
+SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"Destructive" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {}];
+SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {}];
 
+[alert addAction:action1];
+[alert addAction:action2];
+[alert addAction:action3]; 
+[self presentViewController: alert animated:YES completion:^{}];
 ```
-* 第二步：创建action
-```
-SPAlertAction *actionOK = [SPAlertAction actionWithTitle:@"OK" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        
-    }];
-    
-说明:
-方法参数中的style是action的样式，这里跟系统的一致，共有SPAlertActionStyleDefault、SPAlertActionStyleCancel(取消)、SPAlertActionStyleDestructive(默认红色)这3种样式，跟系统不一样的是，SPAlertController可以自定义action的相关属性，如文本颜色、字体等;
-block块:当点击action的时候回调
-```
-* 第三步：添加action
-```
-[alertController addAction:actionOK];
-```
-* 第四步：modal出alertController
-```
-[self presentViewController:alertController animated:YES completion:nil];
-```
-*以上这就是最基本的四步操作，当然你可以中间再设置alertController的属性或者action的属性，至于具体哪些属性干什么，示例程序中有非常详细的注释.*
 
-### 还可以做什么?
-* 添加文本输入框
+## Topics
+### 创建SPAlertController
 ```
-[alertController addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
-        // 这个block只会回调一次，因此可以在这里自由定制textFiled，如设置textField的相关属性，设置代理，添加addTarget，监听通知等
-}];
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle;
 ```
-* 自定义整个弹出视图
 ```
-MyView *myView = [MyView shareMyView];
-    
-SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeAlpha customView:myView];
-[self presentViewController:alertController animated:YES completion:nil];
-    
-说明:
-自定义整个弹出视图时,添加action或textField没有任何作用，因为已经自定义了整个视图，自带的内部布局将不起作用
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 ```
-* 自定义headerView
-```
-MyHeaderView *myHeaderView = [[MyHeaderView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
-SPAlertController *alertController = [SPAlertController alertControllerWithPreferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customHeaderView:myHeaderView];
-SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-     NSLog(@"点击了第1个");
-}];
-    
-SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
-    NSLog(@"点击了第2个");
-}];
-[alertController addAction:action1];
-[alertController addAction:action2];
-[self presentViewController:alertController animated:YES completion:nil];
-
-说明:
-为什么要自定义headerView？有这样的的需求吗？答案是肯定的，因为SPAlertController自带的headerView只能显示文本且居中，如果想往里面添加图片则自带的就不管用了，这时便可以在外界自定义好一个headerView，创建时当参数传进去，SPAlertController便会帮你显示在对话框的顶部
-```
-* 自定义centerView
-```
-MyCenterView *centerView = [[MyCenterView alloc] initWithFrame:CGRectMake(0, 0, 0, 200)];
-    
-SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"这是大标题" message:@"这是小标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customCenterView:centerView];
-
-SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"第1个" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-    NSLog(@"点击了第1个");
-}];
-// 设置第1个action的颜色
-action1.titleColor = [UIColor blueColor];
-
-// SPAlertActionStyleDestructive默认文字为红色(可修改)
-SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"第2个" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
-    NSLog(@"点击了第2个");
-}];
-// 设置第2个action的颜色
-action2.titleColor = [UIColor redColor];
-[alertController addAction:action1];
-[alertController addAction:action2];
-[self presentViewController:alertController animated:YES completion:nil];
-
-说明:
-有时看见过这样的对话框，顶部是一个title，最底部有2个action，中间是一个tableView；这里自定义centerView就是解决这个需求。
-
-先记作n = maxNumberOfActionHorizontalArrangementForAlert;(maxNumberOfActionHorizontalArrangementForAlert是本框架的一个属性：最大水平排列个数);
-
-当自定义centerView时，如果是SPAlertControllerStyleAlert样式，action的个数最多只能是n个，超过n个将不显示，只显示最前面n个添加的；如果是SPAlertControllerStyleActionSheet样式，只有取消（SPAlertActionStyleCancel）样式才会显示，其余样式的action均不会显示
-```
-* 自定义footerView
-```
-MyFooterView *footerView = [MyFooterView shareMyFooterView];
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"苹果logo" message:nil preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault customFooterView:footerView];
-    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"我是一个按钮" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了 我是一个按钮");
-    }];
-[alertController addAction:action2];
-[self presentViewController:alertController animated:YES completion:nil];
-```
-* 讲一下对话框的宽高 :  
-1. SPAlertControllerStyleAlert样式下对话框的默认宽度恒为屏幕
-宽-40,高度最大为屏幕高-40,如果想设置对话框的宽度以及修改最大高度,可以通过调整maxMarginForAlert属性来设置,高度上只要没有超出最大高度，会自适应内容. 
-2. SPAlertControllerStyleActionSheet样式下对话框的默认宽度 恒为屏幕宽,高度最大为屏幕高,外界无法通过任何属性修改宽度,最大高度可通过maxTopMarginForActionSheet属性来修改,高度上只要没超出最大高度,会自适应内容.
-* 关于自定义的view的宽高如何让给定？   
-当自定义view时,如果宽度小于等于0,或者大于等于对话框的宽度,内部会自动处理为等宽于对话框,除此之外,自定义view的高度在对话框最大高度范围内的情况下:自定义view的大小是多大,显示出来就是多大;从这里也可以看出,如果自定义view时想用对话框的默认宽度,宽度设置为0或者足够大就行了. 稍微要注意的是假如你采用的是自动布局/xib/storyboard,宽度设置为0可能会有约束警告.
+上面2种创建方式唯一的区别就是：第2种方式多了一个animationType参数，该参数可以设置弹出动画。如果以第一种方式创建，会采用默认动画，默认动画跟preferredStyle 有关，如果是SPAlertControllerStyleActionSheet样式，默认动画为从底部弹出，如果是SPAlertControllerStyleAlert样式，默认动画为从中间弹出
 
 ## 效果图
 ![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/F6C0259AFBAD7E5F651CB1FD41796DEF.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/06A97B9DBDE3F07D2207BAA2085D25C6.jpg)  
