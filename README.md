@@ -26,7 +26,7 @@
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
 
-
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)
 ## CocoaPods
 ##### 版本3.0.1
 ```
