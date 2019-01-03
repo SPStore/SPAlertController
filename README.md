@@ -25,8 +25,6 @@
 - [x] 可以自定义各种UIView
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
-
-![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)
 ## CocoaPods
 ##### 版本3.0.1
 ```
@@ -74,6 +72,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 * textAlignment，对话框标题的对齐方式（标题指主标题和副标题）
 * imageLimitSize，对话框头部图标的限制大小，默认是无穷大
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/6AAAA07F90853F52CA6166D815F619A9.jpg)
 
 ## 历史版本
 ##### 版本3.0 
