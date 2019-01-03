@@ -13,6 +13,15 @@
 * [效果图](#效果图) 
 
 ## 如何导入
+##### 版本3.0.1
+```
+platform:ios,'9.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 3.0.1'
+end
+
+3.0.1版本使背景蒙层动画更加的柔和
+```
 ##### 版本3.0 (从3.0版本开始仅支持iOS9及iOS9以上，请大家谨慎更新)
 ```
 platform:ios,'9.0'
