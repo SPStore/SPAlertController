@@ -136,7 +136,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 
 - (CGFloat)customSpacingAfterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
 ```
-![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-b24cd93757b2f42c.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3CB7E93FDA241F253BFE156D0B4AA7E2.jpg)
 
 ```
  // 该API是设置背景蒙层的样式，分为半透明和毛玻璃效果，毛玻璃又细分为Dark，ExtraLight，Light3种样式
