@@ -73,7 +73,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 * textAlignment，对话框标题的对齐方式（标题指主标题和副标题）
 * imageLimitSize，对话框头部图标的限制大小，默认是无穷大
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)![image](https://github.com/SPStore/SPAlertController/blob/master/Images/6AAAA07F90853F52CA6166D815F619A9.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)
 
 ### SPAlertControllerd的action配置
 ```
@@ -170,6 +170,8 @@ SPAlertControllerStyleAlert下的圆角半径
 * titleFont，action标题的字体
 * titleEdgeInsets，action标题的内边距，此属性能够改变action的高度
 * enabled，action是否能被点击
+
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/6AAAA07F90853F52CA6166D815F619A9.jpg)
 
 ## 自定义各大View
 * 自定义对话框的头部
