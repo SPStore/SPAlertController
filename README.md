@@ -10,7 +10,8 @@
 # 目录
 * [CocoaPods](#CocoaPods) 
 * [使用示例](#使用示例)
-* [效果图](#效果图) 
+* [API及属性详解](#API及属性详解) 
+* [自定义各大View](#自定义各大View)
 * [历史版本](#历史版本)
 
 ## 功能特点
@@ -25,7 +26,6 @@
 - [x] 可以自定义各种UIView
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
-
 ## CocoaPods
 ##### 版本3.0.1
 ```
@@ -51,7 +51,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 [self presentViewController: alert animated:YES completion:^{}];
 ```
 
-## Topics
+## API及属性详解
 ### 创建SPAlertController
 ```
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle;
@@ -60,28 +60,139 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 ```
 上面2种创建方式唯一的区别就是：第2种方式多了一个animationType参数，该参数可以设置弹出动画。如果以第一种方式创建，会采用默认动画，默认动画跟preferredStyle 有关，如果是SPAlertControllerStyleActionSheet样式，默认动画为从底部弹出，如果是SPAlertControllerStyleAlert样式，默认动画为从中间弹出
+### SPAlertController的头部配置
+* title，对话框的主标题
+* message，对话框的副标题
+* attributedTitle，对话框的主标题，富文本
+* attributedMessage，对话框的副标题，富文本
+* image，对话框的头部上的图标，位置处于主标题之上
+* titleColor，对话框主标题的颜色
+* titleFont，对话框主标题的字体
+* messageColor，对话框副标题的颜色
+* messageFont，对话框副标题的字体
+* textAlignment，对话框标题的对齐方式（标题指主标题和副标题）
+* imageLimitSize，对话框头部图标的限制大小，默认是无穷大
 
-## 效果图
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/F6C0259AFBAD7E5F651CB1FD41796DEF.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/06A97B9DBDE3F07D2207BAA2085D25C6.jpg)  
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)![image](https://github.com/SPStore/SPAlertController/blob/master/Images/6AAAA07F90853F52CA6166D815F619A9.jpg)
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/A76E51AC536052790CD80C184E803432.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/9C6F94D5ECF90CE6A94D90D507DB18EC.jpg)  
+### SPAlertControllerd的action配置
+```
+// 添加action，actions里面存放的就是添加的所有action
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/4DB2CAFA218FEE08E36578C94F2A5B71.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/03A721F9F6A4F39346134F7EEE49FA2E.jpg)
+- (void)addAction:(SPAlertAction *)action;
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3DB1CF20C14DFE9103B827F06BE5ACE5.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1A20B204D250B3DBFE973A4EC0C5209F.jpg)  
+@property (nonatomic, readonly) NSArray<SPAlertAction *> *actions;
+```
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/57DDD7273486D292452471FAFDDC9F18.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/CDD1F2ADE694932980AB1509921FB628.jpg) 
+```
+// 添加文本输入框，textFields存放的就是添加的所有textField
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/EAEFB2EAA7932E456E7D85238E2C73C7.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/2DB32E8A0446B214C5EDC97998B127BA.jpg) 
+- (void)addTextFieldWithConfigurationHandler:(void (^ __nullable)(UITextField *textField))configurationHandler;
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/19E17ECCD0C1A8CE7D0499CD8AF06A2F.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/30D02B422FC9CA27F5CBA37FF85BADE6.jpg)  
+@property(nullable, nonatomic, readonly) NSArray<UITextField *> *textFields;
+```
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/36186FEFDD89D2356EFEF140093A28A7.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/3E8019BA57F447785BD2561ECF95D234.jpg)
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-9ed0416190e155dc.jpg)
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/91B2F76B900C0EA9B5E34B8AE64CAB36.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1776B8F36B3C3051C2C2FE3AE12D843F.jpg)
+```
+// SPAlertControllerStyleActionSheet样式下：默认为UILayoutConstraintAxisVertical(垂直排列), 如果设置为UILayoutConstraintAxisHorizontal(水平排列)，则除去取消样式action之外的其余action将水平排列；SPAlertControllerStyleAlert样式下：当actions的个数大于2，或者某个action的title显示不全时为UILayoutConstraintAxisVertical(垂直排列)，否则默认为UILayoutConstraintAxisHorizontal(水平排列)，此样式下设置该属性可以修改所有action的排列方式；不论哪种样式，只要外界设置了该属性，永远以外界设置的优先
 
-![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/1FE9B512B50D7E139B30E0BDB5B3FF6E.jpg)....................![image](https://github.com/SPStore/SPAlertController/blob/master/PreImages/86C4035CB7097B99FA89706E3668055E.jpg)
+@property(nonatomic) UILayoutConstraintAxis actionAxis;
+```
+* SPAlertControllerStyleActionSheet样式下的垂直排列和水平排列
 
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-a12eae25bc1061d6.jpg)
+
+* SPAlertControllerStyleAlert样式下的垂直排列和水平排列
+
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-b35b79b657815756.jpg)
+
+```
+// 该属性配置的是距离屏幕边缘的最小间距；SPAlertControllerStyleAlert样式下该属性是指对话框四边与屏幕边缘之间的距离，此样式下默认值随设备变化，SPAlertControllerStyleActionSheet样式下是指弹出边的对立边与屏幕之间的距离，比如如果从右边弹出，那么该属性指的就是对话框左边与屏幕之间的距离，此样式下默认值为70
+
+@property(nonatomic, assign) CGFloat minDistanceToEdges;
+```
+* 图中红色画线都是指minDistanceToEdges 
+
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-6f3752d49e579460.jpg)
+
+```
+// 该属性是制造对话框的毛玻璃效果，3.0版本开始采用的是系统私有类_UIDimmingKnockoutBackdropView所实现
+
+@property(nonatomic, assign) BOOL needDialogBlur;
+```
+```
+// SPAlertControllerStyleAlert下的偏移量配置 ,CGPoint类型，y值为正向下偏移，为负向上偏移；x值为正向右偏移，为负向左偏移，该属性只对SPAlertControllerStyleAlert样式有效,键盘的frame改变会自动偏移，如果外界手动设置偏移只会取手动设置的
+
+@property(nonatomic, assign) CGPoint offsetForAlert;
+
+- (void)setOffsetForAlert:(CGPoint)offsetForAlert animated:(BOOL)animated;
+```
+
+```
+// 该API是设置和获取指定action后面的间距，如图中箭头所指，iOS11及其以上才支持
+
+- (void)setCustomSpacing:(CGFloat)spacing afterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
+
+- (CGFloat)customSpacingAfterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
+```
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-b24cd93757b2f42c.jpg)
+
+```
+ // 该API是设置背景蒙层的样式，分为半透明和毛玻璃效果，毛玻璃又细分为Dark，ExtraLight，Light3种样式
+ 
+- (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;
+``` 
+ ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-0b23494c3ba2a6fc.jpg)
+ 
+```
+  // 单击背景蒙层是否退出对话框，默认YES
+
+@property(nonatomic, assign) BOOL tapBackgroundViewDismiss;
+ ``` 
+ ```
+@property(nonatomic, assign) CGFloat cornerRadiusForAlert;
+```
+SPAlertControllerStyleAlert下的圆角半径
+
+### 创建action
+```
+// 其中，title为action的标题，创建的时候仅支持普通文本，如果要使用富文本，可以另外设置action的属性attributedTitle，设置后会覆盖普通文本
+
++ (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
+```
+### 配置action
+* title，action的标题
+* attributedTitle，action的富文本标题，普通文本和富文本同时设置时，只会显示富文本
+* image，action上的图片，文字和图片都存在时，图片在左，文字在右
+* imageTitleSpacing，图片与文字之间的间距
+* titleColor，action标题的颜色
+* titleFont，action标题的字体
+* titleEdgeInsets，action标题的内边距，此属性能够改变action的高度
+* enabled，action是否能被点击
+
+## 自定义各大View
+* 自定义对话框的头部
+```
++ (instancetype)alertControllerWithCustomHeaderView:(nullable UIView *)customHeaderView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
+```
+
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-41170beb443f32f0.jpg)
+
+* 自定义整个对话框
+```
++ (instancetype)alertControllerWithCustomAlertView:(nullable UIView *)customAlertView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
+```
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-3cd4a2b6ff4da206.jpg)
+
+* 自定义对话框的action部分
+```
++ (instancetype)alertControllerWithCustomActionSequenceView:(nullable UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
+```
+## 关于自定义view的大小
+* 非自动布局，在传入自定义view之前，应该为自定义的view设置好frame，或者传入之后，调用API```- (void)updateCustomViewSize:(CGSize)size```设置大小；
+* 自动布局，如果宽度和高度都能由子控件撑起来，那么你不需要设置frame，否则，宽度和高度只要有其中一个无法由子控件撑起，那么就必须设置其值，比如高度能被子控件撑起来，而宽度不能，那么你就必须手动给自定义view设置一个宽度，高度可以不用设置或者设置为0都可。如果是xib或者storyboard，若自定义的view无法由子控件撑起来，SPAlertController会读取xib\storyboard中的默认frame,如果不合适，那么你应该修改默认frame或者用纯代码重新设置frame
+* 当自定义的view的大小在对话框显示期间如果发生了变化，那么应该调用```- (void)updateCustomViewSize:(CGSize)size```通知SPAlertController更新其大小
 
 ## 历史版本
 ##### 版本3.0 
