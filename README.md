@@ -191,6 +191,7 @@ SPAlertControllerStyleAlert下的圆角半径
 ```
 + (instancetype)alertControllerWithCustomActionSequenceView:(nullable UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 ```
+![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-9544748007937417.jpg)
 ## 关于自定义view的大小
 * 非自动布局，在传入自定义view之前，应该为自定义的view设置好frame，也可以在传入自定义view之后，调用API```- (void)updateCustomViewSize:(CGSize)size```设置其大小；
 * 自动布局，如果宽度和高度都能由子控件撑起来，那么你不需要设置frame，否则，宽度和高度只要有其中一个无法由子控件撑起，那么就必须设置其值，比如高度能被子控件撑起来，而宽度不能，那么你就必须手动设置一个宽度，高度可以不用设置或者设置为0都可。如果是xib或者storyboard，若自定义的view无法由子控件撑起来，SPAlertController会读取xib/storyboard中的默认frame，如果不合适，那么你应该修改xib/storyboard中的默认frame或者用纯代码重新设置frame。如果自定义view的宽度能够被子控件撑起，但同时又手动设置了自定义view的宽度，那么SPAlertController会取自动撑起的宽度和手动设置的宽度中较大的那个，高度同理。有一种情况要值得注意：如果子控件类似按钮这种不设置大小就自动会产生大小的子控件，同时该按钮设置了左右间距，那么它就能将自定义的view的宽度撑起，但是这种撑起来的宽度可能并非你想要的，因为按钮宽度是由内容自动产生，不是你设置的，这时你应该手动设置按钮的宽度，以便自定义的view的宽度被撑起的恰到好处，或者手动设置自定义view的宽度，这个手动设置的宽度，应该要比没有手动设置宽度的按钮将自定义view撑起来的宽度要大。
