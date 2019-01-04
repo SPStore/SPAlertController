@@ -1,5 +1,5 @@
 
-# 3.0版本有极大的优化，由于采用了iOS9之后推出的UIStackView，因此3.0版本只支持iOS9及iOS9以上的系统
+# 3.0版本有极大的优化，由于采用了iOS9之后推出的UIStackView，因此3.0版本只支持iOS9及其以上系统
 # SPAlertController
 [![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
 [![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
