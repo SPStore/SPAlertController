@@ -103,7 +103,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-a12eae25bc1061d6.jpg)
 
-* SPAlertControllerStyleActionSheet样式下的垂直排列和水平排列
+* SPAlertControllerStyleAlert样式下的垂直排列和水平排列
 
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-b35b79b657815756.jpg)
 
