@@ -15,7 +15,7 @@
 * [历史版本](#历史版本)
 
 ## 功能特点
-- [x] 采用VFL布局，3.0版本开始核心控件为UIStackView，不依赖任何其余框架，风格与微信几乎零误差
+- [x] 采用VFL布局，3.0版本开始核心控件为UIStackView，风格与微信几乎零误差
 - [x] 3.0版本开始对话框头部新增图片设置
 - [x] 3.0版本开始action支持图片设置
 - [x] 3.0版本开始，iOS11及其以上系统可单独设置指定action后的间距
@@ -75,7 +75,7 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 
 ![image](https://github.com/SPStore/SPAlertController/blob/master/Images/F4FB539593B4CC499E65735E4F1E8227.jpg)
 
-### SPAlertControllerd的action配置
+### SPAlertController的action配置
 ```
 // 添加action，actions里面存放的就是添加的所有action
 
