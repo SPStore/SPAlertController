@@ -378,10 +378,9 @@
 
 #pragma mark ---------------------------- SPAlertControllerActionView begin --------------------------------
 
-@interface SPAlertControllerActionView : UIView {
-    id _target;
-    SEL _methodAction;
-}
+@interface SPAlertControllerActionView : UIView
+@property (nonatomic, weak) id target;
+@property (nonatomic, assign) SEL methodAction;
 @property (nonatomic, strong) SPAlertAction *action;
 @property (nonatomic, weak) UIButton *actionButton;
 @property (nonatomic, strong) NSMutableArray *actionButtonConstraints;

@@ -196,6 +196,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 /** 更新自定义view的size，自定义了哪个view，该size指的就是哪个view的size,比如屏幕旋转，自定义view的大小发生了改变，可通过该方法更新 */
 - (void)updateCustomViewSize:(CGSize)size;
 
+
 @property (nonatomic, assign) CGFloat maxTopMarginForActionSheet NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdgeForAlert instead");  //  actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
 @property(nonatomic, assign) CGFloat maxMarginForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdgeForAlert instead");// alert样式下,四周的最小间距,默认为20，该属性起名有误，应该是最小，而不是最大，3.0版本属性名已改，叫minDistanceToEdgeForAlert
 @property(nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use actionAxis instead");// alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2；在添加action之前设置性能会更佳,由于水平排列的action都是排布在footerView上,所以如果自定义了footerView，该属性将失去效用
@@ -212,6 +213,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 - (void)didPresentAlertController:(SPAlertController *)alertController;  // 已经present
 - (void)willDismissAlertController:(SPAlertController *)alertController; // 将要dismiss
 - (void)didDismissAlertController:(SPAlertController *)alertController;  // 已经dismiss
+
 
 - (void)sp_alertControllerWillShow:(SPAlertController *)alertController NS_DEPRECATED_IOS(8_0, 8_0,"Use -willPresentAlertController:");
 - (void)sp_alertControllerDidShow:(SPAlertController *)alertController  NS_DEPRECATED_IOS(8_0, 8_0,"Use -DidPresentAlertController:");
