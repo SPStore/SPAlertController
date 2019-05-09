@@ -3,7 +3,7 @@
 //  SPAlertController
 //
 //  Created by 乐升平 on 18/10/12. https://github.com/SPStore/SPAlertController
-//  Copyright © 2018年 iDress. All rights reserved.
+//  Copyright © 2018-2019 leshengping (lesp163@163.com). All rights reserved.
 //
 
 #import "SPAlertController.h"
