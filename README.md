@@ -27,14 +27,14 @@
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
 ## CocoaPods
-##### 版本3.0.1
+##### 版本3.0.2
 ```
 platform:ios,'9.0'
 target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0.1'
+  pod 'SPAlertController', '~> 3.0.2'
 end
 
-3.0.1版本使背景蒙层动画更加的柔和
+3.0.2版本修复了内存泄漏问题
 ```
 
 ## 使用示例
@@ -198,6 +198,16 @@ SPAlertControllerStyleAlert下的圆角半径
 * 当自定义的view的大小在对话框显示期间发生了变化，你应该调用```- (void)updateCustomViewSize:(CGSize)size```通知SPAlertController更新其大小
 
 ## 历史版本
+
+##### 版本3.0.1
+```
+platform:ios,'9.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 3.0.1'
+end
+
+3.0.1版本使背景蒙层动画更加的柔和
+```
 ##### 版本3.0 
 ```
 platform:ios,'9.0'
