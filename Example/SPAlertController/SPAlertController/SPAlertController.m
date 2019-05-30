@@ -971,8 +971,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 // 添加文本输入框
 - (void)addTextFieldWithConfigurationHandler:(void (^)(UITextField * _Nonnull))configurationHandler {
-    NSString *errorDesc =  [NSString stringWithFormat:@"SPAlertController does not allow '%@' to be called in the style of SPAlertControllerStyleActionSheet",NSStringFromSelector(_cmd)];
-    NSAssert(self.preferredStyle == SPAlertControllerStyleAlert,errorDesc);
+    NSAssert(self.preferredStyle == SPAlertControllerStyleAlert,@"SPAlertController does not allow 'addTextFieldWithConfigurationHandler:' to be called in the style of SPAlertControllerStyleActionSheet");
     UITextField *textField = [[UITextField alloc] init];
     textField.translatesAutoresizingMaskIntoConstraints = NO;
     textField.backgroundColor = [UIColor whiteColor];
@@ -1889,7 +1888,9 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         actionSequenceView.buttonClickedInActionViewBlock = ^(NSInteger index) {
             [weakSelf dismissViewControllerAnimated:YES completion:nil];
             SPAlertAction *action = weakSelf.actions[index];
-            action.handler(action);
+            if (action.handler) {
+                action.handler(action);
+            }
         };
         if (self.actions.count && !self.customActionSequenceView) {
             [self.alertView addSubview:actionSequenceView];

@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, SPAlertAnimationType) {
     SPAlertAnimationTypeFade,        // 渐变动画
 
     SPAlertAnimationTypeNone,        // 无动画
-    SPAlertAnimationTypeAlpha NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFad instead"), // 渐变动画
+    SPAlertAnimationTypeAlpha NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFade instead"), // 渐变动画
     SPAlertAnimationTypeRaiseUp NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFromBottom instead"), // 从底部弹出
     SPAlertAnimationTypeDropDown NS_ENUM_DEPRECATED_IOS(8_0, 8_0, "Use SPAlertAnimationTypeFromTop instead"), // 从顶部弹出
 };
