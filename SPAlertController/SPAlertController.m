@@ -2164,7 +2164,9 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (void)tapOverlayView {
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
-    [alertController dismissViewControllerAnimated:YES completion:^{}];
+    if (alertController.tapBackgroundViewDismiss) {
+        [alertController dismissViewControllerAnimated:YES completion:^{}];
+    }
 }
 
 - (void)dealloc {
