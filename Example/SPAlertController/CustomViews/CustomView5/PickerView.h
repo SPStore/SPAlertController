@@ -10,7 +10,7 @@
 
 @interface PickerView : UIView
 
-@property (nonatomic, copy) void(^cancelClickedBlock)();
-@property (nonatomic, copy) void(^doneClickedBlock)();
+@property (nonatomic, copy) void(^cancelClickedBlock)(void);
+@property (nonatomic, copy) void(^doneClickedBlock)(void);
 
 @end

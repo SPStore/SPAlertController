@@ -28,6 +28,11 @@
 		522C267F21D0D5F0004EBDEB /* SendAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 522C267E21D0D5F0004EBDEB /* SendAlertView.xib */; };
 		522C268621D0E40A004EBDEB /* send1.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 522C268121D0E409004EBDEB /* send1.jpeg */; };
 		522C268F21D0EB17004EBDEB /* send0.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 522C268E21D0EB16004EBDEB /* send0.jpeg */; };
+		5270519A22EE9FF50016D0DB /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
+		5270519B22EE9FF50016D0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5C521B60F86006AF8CC /* main.m */; };
+		5270519C22EEAF000016D0DB /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
+		5270519D22EEAF410016D0DB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5B721B60F83006AF8CC /* AppDelegate.m */; };
+		5270519E22EEBC660016D0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5C521B60F86006AF8CC /* main.m */; };
 		52CB4ACC21B616E400B6090B /* MyCenterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AB321B616E400B6090B /* MyCenterView.m */; };
 		52CB4ACD21B616E400B6090B /* ShoppingCartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52CB4AB521B616E400B6090B /* ShoppingCartCell.xib */; };
 		52CB4ACE21B616E400B6090B /* ShoppingCartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AB621B616E400B6090B /* ShoppingCartView.m */; };
@@ -38,15 +43,12 @@
 		52CB4AD321B616E400B6090B /* PassWordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AC321B616E400B6090B /* PassWordView.m */; };
 		52CB4AD421B616E400B6090B /* MyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52CB4AC421B616E400B6090B /* MyView.xib */; };
 		52CB4AD521B616E400B6090B /* MyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AC721B616E400B6090B /* MyView.m */; };
-		52F6A5B821B60F83006AF8CC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5B721B60F83006AF8CC /* AppDelegate.m */; };
 		52F6A5BB21B60F83006AF8CC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5BA21B60F83006AF8CC /* ViewController.m */; };
 		52F6A5BE21B60F83006AF8CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52F6A5BC21B60F83006AF8CC /* Main.storyboard */; };
 		52F6A5C021B60F86006AF8CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52F6A5BF21B60F86006AF8CC /* Assets.xcassets */; };
 		52F6A5C321B60F86006AF8CC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52F6A5C121B60F86006AF8CC /* LaunchScreen.storyboard */; };
-		52F6A5C621B60F86006AF8CC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5C521B60F86006AF8CC /* main.m */; };
 		52F6A5D021B60F86006AF8CC /* SPAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5CF21B60F86006AF8CC /* SPAlertControllerTests.m */; };
 		52F6A5DB21B60F86006AF8CC /* SPAlertControllerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5DA21B60F86006AF8CC /* SPAlertControllerUITests.m */; };
-		52F6A5EB21B6101E006AF8CC /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -315,7 +317,6 @@
 				52F6A5C121B60F86006AF8CC /* LaunchScreen.storyboard */,
 				52F6A5C421B60F86006AF8CC /* Info.plist */,
 				09810FB721C4F90300E702E1 /* Images */,
-				52F6A5C521B60F86006AF8CC /* main.m */,
 			);
 			path = SPAlertController;
 			sourceTree = "<group>";
@@ -323,6 +324,7 @@
 		52F6A5CE21B60F86006AF8CC /* SPAlertControllerTests */ = {
 			isa = PBXGroup;
 			children = (
+				52F6A5C521B60F86006AF8CC /* main.m */,
 				52F6A5CF21B60F86006AF8CC /* SPAlertControllerTests.m */,
 				52F6A5D121B60F86006AF8CC /* Info.plist */,
 			);
@@ -494,6 +496,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5270519E22EEBC660016D0DB /* main.m in Sources */,
+				5270519D22EEAF410016D0DB /* AppDelegate.m in Sources */,
+				5270519C22EEAF000016D0DB /* SPAlertController.m in Sources */,
 				522C267A21D0D0B7004EBDEB /* SPTextView.m in Sources */,
 				090BCB9221CEA18300057E1F /* PopView.m in Sources */,
 				52CB4ACF21B616E400B6090B /* ShoppingCartItem.m in Sources */,
@@ -505,11 +510,8 @@
 				522C267321D0C422004EBDEB /* ScoreView.m in Sources */,
 				522C267021D0C31F004EBDEB /* HCSStarRatingView.m in Sources */,
 				52CB4ACE21B616E400B6090B /* ShoppingCartView.m in Sources */,
-				52F6A5EB21B6101E006AF8CC /* SPAlertController.m in Sources */,
-				52F6A5C621B60F86006AF8CC /* main.m in Sources */,
 				52CB4AD121B616E400B6090B /* CommodityListView.m in Sources */,
 				52CB4AD521B616E400B6090B /* MyView.m in Sources */,
-				52F6A5B821B60F83006AF8CC /* AppDelegate.m in Sources */,
 				52CB4AD021B616E400B6090B /* ShoppingCartCell.m in Sources */,
 				52CB4AD221B616E400B6090B /* PickerView.m in Sources */,
 			);
@@ -520,6 +522,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				52F6A5D021B60F86006AF8CC /* SPAlertControllerTests.m in Sources */,
+				5270519B22EE9FF50016D0DB /* main.m in Sources */,
+				5270519A22EE9FF50016D0DB /* SPAlertController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -19,7 +19,7 @@
 
 #define ScreenWidth [UIScreen mainScreen].bounds.size.width
 #define ScreenHeight [UIScreen mainScreen].bounds.size.height
-#define StatusHeight ([UIScreen mainScreen].bounds.size.height >= 812 ? 44 : 20)
+#define NaviHeight ([UIScreen mainScreen].bounds.size.height >= 812 ? 88 : 64)
 
 // RGB颜色
 #define SPColorRGBA(r, g, b, a) [UIColor colorWithRed:(r)/255.0 green:(g)/255.0 blue:(b)/255.0 alpha:(a)]
@@ -28,7 +28,7 @@
 // 随机色
 #define SPRandomColor ZCColorRGBA(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256),1)
 
-@interface ViewController () <UITableViewDelegate,UITableViewDataSource, PassWordViewDelegate>
+@interface ViewController () <UITableViewDelegate,UITableViewDataSource, PassWordViewDelegate,SPAlertControllerDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) NSArray *titles;
 @property (nonatomic, strong) NSArray *dataSource;
@@ -36,6 +36,7 @@
 @property (nonatomic, strong) UITextField *phoneNumberTextField;
 @property (nonatomic, strong) UITextField *passwordTextField;
 @property (weak, nonatomic) IBOutlet UIButton *changeButton;
+@property (nonatomic, assign) BOOL haveBg;
 @property (nonatomic, assign) BOOL lookBlur;
 @property (nonatomic, weak) SPAlertController *alertController;
 @end
@@ -49,6 +50,7 @@
 // 示例1:actionSheet的默认动画样式(从底部弹出，有取消按钮)
 - (void)actionSheetTest1 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleActionSheet];
+    alertController.needDialogBlur = _lookBlur;
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了Default ");
     }];
@@ -68,6 +70,7 @@
 // 示例2:actionSheet的默认动画(从底部弹出,无取消按钮)
 - (void)actionSheetTest2 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleActionSheet];
+    alertController.needDialogBlur = _lookBlur;
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了Default ");
     }];
@@ -257,6 +260,8 @@
 // 示例9:alert 默认动画(收缩动画)
 - (void)alertTest1 {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeDefault];
+    alertController.needDialogBlur = _lookBlur;
+
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"确定" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了确定");
     }];
@@ -691,7 +696,7 @@
     SPAlertController *alertController = [SPAlertController alertControllerWithCustomAlertView:popView preferredStyle:SPAlertControllerStyleAlert animationType:SPAlertAnimationTypeNone];
     alertController.minDistanceToEdges = 0; // 要想自定义view全屏，该属性必须为0，否则四周会有间距
     alertController.needDialogBlur = NO; // 去除对话框的毛玻璃
-    alertController.cornerRadiusForAlert = 0; // 去除圆角半径
+    alertController.cornerRadius = 0; // 去除圆角半径
     // 设置背景遮罩为毛玻璃样式
     [alertController setBackgroundViewAppearanceStyle:SPBackgroundViewAppearanceStyleBlurExtraLight alpha:1.0];
     [self presentViewController:alertController animated:NO completion:^{
@@ -880,36 +885,13 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-#pragma mark ========================================== 毛玻璃示例 =======================================================
+#pragma mark ========================================== 背景毛玻璃示例 =======================================================
 
-// 示例33:去除对话框的毛玻璃(默认0.5透明)
-- (void)dialogRemoveBlurTest1 {
-    
-    SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleActionSheet];
-    
-    SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了Default");
-    }];
-    
-    SPAlertAction *action2 = [SPAlertAction actionWithTitle:@"Destructive" style:SPAlertActionStyleDestructive handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了Destructive");
-    }];
-    SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertActionStyleCancel handler:^(SPAlertAction * _Nonnull action) {
-        NSLog(@"点击了Cancel");
-    }];
-    [alertController addAction:action1];
-    [alertController addAction:action2];
-    [alertController addAction:action3];
-    
-    // 设置对话框不需要毛玻璃
-    alertController.needDialogBlur = NO;
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-// 示例34:背景外观样式
-- (void)backgroundAppearanceStyleTest2:(SPBackgroundViewAppearanceStyle)appearanceStyle {
+// 示例33:背景外观样式
+- (void)backgroundAppearanceStyleTest:(SPBackgroundViewAppearanceStyle)appearanceStyle {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeFromBottom];
+    
+    alertController.needDialogBlur = _lookBlur;
     
     SPAlertAction *action1 = [SPAlertAction actionWithTitle:@"Default" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
         NSLog(@"点击了Default");
@@ -980,27 +962,33 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-// 切换背景
-- (IBAction)changeBackgroundImage:(UIButton *)sender {
-    if (!sender.selected) {
-        NSInteger c = 1+(arc4random() % 2);
-        self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"背景%li.jpg",c]]];
-    } else {
-        self.tableView.backgroundView = nil;
-    }
-    _lookBlur = !sender.selected;
-    sender.selected = !sender.selected;
-    [self.tableView reloadData];
+#pragma mark - SPAlertControllerDelegate
+
+- (void)willPresentAlertController:(SPAlertController *)alertController {
+    
+}
+
+- (void)didPresentAlertController:(SPAlertController *)alertController {
+    
+}
+
+- (void)willDismissAlertController:(SPAlertController *)alertController {
+    
+}
+
+- (void)didDismissAlertController:(SPAlertController *)alertController {
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self setupNavi];
     dic = [NSMutableDictionary dictionaryWithCapacity:2];
     self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
     self.tableView.sectionFooterHeight = CGFLOAT_MIN;
     
-    self.titles = @[@"ActionSheet样式",@"Alert样式",@"富文本",@"自定义视图",@"特殊情况",@"毛玻璃"];
+    self.titles = @[@"actionSheet样式",@"alert样式",@"富文本",@"自定义视图",@"特殊情况",@"背景毛玻璃"];
     self.dataSource = @[
                         @[@"actionSheet样式 默认动画(从底部弹出,有取消按钮)",@"actionSheet样式 默认动画(从底部弹出,无取消按钮)",@"actionSheet样式 从顶部弹出(无标题)",@"actionSheet样式 从顶部弹出(有标题)",@"actionSheet样式 水平排列（有取消样式按钮）",@"actionSheet样式 水平排列（无取消样式按钮)",@"actionSheet样式 action含图标",@"actionSheet样式 模拟多分区样式(>=iOS11才支持)"
                           ],
@@ -1012,9 +1000,68 @@
                           ],
                         @[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多",@"action上的文字过长（垂直）",@"action上的文字过长（水平）"
                           ],
-                        @[@"去除对话框的毛玻璃",@"透明黑色背景样式(背景无毛玻璃,默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"
+                        @[@"透明黑色背景样式(背景无毛玻璃,默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"
                           ]
                         ];
+}
+
+- (void)setupNavi {
+    self.navigationItem.title = @"演示Demo";
+    UIButton *changeBgButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    changeBgButton.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
+    [changeBgButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [changeBgButton setTitle:@"切换背景" forState:UIControlStateNormal];
+    changeBgButton.titleLabel.font = [UIFont systemFontOfSize:12];
+    changeBgButton.frame = CGRectMake(0, 0, 70, 25);
+    changeBgButton.layer.cornerRadius = 5;
+    changeBgButton.layer.masksToBounds = YES;
+    [changeBgButton addTarget:self action:@selector(changeBackgroundImage:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:changeBgButton];
+    
+    UIButton *blurButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    blurButton.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
+    [blurButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [blurButton setTitle:@"打开毛玻璃" forState:UIControlStateNormal];
+    [blurButton setTitle:@"关闭毛玻璃" forState:UIControlStateSelected];
+    blurButton.titleLabel.font = [UIFont systemFontOfSize:12];
+    blurButton.frame = CGRectMake(0, 0, 70, 25);
+    blurButton.layer.cornerRadius = 5;
+    blurButton.layer.masksToBounds = YES;
+    [blurButton addTarget:self action:@selector(lookBlurAction:) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:blurButton];
+
+}
+
+- (void)changeBackgroundImage:(UIButton *)sender {
+    if (!sender.selected) {
+        NSInteger c = 1+(arc4random() % 2);
+        self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"背景%li.jpg",c]]];
+        sender.backgroundColor = [UIColor orangeColor];
+    } else {
+        self.tableView.backgroundView = nil;
+        sender.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
+    }
+    _haveBg = !sender.selected;
+    sender.selected = !sender.selected;
+    [self.tableView reloadData];
+}
+
+- (void)lookBlurAction:(UIButton *)sender {
+    _lookBlur = !sender.selected;
+    if (!sender.selected) {
+        sender.backgroundColor = [UIColor orangeColor];
+        if (!_haveBg) {
+            SPAlertController *alertVc = [SPAlertController alertControllerWithTitle:@"提示" message:@"切换背景看毛玻璃效果更明显哦！" preferredStyle:SPAlertControllerStyleAlert];
+            SPAlertAction *action = [SPAlertAction actionWithTitle:@"知道了" style:SPAlertActionStyleDefault handler:^(SPAlertAction * _Nonnull action) {
+                
+            }];
+            [alertVc addAction:action];
+            [self presentViewController:alertVc animated:YES completion:nil];
+        }
+    } else {
+        sender.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
+    }
+    sender.selected = !sender.selected;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -1035,7 +1082,7 @@
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     cell.textLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
-    if (_lookBlur) {
+    if (_haveBg) {
         cell.backgroundColor = [UIColor clearColor];
     } else {
         cell.backgroundColor = [UIColor whiteColor];
@@ -1054,7 +1101,7 @@
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         titleLabel.textAlignment = NSTextAlignmentCenter;
-        titleLabel.font = [UIFont boldSystemFontOfSize:18];
+        titleLabel.font = [UIFont boldSystemFontOfSize:16];
         titleLabel.userInteractionEnabled = YES;
         titleLabel.tag = 200;
         [header.contentView addSubview:titleLabel];
@@ -1079,8 +1126,8 @@
         [dic setValue:@(0) forKey:key];
     }
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:section] withRowAnimation:UITableViewRowAnimationFade];
-    if (self.tableView.contentOffset.y < -StatusHeight) {
-        [self.tableView setContentOffset:CGPointMake(0, -StatusHeight) animated:YES];
+    if (self.tableView.contentOffset.y < -NaviHeight) {
+        [self.tableView setContentOffset:CGPointMake(0, -NaviHeight) animated:YES];
     }
 }
 
@@ -1205,19 +1252,16 @@
     } else {
         switch (indexPath.row) { // 毛玻璃区
             case 0:
-                [self dialogRemoveBlurTest1];
+                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleTranslucent];
                 break;
             case 1:
-                [self backgroundAppearanceStyleTest2:SPBackgroundViewAppearanceStyleTranslucent];
+                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleBlurDark];
                 break;
             case 2:
-                [self backgroundAppearanceStyleTest2:SPBackgroundViewAppearanceStyleBlurDark];
+                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleBlurExtraLight];
                 break;
             case 3:
-                [self backgroundAppearanceStyleTest2:SPBackgroundViewAppearanceStyleBlurExtraLight];
-                break;
-            case 4:
-                [self backgroundAppearanceStyleTest2:SPBackgroundViewAppearanceStyleBlurLight];
+                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleBlurLight];
                 break;
         }
     }
