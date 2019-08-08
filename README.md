@@ -33,13 +33,6 @@ platform:ios,'9.0'
 target 'MyApp' do
   pod 'SPAlertController', '~> 3.1.0'
 end
-
-3.1.0版本改动点：
-1、actionSheet样式加了单边圆角效果
-2、毛玻璃默认为NO
-3、当不需要毛玻璃效果时，actionButton的选中背景色修改(灰度0.1)，属于bug修复
-4、“取消action”上的分割线背景色修改(灰度由0.3变为0.2)，高度由6增加为8，
-5、每个actionButton的最小高度由49变为55
 ```
 
 ## 使用示例
