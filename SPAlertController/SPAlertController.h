@@ -11,7 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, SPAlertControllerStyle) {
-    SPAlertControllerStyleActionSheet = 0, // 从四周的某一侧弹出(顶/左/底/右),从哪边弹出,就往哪边对齐
+    SPAlertControllerStyleActionSheet = 0, // 从单侧弹出(顶/左/底/右)
     SPAlertControllerStyleAlert,           // 从中间弹出
 };
 
@@ -132,15 +132,15 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
  */
 @property(nonatomic, assign) CGFloat minDistanceToEdges;
 
-/** 圆角半径，只有alert样式有效*/
-@property(nonatomic, assign) CGFloat cornerRadiusForAlert;
+/** SPAlertControllerStyleAlert样式下默认6.0f，SPAlertControllerStyleActionSheet样式下默认13.0f，去除半径设置为0即可 */
+@property(nonatomic, assign) CGFloat cornerRadius;
 
-/** 对话框的偏移量，y值为正向下偏移，为负向上偏移；x值为正向右偏移，为负向左偏移，该属性只对SPAlertControllerStyleAlert样式有效,键盘的frame改变会自动偏移，如果外界手动设置偏移只会取手动设置的 */
+/** 对话框的偏移量，y值为正向下偏移，为负向上偏移；x值为正向右偏移，为负向左偏移，该属性只对SPAlertControllerStyleAlert样式有效,键盘的frame改变会自动偏移，如果手动设置偏移只会取手动设置的 */
 @property(nonatomic, assign) CGPoint offsetForAlert;
 /** 设置alert样式下的偏移量,动画为NO则跟属性offsetForAlert等效 */
 - (void)setOffsetForAlert:(CGPoint)offsetForAlert animated:(BOOL)animated;
 
-/** 是否需要对话框拥有毛玻璃,默认为YES----Dialog单词是对话框的意思 */
+/** 是否需要对话框拥有毛玻璃,默认为YES */
 @property(nonatomic, assign) BOOL needDialogBlur;
 
 /** 是否单击背景退出对话框,默认为YES */
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 - (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;
 
 // 插入一个组件view，位置处于头部和action部分之间，要求头部和action部分同时存在
-- (void)insertComponentView:(nullable UIView *)componentView;
+- (void)insertComponentView:(nonnull UIView *)componentView;
 
 
 // ---------------------------------------------- custom -----------------------------------------------------
@@ -171,7 +171,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
  @param animationType 动画类型
  @return 控制器对象
  */
-+ (instancetype)alertControllerWithCustomAlertView:(nullable UIView *)customAlertView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
++ (instancetype)alertControllerWithCustomAlertView:(nonnull UIView *)customAlertView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 /**
  创建控制器(自定义对话框的头部)
  
@@ -180,7 +180,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
  @param animationType 动画类型
  @return 控制器对象
  */
-+ (instancetype)alertControllerWithCustomHeaderView:(nullable UIView *)customHeaderView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
++ (instancetype)alertControllerWithCustomHeaderView:(nonnull UIView *)customHeaderView preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 /**
  创建控制器(自定义对话框的action部分)
  
@@ -191,20 +191,22 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
  @param animationType 动画类型
  @return 控制器对象
  */
-+ (instancetype)alertControllerWithCustomActionSequenceView:(nullable UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
++ (instancetype)alertControllerWithCustomActionSequenceView:(nonnull UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 
-/** 更新自定义view的size，自定义了哪个view，该size指的就是哪个view的size,比如屏幕旋转，自定义view的大小发生了改变，可通过该方法更新 */
+/** 更新自定义view的size，比如屏幕旋转，自定义view的大小发生了改变，可通过该方法更新size */
 - (void)updateCustomViewSize:(CGSize)size;
 
 
-@property (nonatomic, assign) CGFloat maxTopMarginForActionSheet NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdgeForAlert instead");  //  actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
-@property(nonatomic, assign) CGFloat maxMarginForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdgeForAlert instead");// alert样式下,四周的最小间距,默认为20，该属性起名有误，应该是最小，而不是最大，3.0版本属性名已改，叫minDistanceToEdgeForAlert
+/** SPAlertControllerStyleAlert样式下的圆角半径，默认6.0f */
+@property(nonatomic, assign) CGFloat cornerRadiusForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use cornerRadius instead");
+@property (nonatomic, assign) CGFloat maxTopMarginForActionSheet NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdges instead");  //  actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
+@property(nonatomic, assign) CGFloat maxMarginForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdges instead");// alert样式下,四周的最小间距,默认为20，该属性起名有误，应该是最小，而不是最大，3.0版本属性名已改，叫minDistanceToEdges
 @property(nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use actionAxis instead");// alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2；在添加action之前设置性能会更佳,由于水平排列的action都是排布在footerView上,所以如果自定义了footerView，该属性将失去效用
-@property(nonatomic, assign) CGFloat offsetYForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use offset instead"); //  对话框垂直方向上的偏移
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomView:preferredStyle:animationType:");
+@property(nonatomic, assign) CGFloat offsetYForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use offsetForAlert instead"); //  对话框垂直方向上的偏移
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomAlertView:preferredStyle:animationType:");
 + (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customHeaderView:(nullable UIView *)customHeaderView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomHeaderView:preferredStyle:animationType:");
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithComponentView:title:message:(nullable NSString *)message preferredStyle:animationType:");
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customFooterView:(nullable UIView *)customFooterView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomActionGroupView:title:message: preferredStyle:animationType:");
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView NS_DEPRECATED_IOS(8_0, 8_0,"Use -insertComponentView:");
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customFooterView:(nullable UIView *)customFooterView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomActionSequenceView:title:message:preferredStyle:animationType:");
 @end
 
 @protocol SPAlertControllerDelegate <NSObject>

@@ -17,7 +17,7 @@
 #define Is_iPhoneX MAX(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) >= 812
 #define SP_STATUS_BAR_HEIGHT (Is_iPhoneX ? 44 : 20)
 #define SP_ACTION_TITLE_FONTSIZE 18
-#define SP_ACTION_HEIGHT 49.0
+#define SP_ACTION_HEIGHT 55.0
 
 #pragma mark ---------------------------- SPAlertAction begin --------------------------------
 
@@ -156,7 +156,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.backgroundColor = self.frame.size.height > SP_LINE_WIDTH ? [[UIColor grayColor] colorWithAlphaComponent:0.2] : SP_LINE_COLOR;
+    self.backgroundColor = self.frame.size.height > SP_LINE_WIDTH ? [[UIColor grayColor] colorWithAlphaComponent:0.15] : SP_LINE_COLOR;
 }
 
 @end
@@ -446,11 +446,28 @@
 }
 
 - (void)touchDown:(UIButton *)sender {
-    sender.backgroundColor = SP_SELECTED_COLOR;
+    SPAlertController *alert = [self findAlertController];
+    if (alert.needDialogBlur) {
+        sender.backgroundColor = SP_SELECTED_COLOR; // 需要毛玻璃时，只有白色带透明，毛玻璃效果才更加清澈
+    } else {
+        sender.backgroundColor = [[UIColor grayColor] colorWithAlphaComponent:0.1]; // 该颜色比'取消action'上的分割线的颜色浅一些
+    }
 }
 
 - (void)touchDragExit:(UIButton *)sender {
     sender.backgroundColor = SP_NORMAL_COLOR;
+}
+
+- (SPAlertController *)findAlertController {
+    UIResponder *next = [self nextResponder];
+    do {
+        if ([next isKindOfClass:[SPAlertController class]]) {
+            return (SPAlertController *)next;
+        } else {
+            next = [next nextResponder];
+        }
+    } while (next != nil);
+    return nil;
 }
 
 // 安全区域发生了改变,在这个方法里自动适配iPhoneX
@@ -635,7 +652,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     UIStackView *stackView = self.stackView;
     NSArray *arrangedSubviews = stackView.arrangedSubviews;
     if (arrangedSubviews.count <= 1) return;
-        // 用谓词语句筛选出所有的分割线
+    // 用谓词语句筛选出所有的分割线
     NSArray *lines = [self filteredArrayFromArray:stackView.subviews notInArray:stackView.arrangedSubviews];
     if (arrangedSubviews.count < lines.count) return;
     NSMutableArray *actionLineConstraints = [NSMutableArray array];
@@ -729,7 +746,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         NSMutableArray *cancelActionLineConstraints = [NSMutableArray array];
         [cancelActionLineConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[cancelActionLine]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(cancelActionLine)]];
         [cancelActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:cancelActionLine attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:cancelView attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
-        [cancelActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:cancelActionLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:6.0]];
+        [cancelActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:cancelActionLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:8.0]];
         [NSLayoutConstraint activateConstraints:cancelActionLineConstraints];
     }
     
@@ -880,7 +897,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     return alertVc;
 }
 
-+ (instancetype)alertControllerWithCustomActionSequenceView:(nullable UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType {
++ (instancetype)alertControllerWithCustomActionSequenceView:(UIView *)customActionSequenceView title:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType {
     SPAlertController *alertVc = [[SPAlertController alloc] initWithTitle:title message:message customAlertView:nil customHeaderView:nil customActionSequenceView:customActionSequenceView componentView:nil preferredStyle:preferredStyle animationType:animationType];
     return alertVc;
 }
@@ -1054,9 +1071,11 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if (preferredStyle == SPAlertControllerStyleAlert) {
         _maxMarginForAlert = (MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) - 275) / 2.0;
         _minDistanceToEdges = (MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) - 275) / 2.0;
+        _cornerRadius = 6.0;
     } else {
         _minDistanceToEdges = 70;
         _maxTopMarginForActionSheet = 70;
+        _cornerRadius = 13.0;
     }
     if (preferredStyle == SPAlertControllerStyleAlert) {
         _actionAxis = UILayoutConstraintAxisHorizontal;
@@ -1090,10 +1109,10 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     _messageColor = [UIColor grayColor];
     _textAlignment = NSTextAlignmentCenter;
     _imageLimitSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-    _backgroundViewAlpha = 0.5;
     _cornerRadiusForAlert = 6.0;
+    _backgroundViewAlpha = 0.5;
     _tapBackgroundViewDismiss = YES;
-    _needDialogBlur = YES;
+    _needDialogBlur = NO;
     _maxNumberOfActionHorizontalArrangementForAlert = 2;
 }
 
@@ -1560,6 +1579,10 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     // 对自己创建的alertControllerView布局，在这个方法里，self.view才有父视图，有父视图才能改变其约束
     [self layoutAlertControllerView];
     [self layoutChildViews];
+    
+    if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
+        [self setCornerRadius:_cornerRadius];
+    }
 }
 
 - (void)viewDidLayoutSubviews {
@@ -1724,8 +1747,42 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
 }
 
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+    _cornerRadius = cornerRadius;
+    if (self.preferredStyle == SPAlertControllerStyleAlert) {
+        self.containerView.layer.cornerRadius = _cornerRadius;
+        self.containerView.layer.masksToBounds = YES;
+    } else {
+        if (_cornerRadius > 0.0) {
+            UIRectCorner corner = UIRectCornerTopLeft | UIRectCornerTopRight;
+            switch (_animationType) {
+                case SPAlertAnimationTypeFromBottom:
+                    corner = UIRectCornerTopLeft | UIRectCornerTopRight;
+                    break;
+                case SPAlertAnimationTypeFromTop:
+                    corner = UIRectCornerBottomLeft | UIRectCornerBottomRight;
+                    break;
+                case SPAlertAnimationTypeFromLeft:
+                    corner = UIRectCornerTopRight | UIRectCornerBottomRight;
+                    break;
+                case SPAlertAnimationTypeFromRight:
+                    corner = UIRectCornerTopLeft | UIRectCornerBottomLeft;
+                    break;
+                default:
+                    break;
+            }
+            CAShapeLayer *maskLayer = (CAShapeLayer *)_containerView.layer.mask;
+            maskLayer.path = [UIBezierPath bezierPathWithRoundedRect:_containerView.bounds byRoundingCorners:corner cornerRadii:CGSizeMake(_cornerRadius, _cornerRadius)].CGPath;
+            maskLayer.frame = _containerView.bounds;
+        } else {
+            _containerView.layer.mask = nil;
+        }
+    }
+}
+
 - (void)setCornerRadiusForAlert:(CGFloat)cornerRadiusForAlert {
     _cornerRadiusForAlert = cornerRadiusForAlert;
+    _cornerRadius = cornerRadiusForAlert;
     if (self.preferredStyle == SPAlertControllerStyleAlert) {
         self.containerView.layer.cornerRadius = _cornerRadiusForAlert;
         self.containerView.layer.masksToBounds = YES;
@@ -1769,12 +1826,14 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
             // 下面4行相当于self.dimmingKnockoutBackdropView = [self.dimmingKnockoutBackdropView performSelector:NSSelectorFromString(@"initWithStyle:") withObject:@(UIBlurEffectStyleLight)];
             SEL selector = NSSelectorFromString(@"initWithStyle:");
             IMP imp = [self.dimmingKnockoutBackdropView methodForSelector:selector];
-            UIView *(*func)(id, SEL,UIBlurEffectStyle) = (void *)imp;
-            self.dimmingKnockoutBackdropView = func(self.dimmingKnockoutBackdropView, selector, UIBlurEffectStyleLight);
-            self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
-            self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-            [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
-        } else { // 这个else是防止假如_UIDimmingKnockoutBackdropView这个类不存在了的时候，做一个备案,不过apple应该不会废弃某个类
+            if (imp != NULL) {
+                UIView *(*func)(id, SEL,UIBlurEffectStyle) = (void *)imp;
+                self.dimmingKnockoutBackdropView = func(self.dimmingKnockoutBackdropView, selector, UIBlurEffectStyleLight);
+                self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
+                self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
+            }
+        } else { // 这个else是防止假如_UIDimmingKnockoutBackdropView这个类不存在了的时候，做一个备案
             UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
             self.dimmingKnockoutBackdropView = [[UIVisualEffectView alloc] initWithEffect:blur];
             self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
@@ -1809,10 +1868,16 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         containerView.frame = self.alertControllerView.bounds;
         containerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         if (_preferredStyle == SPAlertControllerStyleAlert) {
-            containerView.layer.cornerRadius = _cornerRadiusForAlert;
+            containerView.layer.cornerRadius = _cornerRadius;
             containerView.layer.masksToBounds = YES;
+        } else {
+            if (_cornerRadius > 0.0) {
+                CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+                containerView.layer.mask = maskLayer;
+            }
         }
         [self.alertControllerView addSubview:containerView];
+        
         _containerView = containerView;
     }
     return _containerView;
