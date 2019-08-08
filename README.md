@@ -27,14 +27,19 @@
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
 ## CocoaPods
-##### 版本3.0.4
+##### 版本3.1.0
 ```
 platform:ios,'9.0'
 target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0.4'
+  pod 'SPAlertController', '~> 3.1.0'
 end
 
-3.0.4版本修复了tapBackgroundViewDismiss属性无效问题
+3.1.0版本改动点：
+1、actionSheet样式加了单边圆角效果
+2、毛玻璃默认为NO
+3、当不需要毛玻璃效果时，actionButton的选中背景色修改(灰度0.1)，属于bug修复
+4、“取消action”上的分割线背景色修改(灰度由0.3变为0.2)，高度由6增加为8，
+5、每个actionButton的最小高度由49变为55
 ```
 
 ## 使用示例
@@ -198,6 +203,15 @@ SPAlertControllerStyleAlert下的圆角半径
 * 当自定义的view的大小在对话框显示期间发生了变化，你应该调用```- (void)updateCustomViewSize:(CGSize)size```通知SPAlertController更新其大小
 
 ## 历史版本
+##### 版本3.0.4
+```
+platform:ios,'9.0'
+target 'MyApp' do
+  pod 'SPAlertController', '~> 3.0.4'
+end
+
+3.0.4版本修复了tapBackgroundViewDismiss属性无效问题
+```
 ##### 版本3.0.3
 ```
 platform:ios,'9.0'
