@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SPAlertController"
-  s.version      =  "3.0.4"
+  s.version      =  "3.1.0"
   s.summary      = "提醒对话框."
 
   # This description is used to generate tags and improve search results.
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-			说明:3.0.4版本修复了tapBackgroundViewDismiss属性无效问题
+			说明:3.1.0版本主要修改了actionSheet样式的UI
                    DESC
 
   s.homepage     = "https://github.com/SPStore/SPAlertController"
