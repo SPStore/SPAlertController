@@ -203,120 +203,23 @@ SPAlertControllerStyleAlert下的圆角半径
 * 当自定义的view的大小在对话框显示期间发生了变化，你应该调用```- (void)updateCustomViewSize:(CGSize)size```通知SPAlertController更新其大小
 
 ## 历史版本
-##### 版本3.0.4
-```
-platform:ios,'9.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0.4'
-end
+|  版本 | 更新日期 | 支持最低系统版本 |更新内容 |
+| :------------:| :------------:| :------------:|------------|
+|v3.1.0|2019.08.08|iOS9.0|1、actionSheet样式加了单边圆角效果<br>2、毛玻璃默认为NO<br>3、当不需要毛玻璃效果时,actionButton的选中背景色修改(灰度0.1)，属于bug修复<br>4、“取消action”上的分割线背景色修改(灰度由0.3变为0.2)，高度由6增加为8<br>5、每个actionButton的最小高度由49变为55|
+|v3.0.4|2019.06.03|iOS9.0|1、修复了tapBackgroundViewDismiss属性无效问题|
+|v3.0.3|2019.05.30|iOS9.0|1、修复了action点击的回调为nil时闪退问题|
+|v3.0.2|2019.05.09|iOS9.0|1、修复了内存泄漏问题|
+|v3.0.1|2019.01.03|iOS9.0|1、背景蒙层动画更加的柔和|
+|v3.0.0|2018.12.29|iOS9.0|1、全方位的大重构|
+|v2.5.2|2018.12.03|iOS8.0|1、按钮处于最底部时长按touchDown事件的延时现象采用新方式解决<br>2、修复了内存泄露问题|
+|v2.5.1|2018.11.07|iOS8.0|1、修改了action的选中效果<br>2、解决iOS11之后，按钮处于最底部时长按touchDown事件的延时现象|
+|v2.5.0|2018.11.07|iOS8.0|1、毛玻璃思路另辟蹊径，毛玻璃效果不会受到背景遮罩的影响，同时背景遮罩不再被镂空<br>2、增加动画枚举，可以从左右弹出<br>3、自定义view时的背景色改为透明色<br>4、增加actionHeight属性，修复maxNumberOfActionHorizontalArrangementForAlert属性<br>5、去除了中间tableView的最后一条分割线<br>6、修改了分割线的颜色，更加接近微信原生<br>7、修复centerView上有textView/textField，旋转屏幕后不可见问题<br>8、优化代码|
+|v2.1.1|2018.11.01|iOS8.0||
+|v2.1.0|2018.10.18|iOS8.0||
+|v2.0.0|2017.11.19|iOS8.0||
+|v1.7.0|2017.11.06|iOS8.0||
+|v1.5.0|2017.11.06|iOS8.0||
+|v1.0.1|2017.10.24|iOS8.0||
+|v1.5.0|2017.10.24|iOS8.0|||
 
-3.0.4版本修复了tapBackgroundViewDismiss属性无效问题
-```
-##### 版本3.0.3
-```
-platform:ios,'9.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0.3'
-end
-
-3.0.3版本修复了action点击的回调为nil时闪退问题
-```
-##### 版本3.0.2
-```
-platform:ios,'9.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0.2'
-end
-
-3.0.2版本修复了内存泄漏问题
-```
-##### 版本3.0.1
-```
-platform:ios,'9.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0.1'
-end
-
-3.0.1版本使背景蒙层动画更加的柔和
-```
-##### 版本3.0 
-```
-platform:ios,'9.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 3.0'
-end
-
-3.0版本进行了全方位的大重构
-```
-##### 版本2.5.2（老版本的终结版）
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.5.2'
-end
-
-按钮处于最底部时长按touchDown事件的延时现象采用新方式解决，另外修复了内存泄露问题
-```
-##### 版本2.5.1
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.5.1'
-end
-
-此版本修改了action的选中效果，以及解决iOS11之后，按钮处于最底部时长按touchDown事件的延时现象
-```
-##### 版本2.5.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.5.0'
-end
-
-此版本在2.2.1版本的基础上主要改动有：
-1、毛玻璃思路另辟蹊径，毛玻璃效果不会受到背景遮罩的影响，同时背景遮罩不再被镂空
-2、增加动画枚举，可以从左右弹出
-3、自定义view时的背景色改为透明色
-4、增加actionHeight属性，修复maxNumberOfActionHorizontalArrangementForAlert属性
-5、去除了中间tableView的最后一条分割线
-6、修改了分割线的颜色，更加接近微信原生
-7、修复centerView上有textView/textField，旋转屏幕后不可见问题
-8、优化代码
-
-```
-##### 版本2.1.1
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.1.1'
-end
-```
-##### 版本2.1.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.1.0'
-end
-```
-##### 版本2.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 2.0'
-end
-```
-##### 版本1.7.0
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 1.7.0'
-end
-```
-##### 版本1.0.1
-```
-platform:ios,'8.0'
-target 'MyApp' do
-  pod 'SPAlertController', '~> 1.0.1'
-end
-```
 [回到顶部](#目录) 
