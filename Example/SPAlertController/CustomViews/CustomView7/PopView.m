@@ -32,7 +32,7 @@ static NSTimeInterval kDelay = 0.0618; // 按钮接着上一个按钮的延时�
 
 - (instancetype)initWithImages:(NSArray<NSString *> *)images
                         titles:(NSArray<NSString *> *)titles
-                  clickedButtonBlock:(void (^)(NSInteger))clickedButtonBlock
+            clickedButtonBlock:(void (^)(NSInteger))clickedButtonBlock
                    cancelBlock:(void (^)(PopView *popView))cancelBlock {
     
     _clickedButtonBlock = clickedButtonBlock;
@@ -72,7 +72,7 @@ static NSTimeInterval kDelay = 0.0618; // 按钮接着上一个按钮的延时�
 - (void)open {
 
     for (int i = 0; i < buttonCount; i++) {
-        SPButton *button = [self.scrollView viewWithTag:i+100];
+        SPButton *button = [self.scrollView viewWithTag:i + 100];
         CGFloat buttonH = button.bounds.size.height;
         CGFloat totalH = (buttonH * kRowCount + kRowSpacing * (kRowCount - 1));
         CGFloat buttonEndY = button.frame.origin.y - totalH - buttonH;
@@ -99,7 +99,7 @@ static NSTimeInterval kDelay = 0.0618; // 按钮接着上一个按钮的延时�
         
         // delay参数计算出来的意思是：第一行每个按钮都比第二行的每个按钮延时0.1秒,同时每列比它的下一列延时kDelay秒
         [UIView animateWithDuration:kAnimationDuration
-                              delay:(1-i/kColumnCount)/10.0 + (kDelay * kColumnCount - i % kColumnCount * kDelay - kDelay)
+                              delay:(1 - i / kColumnCount) / 10.0 + (kDelay * kColumnCount - i % kColumnCount * kDelay - kDelay)
              usingSpringWithDamping:0.6
               initialSpringVelocity:0
                             options:UIViewAnimationOptionCurveEaseOut animations:^{

@@ -65,8 +65,8 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 @property(nullable, nonatomic, copy) UIImage *image;
 /** title跟image之间的间距 */
 @property (nonatomic, assign) CGFloat imageTitleSpacing;
-/** 样式 */
-@property(nonatomic, readonly) SPAlertActionStyle style;
+/** 渲染颜色,当外部的图片使用了UIImageRenderingModeAlwaysTemplate时,使用该属性可改变图片的颜色 */
+@property (nonatomic, strong) UIColor *tintColor;
 /** 是否能点击,默认为YES */
 @property(nonatomic, getter=isEnabled) BOOL enabled;
 /** action的标题颜色,这个颜色只是普通文本的颜色，富文本颜色需要用NSForegroundColorAttributeName */
@@ -75,6 +75,9 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 @property(nonatomic, strong) UIFont *titleFont;
 /** action的标题的内边距，如果在不改变字体的情况下想增大action的高度，可以设置该属性的top和bottom值,默认UIEdgeInsetsMake(0, 15, 0, 15) */
 @property(nonatomic, assign) UIEdgeInsets titleEdgeInsets;
+
+/** 样式 */
+@property(nonatomic, readonly) SPAlertActionStyle style;
 
 @end
 
@@ -118,6 +121,8 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 @property(nonatomic, assign) NSTextAlignment textAlignment;
 /** 头部图标的限制大小,默认无穷大 */
 @property (nonatomic, assign) CGSize imageLimitSize;
+/** 图片的tintColor,当外部的图片使用了UIImageRenderingModeAlwaysTemplate时,该属性可起到作用 */
+@property (nonatomic, strong) UIColor *imageTintColor;
 
 /*
  * action水平排列还是垂直排列

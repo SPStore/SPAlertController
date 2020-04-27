@@ -8,6 +8,7 @@
 
 #import "ScoreView.h"
 #import "HCSStarRatingView.h"
+#import "UIColor+DarkMode.h"
 
 @interface ScoreView()
 
@@ -22,6 +23,8 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         
+        self.backgroundColor = [UIColor alertBackgroundColor];
+        
         HCSStarRatingView *starRatingView = [[HCSStarRatingView alloc] init];
         starRatingView.translatesAutoresizingMaskIntoConstraints = NO;
         starRatingView.maximumValue = 5;
@@ -30,6 +33,7 @@
         starRatingView.spacing = 20;
         starRatingView.tintColor = [UIColor colorWithRed:0.0 green:0.48 blue:1.0 alpha:1.0];
         starRatingView.allowsHalfStars = YES;
+        starRatingView.backgroundColor = [UIColor alertBackgroundColor];
         [starRatingView addTarget:self action:@selector(starRatingViewDidChangeValue:) forControlEvents:UIControlEventValueChanged];
         [self addSubview:starRatingView];
         _starRatingView = starRatingView;
@@ -42,7 +46,7 @@
         
         UIButton *finishButton = [UIButton buttonWithType:UIButtonTypeCustom];
         finishButton.translatesAutoresizingMaskIntoConstraints = NO;
-        finishButton.backgroundColor = [UIColor whiteColor];
+        finishButton.backgroundColor = [UIColor alertBackgroundColor];
         [finishButton setTitle:@"完成" forState:UIControlStateNormal];
         [finishButton setTitleColor:[UIColor colorWithRed:0.0 green:0.48 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
         [finishButton addTarget:self action:@selector(finishButtonAction) forControlEvents:UIControlEventTouchUpInside];

@@ -25,8 +25,10 @@ static NSString  * const MONEYNUMBERS = @"0123456789";
         self.squareWidth = 45;
         self.passWordNum = 6;
         self.pointRadius = 6;
-        self.rectColor = [UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:1.0];
-        self.pointColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
+        self.backgroundColor = [self colorPairsWithLightColor:[UIColor whiteColor]
+                                                         darkColor:[UIColor colorWithRed:44.0 / 255.0 green:44.0 / 255.0 blue:44.0 / 255.0 alpha:1.0]];
+        self.rectColor = [self colorPairsWithLightColor:[UIColor colorWithRed:51.0/255.0 green:51.0/255.0 blue:51.0/255.0 alpha:1.0] darkColor:[UIColor redColor]];
+        self.pointColor = [self colorPairsWithLightColor:[UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0] darkColor:[UIColor yellowColor]];
         [self becomeFirstResponder];
     }
     return self;
@@ -128,25 +130,38 @@ static NSString  * const MONEYNUMBERS = @"0123456789";
     CGFloat y = (height - self.squareWidth)/2.0;
     CGContextRef context = UIGraphicsGetCurrentContext();
     //画外框
-    CGContextAddRect(context, CGRectMake( x, y, self.squareWidth*self.passWordNum, self.squareWidth));
+    CGContextAddRect(context, CGRectMake( x, y, self.squareWidth * self.passWordNum, self.squareWidth));
     CGContextSetLineWidth(context, 1);
     CGContextSetStrokeColorWithColor(context, self.rectColor.CGColor);
-    CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
+    CGContextSetFillColorWithColor(context, self.backgroundColor.CGColor);
     //画竖条
     for (int i = 1; i <= self.passWordNum; i++) {
-        CGContextMoveToPoint(context, x+i*self.squareWidth, y);
-        CGContextAddLineToPoint(context, x+i*self.squareWidth, y+self.squareWidth);
+        CGContextMoveToPoint(context, x + i * self.squareWidth, y);
+        CGContextAddLineToPoint(context, x + i * self.squareWidth, y + self.squareWidth);
         CGContextClosePath(context);
     }
     CGContextDrawPath(context, kCGPathFillStroke);
     CGContextSetFillColorWithColor(context, self.pointColor.CGColor);
     //画黑点
     for (int i = 1; i <= self.textStore.length; i++) {
-        CGContextAddArc(context,  x+i*self.squareWidth - self.squareWidth/2.0, y+self.squareWidth/2, self.pointRadius, 0, M_PI*2, YES);
+        CGContextAddArc(context,  x + i * self.squareWidth - self.squareWidth/2.0, y + self.squareWidth / 2, self.pointRadius, 0, M_PI * 2, YES);
         CGContextDrawPath(context, kCGPathFill);
     }
 }
 
+- (UIColor *)colorPairsWithLightColor:(UIColor *)lightColor darkColor:(UIColor *)darkColor {
+    if (@available(iOS 13.0, *)) {
+        return [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull traitCollection) {
+            if(traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+                return darkColor;
+            } else {
+                return lightColor;
+            }
+        }];
+    } else {
+        return lightColor;
+    }
+}
 
 @end
 

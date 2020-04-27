@@ -7,6 +7,7 @@
 //
 
 #import "CommodityListView.h"
+#import "UIColor+DarkMode.h"
 
 @interface CommodityListView()
 @property (nonatomic, weak) UIScrollView *scrollView;
@@ -31,10 +32,12 @@
 
 - (void)initialize {
     
+    self.backgroundColor = [UIColor alertBackgroundColor];
+    
     NSArray *images = @[@"image0.jpg",@"image1.jpg",@"image2.jpg",@"image3.jpg",@"image4.jpg",@"image5.jpg",@"image6.jpg",@"image7.jpg",@"image8.jpg",@"image9.jpg"];
     
     UIScrollView *scrollView = [[UIScrollView alloc] init];
-    scrollView.backgroundColor = [UIColor colorWithRed:244.0/255.0 green:244.0/255.0 blue:244.0/255.0 alpha:1];
+    scrollView.backgroundColor = [UIColor alertBackgroundColor];
     scrollView.showsVerticalScrollIndicator = NO;
     [self addSubview:scrollView];
     _scrollView = scrollView;

@@ -49,6 +49,7 @@
 		52F6A5C321B60F86006AF8CC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52F6A5C121B60F86006AF8CC /* LaunchScreen.storyboard */; };
 		52F6A5D021B60F86006AF8CC /* SPAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5CF21B60F86006AF8CC /* SPAlertControllerTests.m */; };
 		52F6A5DB21B60F86006AF8CC /* SPAlertControllerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5DA21B60F86006AF8CC /* SPAlertControllerUITests.m */; };
+		BB05FF082455887700950629 /* UIColor+DarkMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB05FF072455887700950629 /* UIColor+DarkMode.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +133,8 @@
 		52F6A5DC21B60F86006AF8CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		52F6A5E921B6101D006AF8CC /* SPAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPAlertController.m; sourceTree = "<group>"; };
 		52F6A5EA21B6101D006AF8CC /* SPAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPAlertController.h; sourceTree = "<group>"; };
+		BB05FF062455887700950629 /* UIColor+DarkMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+DarkMode.h"; sourceTree = "<group>"; };
+		BB05FF072455887700950629 /* UIColor+DarkMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+DarkMode.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -311,6 +314,8 @@
 				52F6A5B721B60F83006AF8CC /* AppDelegate.m */,
 				52F6A5B921B60F83006AF8CC /* ViewController.h */,
 				52F6A5BA21B60F83006AF8CC /* ViewController.m */,
+				BB05FF062455887700950629 /* UIColor+DarkMode.h */,
+				BB05FF072455887700950629 /* UIColor+DarkMode.m */,
 				52CB4AB021B616E400B6090B /* CustomViews */,
 				52F6A5BC21B60F83006AF8CC /* Main.storyboard */,
 				52F6A5BF21B60F86006AF8CC /* Assets.xcassets */,
@@ -506,6 +511,7 @@
 				522C267D21D0D5B2004EBDEB /* SendAlertView.m in Sources */,
 				52CB4AD321B616E400B6090B /* PassWordView.m in Sources */,
 				090BCB9921CEAE2200057E1F /* SPButton.m in Sources */,
+				BB05FF082455887700950629 /* UIColor+DarkMode.m in Sources */,
 				52CB4ACC21B616E400B6090B /* MyCenterView.m in Sources */,
 				522C267321D0C422004EBDEB /* ScoreView.m in Sources */,
 				522C267021D0C31F004EBDEB /* HCSStarRatingView.m in Sources */,
@@ -687,7 +693,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N7GTHGMGVY;
+				DEVELOPMENT_TEAM = AYQTA2673R;
 				INFOPLIST_FILE = SPAlertController/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -704,7 +710,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N7GTHGMGVY;
+				DEVELOPMENT_TEAM = AYQTA2673R;
 				INFOPLIST_FILE = SPAlertController/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

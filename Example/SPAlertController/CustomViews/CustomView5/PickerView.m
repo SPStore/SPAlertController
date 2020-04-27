@@ -7,6 +7,7 @@
 //
 
 #import "PickerView.h"
+#import "UIColor+DarkMode.h"
 
 @interface PickerView() <UIPickerViewDelegate,UIPickerViewDataSource>
 
@@ -81,7 +82,7 @@
         _pickerView = [[UIPickerView alloc] init];
         _pickerView.delegate = self;
         _pickerView.dataSource = self;
-        _pickerView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:239.0/255.0 blue:244.0/255.0 alpha:1];
+        _pickerView.backgroundColor = [UIColor colorPairsWithLightColor:[UIColor colorWithRed:239.0 / 255.0 green:239.0 / 255.0 blue:239.0 / 255.0 alpha:1.0] darkColor:[UIColor colorWithRed:44.0 / 255.0 green:44.0 / 255.0 blue:44.0 / 255.0 alpha:1.0]];
     }
     return _pickerView;
 }
@@ -99,7 +100,7 @@
         UIBarButtonItem *flexibleBBI = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         _toolbar = [[UIToolbar alloc] init];
         // 设置tollbar的背景色
-        _toolbar.barTintColor = [UIColor whiteColor];
+        _toolbar.barTintColor = [UIColor alertBackgroundColor];
         NSArray *toolbarItems = [NSArray arrayWithObjects:cancelBBI, flexibleBBI, doneBBI, nil];
         [_toolbar setItems:toolbarItems];
     }

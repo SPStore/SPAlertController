@@ -8,6 +8,8 @@
 
 #import "SendAlertView.h"
 #import "SPTextView.h"
+#import "UIColor+DarkMode.h"
+
 @interface SendAlertView() <UITextViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *userIconView;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
@@ -27,6 +29,7 @@
 
 - (void)awakeFromNib {
     [super awakeFromNib];
+    self.backgroundColor = [UIColor colorPairsWithLightColor:[UIColor whiteColor] darkColor:[UIColor colorWithRed:44.0 / 255.0 green:44.0 / 255.0 blue:44.0 / 255.0 alpha:1.0]];
     self.userIconView.layer.cornerRadius = 4.0;
     self.userIconView.layer.masksToBounds = YES;
     self.textView.delegate = self;

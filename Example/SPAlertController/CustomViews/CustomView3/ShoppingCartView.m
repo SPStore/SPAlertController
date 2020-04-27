@@ -9,6 +9,7 @@
 #import "ShoppingCartView.h"
 #import "ShoppingCartCell.h"
 #import "ShoppingCartItem.h"
+#import "UIColor+DarkMode.h"
 
 @interface ShoppingCartView() <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView *tableView;
@@ -20,6 +21,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
+        
         [self initialize];
         
     }
@@ -35,6 +37,9 @@
 
 - (void)initialize {
     
+    self.backgroundColor = [UIColor colorPairsWithLightColor:[UIColor colorWithRed:244.0 / 255.0 green:244.0 / 255.0 blue:244.0 / 255.0 alpha:1.0]
+                                                        darkColor:[UIColor colorWithRed:44.0 / 255.0 green:44.0 / 255.0 blue:44.0 / 255.0 alpha:1.0]];
+
     [self addSubview:self.topLabel];
     [self addSubview:self.tableView];
     
@@ -86,11 +91,8 @@
 - (UILabel *)topLabel {
     if (!_topLabel) {
         _topLabel = [[UILabel alloc] init];
-        _topLabel.backgroundColor = [UIColor whiteColor];
-        _topLabel.backgroundColor = [UIColor colorWithRed:244.0/255.0 green:244.0/255.0 blue:244.0/255.0 alpha:1];
         _topLabel.textAlignment = NSTextAlignmentCenter;
         _topLabel.text = @"购物车";
-
     }
     return _topLabel;
 }
