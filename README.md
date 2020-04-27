@@ -1,4 +1,4 @@
-
+# 重大更新：4.0.0版本适配深色模式
 # SPAlertController
 [![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
 [![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
@@ -25,6 +25,7 @@
 - [x] 可以自定义各种UIView
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
+- [x] 全面适配深色模式
 ## CocoaPods
 ##### 版本3.1.0
 ```
@@ -197,6 +198,7 @@ SPAlertControllerStyleAlert下的圆角半径
 ## 历史版本
 |  版本 | 更新日期 | 支持最低系统版本 |更新内容 |
 | :------------:| :------------:| :------------:|------------|
+|v4.0.0|2020.04.27|iOS9.0|适配深色模式|
 |v3.1.0|2019.08.08|iOS9.0|1、actionSheet样式加了单边圆角效果<br>2、毛玻璃默认为NO<br>3、当不需要毛玻璃效果时,actionButton的选中背景色修改(灰度0.1)，属于bug修复<br>4、“取消action”上的分割线背景色修改(灰度由0.3变为0.2)，高度由6增加为8<br>5、每个actionButton的最小高度由49变为55|
 |v3.0.4|2019.06.03|iOS9.0|修复了tapBackgroundViewDismiss属性无效问题|
 |v3.0.3|2019.05.30|iOS9.0|修复了action点击的回调为nil时闪退问题|
