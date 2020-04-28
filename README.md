@@ -197,7 +197,7 @@ SPAlertControllerStyleAlert下的圆角半径
 * 当自定义的view的大小在对话框显示期间发生了变化，你应该调用```- (void)updateCustomViewSize:(CGSize)size```通知SPAlertController更新其大小
 
 ## 深色模式预览
-[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.png)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.png)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.jpg)
 
 ## 历史版本
 |  版本 | 更新日期 | 支持最低系统版本 |更新内容 |
