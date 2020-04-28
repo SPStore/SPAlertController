@@ -10,6 +10,8 @@
 #import "UIColor+DarkMode.h"
 
 @interface MyView()
+@property (weak, nonatomic) IBOutlet UIView *topView;
+@property (weak, nonatomic) IBOutlet UIView *infoView;
 
 @end
 
@@ -27,6 +29,8 @@
     self.backgroundColor = [UIColor colorPairsWithLightColor:[UIColor whiteColor] darkColor:[UIColor blackColor]];
     
     self.passwordView.pointColor = [UIColor colorPairsWithLightColor:[UIColor blackColor] darkColor:[UIColor whiteColor]];
+    self.topView.backgroundColor = [UIColor alertBackgroundColor];
+    self.infoView.backgroundColor = [UIColor alertBackgroundColor];
 }
 
 

@@ -146,7 +146,9 @@
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
                 <outlet property="cancelButton" destination="WCu-An-VzW" id="QcX-Ty-igo"/>
+                <outlet property="infoView" destination="GEB-Kf-zCm" id="TTO-hN-cex"/>
                 <outlet property="passwordView" destination="Opm-H3-sgB" id="Zgv-kd-bXh"/>
+                <outlet property="topView" destination="S0n-u1-tw5" id="h4O-T3-Jar"/>
             </connections>
             <point key="canvasLocation" x="-365" y="173"/>
         </view>

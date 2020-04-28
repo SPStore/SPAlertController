@@ -27,7 +27,6 @@
 		522C267D21D0D5B2004EBDEB /* SendAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 522C267C21D0D5B2004EBDEB /* SendAlertView.m */; };
 		522C267F21D0D5F0004EBDEB /* SendAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 522C267E21D0D5F0004EBDEB /* SendAlertView.xib */; };
 		522C268621D0E40A004EBDEB /* send1.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 522C268121D0E409004EBDEB /* send1.jpeg */; };
-		522C268F21D0EB17004EBDEB /* send0.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 522C268E21D0EB16004EBDEB /* send0.jpeg */; };
 		5270519A22EE9FF50016D0DB /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
 		5270519B22EE9FF50016D0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5C521B60F86006AF8CC /* main.m */; };
 		5270519C22EEAF000016D0DB /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
@@ -50,6 +49,7 @@
 		52F6A5D021B60F86006AF8CC /* SPAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5CF21B60F86006AF8CC /* SPAlertControllerTests.m */; };
 		52F6A5DB21B60F86006AF8CC /* SPAlertControllerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5DA21B60F86006AF8CC /* SPAlertControllerUITests.m */; };
 		BB05FF082455887700950629 /* UIColor+DarkMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB05FF072455887700950629 /* UIColor+DarkMode.m */; };
+		BB5EA69D2457C75E005AE698 /* send0.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = BB5EA69C2457C75E005AE698 /* send0.jpeg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,7 +96,6 @@
 		522C267C21D0D5B2004EBDEB /* SendAlertView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SendAlertView.m; sourceTree = "<group>"; };
 		522C267E21D0D5F0004EBDEB /* SendAlertView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SendAlertView.xib; sourceTree = "<group>"; };
 		522C268121D0E409004EBDEB /* send1.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = send1.jpeg; sourceTree = "<group>"; };
-		522C268E21D0EB16004EBDEB /* send0.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = send0.jpeg; sourceTree = "<group>"; };
 		52CB4AB221B616E400B6090B /* MyCenterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCenterView.h; sourceTree = "<group>"; };
 		52CB4AB321B616E400B6090B /* MyCenterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyCenterView.m; sourceTree = "<group>"; };
 		52CB4AB521B616E400B6090B /* ShoppingCartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShoppingCartCell.xib; sourceTree = "<group>"; };
@@ -135,6 +134,7 @@
 		52F6A5EA21B6101D006AF8CC /* SPAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPAlertController.h; sourceTree = "<group>"; };
 		BB05FF062455887700950629 /* UIColor+DarkMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+DarkMode.h"; sourceTree = "<group>"; };
 		BB05FF072455887700950629 /* UIColor+DarkMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+DarkMode.m"; sourceTree = "<group>"; };
+		BB5EA69C2457C75E005AE698 /* send0.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = send0.jpeg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,7 +189,7 @@
 				09810FB821C4F90300E702E1 /* image8.jpg */,
 				09810FB921C4F90300E702E1 /* image9.jpg */,
 				522C268121D0E409004EBDEB /* send1.jpeg */,
-				522C268E21D0EB16004EBDEB /* send0.jpeg */,
+				BB5EA69C2457C75E005AE698 /* send0.jpeg */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -461,12 +461,12 @@
 				09810FCC21C4F90300E702E1 /* image5.jpg in Resources */,
 				52F6A5C321B60F86006AF8CC /* LaunchScreen.storyboard in Resources */,
 				522C267F21D0D5F0004EBDEB /* SendAlertView.xib in Resources */,
+				BB5EA69D2457C75E005AE698 /* send0.jpeg in Resources */,
 				522C268621D0E40A004EBDEB /* send1.jpeg in Resources */,
 				09810FCA21C4F90300E702E1 /* image6.jpg in Resources */,
 				09810FD121C4F90300E702E1 /* image2.jpg in Resources */,
 				09810FCF21C4F90300E702E1 /* 背景2.jpg in Resources */,
 				09810FC821C4F90300E702E1 /* image7.jpg in Resources */,
-				522C268F21D0EB17004EBDEB /* send0.jpeg in Resources */,
 				09810FD021C4F90300E702E1 /* image0.jpg in Resources */,
 				52F6A5C021B60F86006AF8CC /* Assets.xcassets in Resources */,
 				09810FD321C4F90300E702E1 /* image3.jpg in Resources */,
