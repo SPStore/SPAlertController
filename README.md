@@ -197,8 +197,20 @@ SPAlertControllerStyleAlert下的圆角半径
 * 当自定义的view的大小在对话框显示期间发生了变化，你应该调用```- (void)updateCustomViewSize:(CGSize)size```通知SPAlertController更新其大小
 
 ## 深色模式预览
-[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.jpg)
-
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/1.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/2-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/2.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/3-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/3.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/4-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/4.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/5-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/5.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/6-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/6.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/7-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/7.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/8-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/8.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/9-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/9.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/10-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/10.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/11-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/11.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/12-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/12.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/13-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/13.jpg)
+[![](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/14-small.jpg)](https://raw.githubusercontent.com/wiki/SPStore/SPAlertController/Screetshots/14.jpg)
 ## 历史版本
 |  版本 | 更新日期 | 支持最低系统版本 |更新内容 |
 | :------------:| :------------:| :------------:|------------|
