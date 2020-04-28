@@ -25,8 +25,8 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-			说明:4.0.0适配了深色模式
-                   DESC
+			   说明:4.0.0适配了深色模式
+                     DESC
 
   s.homepage     = "https://github.com/SPStore/SPAlertController"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
