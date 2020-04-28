@@ -695,7 +695,7 @@
     alertController.needDialogBlur = NO; // 去除对话框的毛玻璃
     alertController.cornerRadius = 0; // 去除圆角半径
     // 设置背景遮罩为毛玻璃样式
-    [alertController setBackgroundViewAppearanceStyle:SPBackgroundViewAppearanceStyleBlurExtraLight alpha:1.0];
+    [alertController setBackgroundViewAppearanceStyle:UIBlurEffectStyleExtraLight alpha:1.0];
     [self presentViewController:alertController animated:NO completion:^{
         // 执行popView的弹出动画
         [popView open];
@@ -885,7 +885,7 @@
 #pragma mark ========================================== 背景毛玻璃示例 =======================================================
 
 // 示例33:背景外观样式
-- (void)backgroundAppearanceStyleTest:(SPBackgroundViewAppearanceStyle)appearanceStyle {
+- (void)backgroundAppearanceStyleTest:(UIBlurEffectStyle)appearanceStyle {
     SPAlertController *alertController = [SPAlertController alertControllerWithTitle:@"我是主标题" message:@"我是副标题" preferredStyle:SPAlertControllerStyleActionSheet animationType:SPAlertAnimationTypeFromBottom];
     
     alertController.needDialogBlur = _lookBlur;
@@ -904,12 +904,7 @@
     [alertController addAction:action2];
     [alertController addAction:action3];
     
-    if (appearanceStyle == SPBackgroundViewAppearanceStyleTranslucent) {
-        // 0.5是半透明(默认),设置1为不透明,0为全透明
-        [alertController setBackgroundViewAppearanceStyle:appearanceStyle alpha:0.5];
-    } else {
-        [alertController setBackgroundViewAppearanceStyle:appearanceStyle alpha:1];
-    }
+    [alertController setBackgroundViewAppearanceStyle:appearanceStyle alpha:1];
     
     [self presentViewController:alertController animated:YES completion:nil];
 }
@@ -997,7 +992,7 @@
                           ],
                         @[@"当按钮过多时，以scrollView滑动",@"当文字和按钮同时过多时,二者都可滑动",@"含有文本输入框，且文字过多",@"action上的文字过长（垂直）",@"action上的文字过长（水平）"
                           ],
-                        @[@"透明黑色背景样式(背景无毛玻璃,默认)",@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"
+                        @[@"背景毛玻璃Dark样式",@"背景毛玻璃ExtraLight样式",@"背景毛玻璃Light样式"
                           ]
                         ];
 }
@@ -1032,7 +1027,7 @@
 - (void)changeBackgroundImage:(UIButton *)sender {
     if (!sender.selected) {
         NSInteger c = 1+(arc4random() % 2);
-        self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"背景%li.jpg",c]]];
+        self.tableView.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:[NSString stringWithFormat:@"背景%li.jpg",(long)c]]];
         sender.backgroundColor = [UIColor orangeColor];
     } else {
         self.tableView.backgroundView = nil;
@@ -1066,7 +1061,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSInteger index = [[dic valueForKey:[NSString stringWithFormat:@"%ld",section]] integerValue];
+    NSInteger index = [[dic valueForKey:[NSString stringWithFormat:@"%ld",(long)section]] integerValue];
     if (index == 1) {
         return 0;
     } else {
@@ -1125,7 +1120,7 @@
     
     UITableViewHeaderFooterView *header = (UITableViewHeaderFooterView *)tap.view;
     NSInteger section = header.tag - 100;
-    NSString *key = [NSString stringWithFormat:@"%ld",section];
+    NSString *key = [NSString stringWithFormat:@"%ld",(long)section];
     if ([dic[key] integerValue] == 0) {
         [dic setValue:@(1) forKey:key];
     } else {
@@ -1258,16 +1253,13 @@
     } else {
         switch (indexPath.row) { // 毛玻璃区
             case 0:
-                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleTranslucent];
+                [self backgroundAppearanceStyleTest:UIBlurEffectStyleDark];
                 break;
             case 1:
-                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleBlurDark];
+                [self backgroundAppearanceStyleTest:UIBlurEffectStyleExtraLight];
                 break;
             case 2:
-                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleBlurExtraLight];
-                break;
-            case 3:
-                [self backgroundAppearanceStyleTest:SPBackgroundViewAppearanceStyleBlurLight];
+                [self backgroundAppearanceStyleTest:UIBlurEffectStyleLight];
                 break;
         }
     }

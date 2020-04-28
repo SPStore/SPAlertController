@@ -965,7 +965,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 @property (nonatomic, strong) NSMutableArray *actionSequenceViewConstraints;
 @property (nonatomic, assign) SPAlertControllerStyle preferredStyle;
 @property (nonatomic, assign) SPAlertAnimationType animationType;
-@property (nonatomic, assign) SPBackgroundViewAppearanceStyle backgroundViewAppearanceStyle;
+@property (nonatomic, assign) UIBlurEffectStyle backgroundViewAppearanceStyle;
 @property (nonatomic, assign) CGFloat backgroundViewAlpha;
 
 // action数组
@@ -1148,7 +1148,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     return 0.0;
 }
 
-- (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha {
+- (void)setBackgroundViewAppearanceStyle:(UIBlurEffectStyle)style alpha:(CGFloat)alpha {
     _backgroundViewAppearanceStyle = style;
     _backgroundViewAlpha = alpha;
 }
@@ -1216,6 +1216,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     _textAlignment = NSTextAlignmentCenter;
     _imageLimitSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
     _cornerRadiusForAlert = 6.0;
+    _backgroundViewAppearanceStyle = -1;
     _backgroundViewAlpha = 0.5;
     _tapBackgroundViewDismiss = YES;
     _needDialogBlur = NO;
@@ -1935,24 +1936,26 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     _needDialogBlur = needDialogBlur;
     if (_needDialogBlur) {
         self.containerView.backgroundColor = [UIColor clearColor];
-        self.dimmingKnockoutBackdropView = [NSClassFromString(@"_UIDimmingKnockoutBackdropView") alloc];
-        if (self.dimmingKnockoutBackdropView) {
-            // 下面4行相当于self.dimmingKnockoutBackdropView = [self.dimmingKnockoutBackdropView performSelector:NSSelectorFromString(@"initWithStyle:") withObject:@(UIBlurEffectStyleLight)];
-            SEL selector = NSSelectorFromString(@"initWithStyle:");
-            IMP imp = [self.dimmingKnockoutBackdropView methodForSelector:selector];
-            if (imp != NULL) {
-                UIView *(*func)(id, SEL,UIBlurEffectStyle) = (void *)imp;
-                self.dimmingKnockoutBackdropView = func(self.dimmingKnockoutBackdropView, selector, UIBlurEffectStyleLight);
+        if (!self.dimmingKnockoutBackdropView) {
+            self.dimmingKnockoutBackdropView = [NSClassFromString(@"_UIDimmingKnockoutBackdropView") alloc];
+            if (self.dimmingKnockoutBackdropView) {
+                // 下面4行相当于self.dimmingKnockoutBackdropView = [self.dimmingKnockoutBackdropView performSelector:NSSelectorFromString(@"initWithStyle:") withObject:@(UIBlurEffectStyleLight)];
+                SEL selector = NSSelectorFromString(@"initWithStyle:");
+                IMP imp = [self.dimmingKnockoutBackdropView methodForSelector:selector];
+                if (imp != NULL) {
+                    UIView *(*func)(id, SEL,UIBlurEffectStyle) = (void *)imp;
+                    self.dimmingKnockoutBackdropView = func(self.dimmingKnockoutBackdropView, selector, UIBlurEffectStyleLight);
+                    self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
+                    self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                    [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
+                }
+            } else { // 这个else是防止假如_UIDimmingKnockoutBackdropView这个类不存在了的时候，做一个备案
+                UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+                self.dimmingKnockoutBackdropView = [[UIVisualEffectView alloc] initWithEffect:blur];
                 self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
-                self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+                self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
                 [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
             }
-        } else { // 这个else是防止假如_UIDimmingKnockoutBackdropView这个类不存在了的时候，做一个备案
-            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
-            self.dimmingKnockoutBackdropView = [[UIVisualEffectView alloc] initWithEffect:blur];
-            self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
-            self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-            [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
         }
     } else {
         [self.dimmingKnockoutBackdropView removeFromSuperview];
@@ -2203,9 +2206,9 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
     return self;
 }
-- (void)setAppearanceStyle:(SPBackgroundViewAppearanceStyle)appearanceStyle alpha:(CGFloat)alpha {
+- (void)setAppearanceStyle:(UIBlurEffectStyle)appearanceStyle alpha:(CGFloat)alpha {
     switch (appearanceStyle) {
-        case SPBackgroundViewAppearanceStyleTranslucent: {
+        case -1: {
             [self.effectView removeFromSuperview];
             self.effectView = nil;
             if (alpha < 0) {
@@ -2215,21 +2218,10 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
             self.alpha = 0;
         }
             break;
-        case SPBackgroundViewAppearanceStyleBlurExtraLight: {
-            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+        default:{
+            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:appearanceStyle];
             [self createVisualEffectViewWithBlur:blur alpha:alpha];
         }
-            break;
-        case SPBackgroundViewAppearanceStyleBlurLight: {
-            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
-            [self createVisualEffectViewWithBlur:blur alpha:alpha];
-        }
-            break;
-        case SPBackgroundViewAppearanceStyleBlurDark: {
-            UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-            [self createVisualEffectViewWithBlur:blur alpha:alpha];
-        }
-            break;
     }
 }
 

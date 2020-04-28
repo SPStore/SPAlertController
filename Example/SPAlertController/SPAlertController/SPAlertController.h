@@ -38,23 +38,10 @@ typedef NS_ENUM(NSInteger, SPAlertActionStyle) {
     SPAlertActionStyleDestructive   // 红色字体样式
 };
 
-typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
-    SPBackgroundViewAppearanceStyleTranslucent = 0,  // 无毛玻璃效果,黑色透明(默认是0.5透明)
-    SPBackgroundViewAppearanceStyleBlurDark,
-    SPBackgroundViewAppearanceStyleBlurExtraLight,
-    SPBackgroundViewAppearanceStyleBlurLight,
-};
-
 // ===================================================== SPAlertAction =====================================================
 
 @interface SPAlertAction : NSObject <NSCopying>
-/**
- *  创建一个action
- *
- *  @param title    标题
- *  @param style    action样式
- *  @param handler  点击后的bolok回调
- */
+
 + (instancetype)actionWithTitle:(nullable NSString *)title style:(SPAlertActionStyle)style handler:(void (^ __nullable)(SPAlertAction *action))handler;
 
 /** action的标题 */
@@ -87,7 +74,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 @interface SPAlertController : UIViewController
 
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle;
-+ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType; // animationType传SPAlertAnimationTypeDefault则跟第一个类方法等效
++ (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType;
 
 - (void)addAction:(SPAlertAction *)action;
 @property (nonatomic, readonly) NSArray<SPAlertAction *> *actions;
@@ -161,7 +148,7 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 - (CGFloat)customSpacingAfterAction:(SPAlertAction *)action API_AVAILABLE(ios(11.0));
 
 /** 设置蒙层的外观样式,可通过alpha调整透明度 */
-- (void)setBackgroundViewAppearanceStyle:(SPBackgroundViewAppearanceStyle)style alpha:(CGFloat)alpha;
+- (void)setBackgroundViewAppearanceStyle:(UIBlurEffectStyle)style alpha:(CGFloat)alpha;
 
 // 插入一个组件view，位置处于头部和action部分之间，要求头部和action部分同时存在
 - (void)insertComponentView:(nonnull UIView *)componentView;
@@ -201,13 +188,11 @@ typedef NS_ENUM(NSInteger, SPBackgroundViewAppearanceStyle) {
 /** 更新自定义view的size，比如屏幕旋转，自定义view的大小发生了改变，可通过该方法更新size */
 - (void)updateCustomViewSize:(CGSize)size;
 
-
-/** SPAlertControllerStyleAlert样式下的圆角半径，默认6.0f */
 @property(nonatomic, assign) CGFloat cornerRadiusForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use cornerRadius instead");
-@property (nonatomic, assign) CGFloat maxTopMarginForActionSheet NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdges instead");  //  actionSheet样式下,最大的顶部间距,从底部、右边、左边弹出时默认为0,iPhoneX及以上机型默认44,从顶部弹出时无论哪种机型都默认为0;注意该属性中的top单词不是精确的指顶部，当从右边弹出时，top指的就是左，从左边弹出时，top指的就是右，从顶部弹出时，top指的就是底
-@property(nonatomic, assign) CGFloat maxMarginForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdges instead");// alert样式下,四周的最小间距,默认为20，该属性起名有误，应该是最小，而不是最大，3.0版本属性名已改，叫minDistanceToEdges
-@property(nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use actionAxis instead");// alert样式下,水平排列的最大个数,如果大于了这个数,则所有action将垂直排列,默认是2；在添加action之前设置性能会更佳,由于水平排列的action都是排布在footerView上,所以如果自定义了footerView，该属性将失去效用
-@property(nonatomic, assign) CGFloat offsetYForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use offsetForAlert instead"); //  对话框垂直方向上的偏移
+@property (nonatomic, assign) CGFloat maxTopMarginForActionSheet NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdges instead");
+@property(nonatomic, assign) CGFloat maxMarginForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use minDistanceToEdges instead");
+@property(nonatomic, assign) NSInteger maxNumberOfActionHorizontalArrangementForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use actionAxis instead");
+@property(nonatomic, assign) CGFloat offsetYForAlert NS_DEPRECATED_IOS(8_0, 8_0,"Use offsetForAlert instead");
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customView:(nullable UIView *)customView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomAlertView:preferredStyle:animationType:");
 + (instancetype)alertControllerWithPreferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customHeaderView:(nullable UIView *)customHeaderView NS_DEPRECATED_IOS(8_0, 8_0,"Use +alertControllerWithCustomHeaderView:preferredStyle:animationType:");
 + (instancetype)alertControllerWithTitle:(nullable NSString *)title message:(nullable NSString *)message preferredStyle:(SPAlertControllerStyle)preferredStyle animationType:(SPAlertAnimationType)animationType customCenterView:(nullable UIView *)customCenterView NS_DEPRECATED_IOS(8_0, 8_0,"Use -insertComponentView:");
