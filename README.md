@@ -32,7 +32,7 @@
 ```
 platform:ios,'9.0'
 target 'MyApp' do
-  pod 'SPAlertController', '~> 3.1.0'
+  pod 'SPAlertController', '~> 4.0.0'
 end
 ```
 
