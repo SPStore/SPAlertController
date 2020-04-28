@@ -28,6 +28,7 @@
 + (UIColor *)darkLineColor;
 + (UIColor *)lightWhite_DarkBlackColor;
 + (UIColor *)lightBlack_DarkWhiteColor;
++ (UIColor *)textViewBackgroundColor;
 + (UIColor *)alertRedColor;
 + (UIColor *)grayColor;
 
@@ -73,6 +74,11 @@
 
 + (UIColor *)darkLineColor {
     return [UIColor colorWithRed:60.0 / 255.0 green:60.0 / 255.0 blue:60.0 / 255.0 alpha:1.0];
+}
+
++ (UIColor *)textViewBackgroundColor {
+    return [self colorPairsWithDynamicLightColor:[UIColor colorWithRed:247.0 / 255.0 green:247.0 / 255.0 blue:247.0 / 255.0 alpha:1.0]
+                                       darkColor:[UIColor colorWithRed:54.0 / 255.0 green:54.0 / 255.0 blue:54.0 / 255.0 alpha:1.0]];
 }
 
 + (UIColor *)alertRedColor {
@@ -1090,7 +1096,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     NSAssert(self.preferredStyle == SPAlertControllerStyleAlert,@"SPAlertController does not allow 'addTextFieldWithConfigurationHandler:' to be called in the style of SPAlertControllerStyleActionSheet");
     UITextField *textField = [[UITextField alloc] init];
     textField.translatesAutoresizingMaskIntoConstraints = NO;
-    textField.backgroundColor = [SPColorStyle normalColor];
+    textField.backgroundColor = [SPColorStyle textViewBackgroundColor];
     // 系统的UITextBorderStyleLine样式线条过于黑，所以自己设置
     textField.layer.borderWidth = SP_LINE_WIDTH;
     // 这里设置的颜色是静态的，动态设置CGColor,还需要监听深浅模式的切换
