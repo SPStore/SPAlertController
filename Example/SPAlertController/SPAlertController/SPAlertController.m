@@ -2068,11 +2068,12 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         actionSequenceView.translatesAutoresizingMaskIntoConstraints = NO;
         __weak typeof(self) weakSelf = self;
         actionSequenceView.buttonClickedInActionViewBlock = ^(NSInteger index) {
-            [weakSelf dismissViewControllerAnimated:YES completion:nil];
-            SPAlertAction *action = weakSelf.actions[index];
-            if (action.handler) {
-                action.handler(action);
-            }
+            [weakSelf dismissViewControllerAnimated:YES completion:^{
+                SPAlertAction *action = weakSelf.actions[index];
+                if (action.handler) {
+                    action.handler(action);
+                }
+            }];
         };
         if (self.actions.count && !self.customActionSequenceView) {
             [self.alertView addSubview:actionSequenceView];
