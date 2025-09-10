@@ -217,7 +217,7 @@ SPAlertControllerStyleAlert下的圆角半径
 ## 历史版本
 |  版本 | 更新日期 | 支持最低系统版本 |更新内容 |
 | :------------:| :------------:| :------------:|------------|
-|v4.1.0|2025.09.09|iOS9.0|1、修复title和message同时为空的情况下，在部分机型上无法弹出的问题<br>2、action事件回调改为dimiss动画完成之后<br>3、action新增allowsAutoDismiss和backgroundColor属性<br>4、修复深色模式下模糊效果失效问题<br>|
+|v4.1.0|2025.09.09|iOS9.0|1、修复title和message同时为空的情况下，在部分机型上无法弹出的问题<br>2、action事件回调改为dimiss动画完成之后<br>3、action新增allowsAutoDismiss和backgroundColor属性<br>4、修复深色模式下模糊效果失效问题<br>5、支持SPM|
 |v4.0.0|2020.04.27|iOS9.0|适配深色模式|
 |v3.1.0|2019.08.08|iOS9.0|1、actionSheet样式加了单边圆角效果<br>2、毛玻璃默认为NO<br>3、当不需要毛玻璃效果时,actionButton的选中背景色修改(灰度0.1)，属于bug修复<br>4、“取消action”上的分割线背景色修改(灰度由0.3变为0.2)，高度由6增加为8<br>5、每个actionButton的最小高度由49变为55|
 |v3.0.4|2019.06.03|iOS9.0|修复了tapBackgroundViewDismiss属性无效问题|
