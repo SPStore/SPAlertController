@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "SPAlertController"
-  s.version      =  "4.0.0"
-  s.summary      = "提醒对话框."
+  s.version      =  "4.1.0"
+  s.summary      = "iOS 弹窗，提醒对话框，支持多种样式和自定义，适配深色模式"
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   s.description  = <<-DESC
-			   说明:4.0.0适配了深色模式
+			   说明:4.1.0版本改进了键盘弹出时的动画处理，修复了键盘与弹窗动画冲突的问题，优化了UI组件内存管理，改进了深色模式的颜色适配，增加了Swift Package Manager支持
                      DESC
 
   s.homepage     = "https://github.com/SPStore/SPAlertController"
@@ -80,7 +80,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/SPStore/SPAlertController.git", :tag => s.version }
+  s.source       = { :git => "https://github.com/SPStore/SPAlertController.git", :tag => "#{s.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -130,9 +130,8 @@ Pod::Spec.new do |s|
   #  where they will only apply to your library. If you depend on other Podspecs
   #  you can include multiple dependencies to ensure it works.
 
-  # s.requires_arc = true
+  s.requires_arc = true
 
   # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
   # s.dependency "JSONKit", "~> 1.4"
-
 end

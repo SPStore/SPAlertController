@@ -1,0 +1,4 @@
+module SPAlertController {
+    umbrella header "/Users/shengping_le/SPAlertController/SPAlertController/SPAlertController.h"
+    export *
+}

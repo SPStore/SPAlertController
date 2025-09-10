@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		090BCB9221CEA18300057E1F /* PopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 090BCB9121CEA18300057E1F /* PopView.m */; };
-		090BCB9921CEAE2200057E1F /* SPButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 090BCB9821CEAE2200057E1F /* SPButton.m */; };
 		09810FC621C4F90300E702E1 /* image8.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 09810FB821C4F90300E702E1 /* image8.jpg */; };
 		09810FC721C4F90300E702E1 /* image9.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 09810FB921C4F90300E702E1 /* image9.jpg */; };
 		09810FC821C4F90300E702E1 /* image7.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 09810FBA21C4F90300E702E1 /* image7.jpg */; };
@@ -27,21 +25,10 @@
 		522C267D21D0D5B2004EBDEB /* SendAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 522C267C21D0D5B2004EBDEB /* SendAlertView.m */; };
 		522C267F21D0D5F0004EBDEB /* SendAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 522C267E21D0D5F0004EBDEB /* SendAlertView.xib */; };
 		522C268621D0E40A004EBDEB /* send1.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 522C268121D0E409004EBDEB /* send1.jpeg */; };
-		5270519A22EE9FF50016D0DB /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
 		5270519B22EE9FF50016D0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5C521B60F86006AF8CC /* main.m */; };
-		5270519C22EEAF000016D0DB /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5E921B6101D006AF8CC /* SPAlertController.m */; };
 		5270519D22EEAF410016D0DB /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5B721B60F83006AF8CC /* AppDelegate.m */; };
 		5270519E22EEBC660016D0DB /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5C521B60F86006AF8CC /* main.m */; };
 		52CB4ACC21B616E400B6090B /* MyCenterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AB321B616E400B6090B /* MyCenterView.m */; };
-		52CB4ACD21B616E400B6090B /* ShoppingCartCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52CB4AB521B616E400B6090B /* ShoppingCartCell.xib */; };
-		52CB4ACE21B616E400B6090B /* ShoppingCartView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AB621B616E400B6090B /* ShoppingCartView.m */; };
-		52CB4ACF21B616E400B6090B /* ShoppingCartItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AB721B616E400B6090B /* ShoppingCartItem.m */; };
-		52CB4AD021B616E400B6090B /* ShoppingCartCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AB821B616E400B6090B /* ShoppingCartCell.m */; };
-		52CB4AD121B616E400B6090B /* CommodityListView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4ABD21B616E400B6090B /* CommodityListView.m */; };
-		52CB4AD221B616E400B6090B /* PickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AC021B616E400B6090B /* PickerView.m */; };
-		52CB4AD321B616E400B6090B /* PassWordView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AC321B616E400B6090B /* PassWordView.m */; };
-		52CB4AD421B616E400B6090B /* MyView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 52CB4AC421B616E400B6090B /* MyView.xib */; };
-		52CB4AD521B616E400B6090B /* MyView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52CB4AC721B616E400B6090B /* MyView.m */; };
 		52F6A5BB21B60F83006AF8CC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5BA21B60F83006AF8CC /* ViewController.m */; };
 		52F6A5BE21B60F83006AF8CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52F6A5BC21B60F83006AF8CC /* Main.storyboard */; };
 		52F6A5C021B60F86006AF8CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 52F6A5BF21B60F86006AF8CC /* Assets.xcassets */; };
@@ -49,6 +36,7 @@
 		52F6A5D021B60F86006AF8CC /* SPAlertControllerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5CF21B60F86006AF8CC /* SPAlertControllerTests.m */; };
 		52F6A5DB21B60F86006AF8CC /* SPAlertControllerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52F6A5DA21B60F86006AF8CC /* SPAlertControllerUITests.m */; };
 		BB05FF082455887700950629 /* UIColor+DarkMode.m in Sources */ = {isa = PBXBuildFile; fileRef = BB05FF072455887700950629 /* UIColor+DarkMode.m */; };
+		BB54D6B02E70869400CC72BC /* SPAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB54D6AE2E70869400CC72BC /* SPAlertController.m */; };
 		BB5EA69D2457C75E005AE698 /* send0.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = BB5EA69C2457C75E005AE698 /* send0.jpeg */; };
 /* End PBXBuildFile section */
 
@@ -70,10 +58,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		090BCB9021CEA18300057E1F /* PopView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PopView.h; sourceTree = "<group>"; };
-		090BCB9121CEA18300057E1F /* PopView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PopView.m; sourceTree = "<group>"; };
-		090BCB9721CEAE2200057E1F /* SPButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPButton.h; sourceTree = "<group>"; };
-		090BCB9821CEAE2200057E1F /* SPButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPButton.m; sourceTree = "<group>"; };
 		09810FB821C4F90300E702E1 /* image8.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image8.jpg; sourceTree = "<group>"; };
 		09810FB921C4F90300E702E1 /* image9.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image9.jpg; sourceTree = "<group>"; };
 		09810FBA21C4F90300E702E1 /* image7.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image7.jpg; sourceTree = "<group>"; };
@@ -98,22 +82,6 @@
 		522C268121D0E409004EBDEB /* send1.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = send1.jpeg; sourceTree = "<group>"; };
 		52CB4AB221B616E400B6090B /* MyCenterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyCenterView.h; sourceTree = "<group>"; };
 		52CB4AB321B616E400B6090B /* MyCenterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyCenterView.m; sourceTree = "<group>"; };
-		52CB4AB521B616E400B6090B /* ShoppingCartCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShoppingCartCell.xib; sourceTree = "<group>"; };
-		52CB4AB621B616E400B6090B /* ShoppingCartView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShoppingCartView.m; sourceTree = "<group>"; };
-		52CB4AB721B616E400B6090B /* ShoppingCartItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShoppingCartItem.m; sourceTree = "<group>"; };
-		52CB4AB821B616E400B6090B /* ShoppingCartCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShoppingCartCell.m; sourceTree = "<group>"; };
-		52CB4AB921B616E400B6090B /* ShoppingCartView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShoppingCartView.h; sourceTree = "<group>"; };
-		52CB4ABA21B616E400B6090B /* ShoppingCartCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShoppingCartCell.h; sourceTree = "<group>"; };
-		52CB4ABB21B616E400B6090B /* ShoppingCartItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShoppingCartItem.h; sourceTree = "<group>"; };
-		52CB4ABD21B616E400B6090B /* CommodityListView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommodityListView.m; sourceTree = "<group>"; };
-		52CB4ABE21B616E400B6090B /* CommodityListView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommodityListView.h; sourceTree = "<group>"; };
-		52CB4AC021B616E400B6090B /* PickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickerView.m; sourceTree = "<group>"; };
-		52CB4AC121B616E400B6090B /* PickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickerView.h; sourceTree = "<group>"; };
-		52CB4AC321B616E400B6090B /* PassWordView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PassWordView.m; sourceTree = "<group>"; };
-		52CB4AC421B616E400B6090B /* MyView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MyView.xib; sourceTree = "<group>"; };
-		52CB4AC521B616E400B6090B /* MyView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyView.h; sourceTree = "<group>"; };
-		52CB4AC621B616E400B6090B /* PassWordView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PassWordView.h; sourceTree = "<group>"; };
-		52CB4AC721B616E400B6090B /* MyView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyView.m; sourceTree = "<group>"; };
 		52F6A5B321B60F83006AF8CC /* SPAlertController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SPAlertController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52F6A5B621B60F83006AF8CC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		52F6A5B721B60F83006AF8CC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -130,10 +98,10 @@
 		52F6A5D621B60F86006AF8CC /* SPAlertControllerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SPAlertControllerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		52F6A5DA21B60F86006AF8CC /* SPAlertControllerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPAlertControllerUITests.m; sourceTree = "<group>"; };
 		52F6A5DC21B60F86006AF8CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		52F6A5E921B6101D006AF8CC /* SPAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SPAlertController.m; sourceTree = "<group>"; };
-		52F6A5EA21B6101D006AF8CC /* SPAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SPAlertController.h; sourceTree = "<group>"; };
 		BB05FF062455887700950629 /* UIColor+DarkMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+DarkMode.h"; sourceTree = "<group>"; };
 		BB05FF072455887700950629 /* UIColor+DarkMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+DarkMode.m"; sourceTree = "<group>"; };
+		BB54D6AD2E70869400CC72BC /* SPAlertController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SPAlertController.h; sourceTree = "<group>"; };
+		BB54D6AE2E70869400CC72BC /* SPAlertController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SPAlertController.m; sourceTree = "<group>"; };
 		BB5EA69C2457C75E005AE698 /* send0.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = send0.jpeg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -162,17 +130,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		090BCB8F21CEA0E000057E1F /* CustomView7 */ = {
-			isa = PBXGroup;
-			children = (
-				090BCB9021CEA18300057E1F /* PopView.h */,
-				090BCB9121CEA18300057E1F /* PopView.m */,
-				090BCB9721CEAE2200057E1F /* SPButton.h */,
-				090BCB9821CEAE2200057E1F /* SPButton.m */,
-			);
-			path = CustomView7;
-			sourceTree = "<group>";
-		};
 		09810FB721C4F90300E702E1 /* Images */ = {
 			isa = PBXGroup;
 			children = (
@@ -210,13 +167,8 @@
 			isa = PBXGroup;
 			children = (
 				522C267421D0CF91004EBDEB /* CustomView1 */,
-				52CB4AC221B616E400B6090B /* CustomView2 */,
-				52CB4AB421B616E400B6090B /* CustomView3 */,
-				52CB4ABC21B616E400B6090B /* CustomView4 */,
-				52CB4ABF21B616E400B6090B /* CustomView5 */,
 				52CB4AC821B616E400B6090B /* CustomView5 */,
 				52CB4AB121B616E400B6090B /* CustomView6 */,
-				090BCB8F21CEA0E000057E1F /* CustomView7 */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -228,50 +180,6 @@
 				52CB4AB321B616E400B6090B /* MyCenterView.m */,
 			);
 			path = CustomView6;
-			sourceTree = "<group>";
-		};
-		52CB4AB421B616E400B6090B /* CustomView3 */ = {
-			isa = PBXGroup;
-			children = (
-				52CB4ABA21B616E400B6090B /* ShoppingCartCell.h */,
-				52CB4AB821B616E400B6090B /* ShoppingCartCell.m */,
-				52CB4AB521B616E400B6090B /* ShoppingCartCell.xib */,
-				52CB4ABB21B616E400B6090B /* ShoppingCartItem.h */,
-				52CB4AB721B616E400B6090B /* ShoppingCartItem.m */,
-				52CB4AB921B616E400B6090B /* ShoppingCartView.h */,
-				52CB4AB621B616E400B6090B /* ShoppingCartView.m */,
-			);
-			path = CustomView3;
-			sourceTree = "<group>";
-		};
-		52CB4ABC21B616E400B6090B /* CustomView4 */ = {
-			isa = PBXGroup;
-			children = (
-				52CB4ABE21B616E400B6090B /* CommodityListView.h */,
-				52CB4ABD21B616E400B6090B /* CommodityListView.m */,
-			);
-			path = CustomView4;
-			sourceTree = "<group>";
-		};
-		52CB4ABF21B616E400B6090B /* CustomView5 */ = {
-			isa = PBXGroup;
-			children = (
-				52CB4AC121B616E400B6090B /* PickerView.h */,
-				52CB4AC021B616E400B6090B /* PickerView.m */,
-			);
-			path = CustomView5;
-			sourceTree = "<group>";
-		};
-		52CB4AC221B616E400B6090B /* CustomView2 */ = {
-			isa = PBXGroup;
-			children = (
-				52CB4AC521B616E400B6090B /* MyView.h */,
-				52CB4AC721B616E400B6090B /* MyView.m */,
-				52CB4AC421B616E400B6090B /* MyView.xib */,
-				52CB4AC621B616E400B6090B /* PassWordView.h */,
-				52CB4AC321B616E400B6090B /* PassWordView.m */,
-			);
-			path = CustomView2;
 			sourceTree = "<group>";
 		};
 		52CB4AC821B616E400B6090B /* CustomView5 */ = {
@@ -309,7 +217,7 @@
 		52F6A5B521B60F83006AF8CC /* SPAlertController */ = {
 			isa = PBXGroup;
 			children = (
-				52F6A5E821B6101D006AF8CC /* SPAlertController */,
+				BB54D6AF2E70869400CC72BC /* SPAlertController */,
 				52F6A5B621B60F83006AF8CC /* AppDelegate.h */,
 				52F6A5B721B60F83006AF8CC /* AppDelegate.m */,
 				52F6A5B921B60F83006AF8CC /* ViewController.h */,
@@ -345,14 +253,15 @@
 			path = SPAlertControllerUITests;
 			sourceTree = "<group>";
 		};
-		52F6A5E821B6101D006AF8CC /* SPAlertController */ = {
+		BB54D6AF2E70869400CC72BC /* SPAlertController */ = {
 			isa = PBXGroup;
 			children = (
-				52F6A5EA21B6101D006AF8CC /* SPAlertController.h */,
-				52F6A5E921B6101D006AF8CC /* SPAlertController.m */,
+				BB54D6AD2E70869400CC72BC /* SPAlertController.h */,
+				BB54D6AE2E70869400CC72BC /* SPAlertController.m */,
 			);
-			path = SPAlertController;
-			sourceTree = "<group>";
+			name = SPAlertController;
+			path = ../SPAlertController;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -475,8 +384,6 @@
 				52F6A5BE21B60F83006AF8CC /* Main.storyboard in Resources */,
 				09810FCB21C4F90300E702E1 /* image4.jpg in Resources */,
 				09810FC721C4F90300E702E1 /* image9.jpg in Resources */,
-				52CB4AD421B616E400B6090B /* MyView.xib in Resources */,
-				52CB4ACD21B616E400B6090B /* ShoppingCartCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,24 +409,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				5270519E22EEBC660016D0DB /* main.m in Sources */,
+				BB54D6B02E70869400CC72BC /* SPAlertController.m in Sources */,
 				5270519D22EEAF410016D0DB /* AppDelegate.m in Sources */,
-				5270519C22EEAF000016D0DB /* SPAlertController.m in Sources */,
 				522C267A21D0D0B7004EBDEB /* SPTextView.m in Sources */,
-				090BCB9221CEA18300057E1F /* PopView.m in Sources */,
-				52CB4ACF21B616E400B6090B /* ShoppingCartItem.m in Sources */,
 				52F6A5BB21B60F83006AF8CC /* ViewController.m in Sources */,
 				522C267D21D0D5B2004EBDEB /* SendAlertView.m in Sources */,
-				52CB4AD321B616E400B6090B /* PassWordView.m in Sources */,
-				090BCB9921CEAE2200057E1F /* SPButton.m in Sources */,
 				BB05FF082455887700950629 /* UIColor+DarkMode.m in Sources */,
 				52CB4ACC21B616E400B6090B /* MyCenterView.m in Sources */,
 				522C267321D0C422004EBDEB /* ScoreView.m in Sources */,
 				522C267021D0C31F004EBDEB /* HCSStarRatingView.m in Sources */,
-				52CB4ACE21B616E400B6090B /* ShoppingCartView.m in Sources */,
-				52CB4AD121B616E400B6090B /* CommodityListView.m in Sources */,
-				52CB4AD521B616E400B6090B /* MyView.m in Sources */,
-				52CB4AD021B616E400B6090B /* ShoppingCartCell.m in Sources */,
-				52CB4AD221B616E400B6090B /* PickerView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,7 +427,6 @@
 			files = (
 				52F6A5D021B60F86006AF8CC /* SPAlertControllerTests.m in Sources */,
 				5270519B22EE9FF50016D0DB /* main.m in Sources */,
-				5270519A22EE9FF50016D0DB /* SPAlertController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

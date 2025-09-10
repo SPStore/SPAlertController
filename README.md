@@ -1,13 +1,14 @@
 # 重大更新：4.0.0版本适配深色模式
 # SPAlertController
-[![Build Status](http://img.shields.io/travis/SPStore/SPAlertController.svg?style=flat)](https://travis-ci.org/SPStore/SPAlertController)
 [![Pod Version](http://img.shields.io/cocoapods/v/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
 [![Pod Platform](http://img.shields.io/cocoapods/p/SPAlertController.svg?style=flat)](http://cocoadocs.org/docsets/SPAlertController/)
 ![Language](https://img.shields.io/badge/language-Object--C-ff69b4.svg)
 [![Pod License](http://img.shields.io/cocoapods/l/SPAlertController.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SPStore/SPAlertController)
 # 目录
-* [CocoaPods](#CocoaPods) 
+* [安装](#安装)
+  * [CocoaPods](#CocoaPods)
+  * [Swift Package Manager](#Swift-Package-Manager)
 * [使用示例](#使用示例)
 * [API及属性详解](#API及属性详解) 
 * [自定义View](#自定义View)
@@ -23,18 +24,28 @@
 - [x] action的排列可灵活设置垂直排列和水平排列
 - [x] 每个action的高度自适应
 - [x] 支持旋转(横竖屏)
-- [x] 可以自定义各种UIView
+- [x] 支持自定义头部视图
+- [x] 支持头部和action之间插入自定义视图
 - [x] 支持对话框毛玻璃和背景蒙层毛玻璃
 - [x] 全面适配iPhoneX，iPhoneXR，iPhoneXS，iPhoneXS MAX
 - [x] 全面适配深色模式
-## CocoaPods
-##### 版本4.0.0
+
+## 安装
+
+### CocoaPods
 ```
 platform:ios,'9.0'
 target 'MyApp' do
-  pod 'SPAlertController', '~> 4.0.0'
+  pod 'SPAlertController', '~> 4.1.0'
 end
 ```
+
+### Swift Package Manager
+Swift Package Manager是Apple官方提供的依赖管理工具，在Xcode中集成。
+
+- Xcode 11+，打开你的项目，选择：File > Swift Packages > Add Package Dependency
+- 输入仓库地址：https://github.com/SPStore/SPAlertController
+- 选择版本规则：Up to Next Major（4.1.0）
 
 ## 使用示例
 ```
@@ -111,9 +122,6 @@ SPAlertAction *action3 = [SPAlertAction actionWithTitle:@"Cancel" style:SPAlertA
 
 @property(nonatomic, assign) CGFloat minDistanceToEdges;
 ```
-* 图中红色画线都是指minDistanceToEdges 
-
-![image](https://github.com/SPStore/SPAlertController/blob/master/Images/3006981-6f3752d49e579460.jpg)
 
 ```
 // 该属性是制造对话框的毛玻璃效果，3.0版本开始采用的是系统私有类_UIDimmingKnockoutBackdropView所实现
@@ -214,6 +222,7 @@ SPAlertControllerStyleAlert下的圆角半径
 ## 历史版本
 |  版本 | 更新日期 | 支持最低系统版本 |更新内容 |
 | :------------:| :------------:| :------------:|------------|
+|v4.1.0|2025.09.09|iOS9.0|1、修复title和message同时为空的情况下，在部分机型上无法弹出的问题<br>2、action事件回调改为dimiss动画完成之后<br>3、action新增allowsAutoDismiss和backgroundColor属性<br>4、修复深色模式下模糊效果失效问题<br>|
 |v4.0.0|2020.04.27|iOS9.0|适配深色模式|
 |v3.1.0|2019.08.08|iOS9.0|1、actionSheet样式加了单边圆角效果<br>2、毛玻璃默认为NO<br>3、当不需要毛玻璃效果时,actionButton的选中背景色修改(灰度0.1)，属于bug修复<br>4、“取消action”上的分割线背景色修改(灰度由0.3变为0.2)，高度由6增加为8<br>5、每个actionButton的最小高度由49变为55|
 |v3.0.4|2019.06.03|iOS9.0|修复了tapBackgroundViewDismiss属性无效问题|

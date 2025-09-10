@@ -8,20 +8,20 @@
 
 #import "SPAlertController.h"
 
-#define SP_SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
-#define SP_SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
+#define SPALERT_SCREEN_WIDTH [UIScreen mainScreen].bounds.size.width
+#define SPALERT_SCREEN_HEIGHT [UIScreen mainScreen].bounds.size.height
 
-#define SP_LINE_WIDTH 1.0 / [UIScreen mainScreen].scale
+#define SPALERT_LINE_WIDTH 1.0 / [UIScreen mainScreen].scale
 
-#define Is_iPhoneX MAX(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) >= 812
-#define SP_STATUS_BAR_HEIGHT (Is_iPhoneX ? 44 : 20)
-#define SP_ACTION_TITLE_FONTSIZE 18
-#define SP_ACTION_HEIGHT 55.0
+#define SPALERT_IS_IPHONEX MAX(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT) >= 812
+#define SPALERT_STATUS_BAR_HEIGHT (SPALERT_IS_IPHONEX ? 44 : 20)
+#define SPALERT_ACTION_TITLE_FONTSIZE 18
+#define SPALERT_ACTION_HEIGHT 55.0
 
-@interface SPColorStyle : NSObject
+@interface _SPColorStyle : NSObject
 
 + (UIColor *)normalColor;
-+ (UIColor *)selectedColor;
++ (UIColor *)highlightedColor;
 + (UIColor *)lineColor;
 + (UIColor *)line2Color;
 + (UIColor *)lightLineColor;
@@ -36,16 +36,16 @@
 + (UIColor *)colorPairsWithStaticLightColor:(UIColor *)lightColor darkColor:(UIColor *)darkColor;
 @end
 
-@implementation SPColorStyle
+@implementation _SPColorStyle
 
 + (UIColor *)normalColor {
     return [self colorPairsWithDynamicLightColor:[[UIColor whiteColor] colorWithAlphaComponent:0.7]
-                                       darkColor:[UIColor colorWithRed:44.0 / 255.0 green:44.0 / 255.0 blue:44.0 / 255.0 alpha:1.0]];
+                                       darkColor:[UIColor colorWithRed:70.0 / 255.0 green:70.0 / 255.0 blue:70.0 / 255.0 alpha:0.7]];
 }
 
-+ (UIColor *)selectedColor {
-    return [self colorPairsWithDynamicLightColor:[[UIColor grayColor] colorWithAlphaComponent:0.1]
-                                       darkColor:[UIColor colorWithRed:55.0 / 255.0 green:55.0 / 255.0 blue:55.0 / 255.0 alpha:1.0]];
++ (UIColor *)highlightedColor {
+    return [self colorPairsWithDynamicLightColor:[[UIColor grayColor] colorWithAlphaComponent:0.2]
+                                       darkColor:[UIColor colorWithRed:80.0 / 255.0 green:80.0 / 255.0 blue:80.0 / 255.0 alpha:0.7]];
 }
 
 + (UIColor *)lineColor {
@@ -54,8 +54,8 @@
 }
 
 + (UIColor *)line2Color {
-    return [self colorPairsWithDynamicLightColor:[[UIColor grayColor] colorWithAlphaComponent:0.15]
-                                       darkColor:[UIColor colorWithRed:29.0 / 255.0 green:29.0 / 255.0 blue:29.0 / 255.0 alpha:1.0]];
+    return [self colorPairsWithDynamicLightColor:[[UIColor grayColor] colorWithAlphaComponent:0.1]
+                                       darkColor:[[UIColor grayColor] colorWithAlphaComponent:0.25]];
 }
 
 + (UIColor *)lightWhite_DarkBlackColor {
@@ -73,7 +73,7 @@
 }
 
 + (UIColor *)darkLineColor {
-    return [UIColor colorWithRed:60.0 / 255.0 green:60.0 / 255.0 blue:60.0 / 255.0 alpha:1.0];
+    return [[UIColor whiteColor] colorWithAlphaComponent:0.3];
 }
 
 + (UIColor *)textViewBackgroundColor {
@@ -150,6 +150,8 @@
     action.titleEdgeInsets = self.titleEdgeInsets;
     action.handler = self.handler;
     action.propertyChangedBlock = self.propertyChangedBlock;
+    action.allowsAutoDismiss = self.allowsAutoDismiss;
+    action.backgroundColor = self.backgroundColor;
     return action;
 }
 
@@ -164,14 +166,14 @@
     self.style = style;
     self.handler = handler;
     if (style == SPAlertActionStyleDestructive) {
-        self.titleColor = [SPColorStyle alertRedColor];
-        self.titleFont = [UIFont systemFontOfSize:SP_ACTION_TITLE_FONTSIZE];
+        self.titleColor = [_SPColorStyle alertRedColor];
+        self.titleFont = [UIFont systemFontOfSize:SPALERT_ACTION_TITLE_FONTSIZE];
     } else if (style == SPAlertActionStyleCancel) {
-        self.titleColor = [SPColorStyle lightBlack_DarkWhiteColor];
-        self.titleFont = [UIFont boldSystemFontOfSize:SP_ACTION_TITLE_FONTSIZE];
+        self.titleColor = [_SPColorStyle lightBlack_DarkWhiteColor];
+        self.titleFont = [UIFont boldSystemFontOfSize:SPALERT_ACTION_TITLE_FONTSIZE];
     } else {
-        self.titleColor = [SPColorStyle lightBlack_DarkWhiteColor];
-        self.titleFont = [UIFont systemFontOfSize:SP_ACTION_TITLE_FONTSIZE];
+        self.titleColor = [_SPColorStyle lightBlack_DarkWhiteColor];
+        self.titleFont = [UIFont systemFontOfSize:SPALERT_ACTION_TITLE_FONTSIZE];
     }
     return self;
 }
@@ -185,9 +187,11 @@
 
 - (void)initialize {
     _enabled = YES; // 默认能点击
-    _titleColor = [SPColorStyle lightBlack_DarkWhiteColor];
-    _titleFont = [UIFont systemFontOfSize:SP_ACTION_TITLE_FONTSIZE];
+    _allowsAutoDismiss = YES; // 默认点击后自动dismiss
+    _titleColor = [_SPColorStyle lightBlack_DarkWhiteColor];
+    _titleFont = [UIFont systemFontOfSize:SPALERT_ACTION_TITLE_FONTSIZE];
     _titleEdgeInsets = UIEdgeInsetsMake(0, 15, 0, 15);
+    _backgroundColor = [_SPColorStyle normalColor]; 
 }
 
 - (void)setTitle:(NSString *)title {
@@ -225,6 +229,13 @@
     }
 }
 
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+    _backgroundColor = backgroundColor;
+    if (self.propertyChangedBlock) {
+        self.propertyChangedBlock(self,NO); // 背景色改变不需要更新布局
+    }
+}
+
 - (void)setTitleFont:(UIFont *)titleFont {
     _titleFont = titleFont;
     if (self.propertyChangedBlock) {
@@ -250,14 +261,14 @@
 @implementation SPInterfaceActionItemSeparatorView
 - (instancetype)init {
     if (self = [super init]) {
-        self.backgroundColor = [SPColorStyle lineColor];
+        self.backgroundColor = [_SPColorStyle lineColor];
     }
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    self.backgroundColor = MIN(self.frame.size.width, self.frame.size.height) > SP_LINE_WIDTH ? [SPColorStyle line2Color] : [SPColorStyle lineColor];
+    self.backgroundColor = MIN(self.frame.size.width, self.frame.size.height) > SPALERT_LINE_WIDTH ? [_SPColorStyle line2Color] : [_SPColorStyle lineColor];
 }
 
 @end
@@ -266,12 +277,12 @@
 #pragma mark ---------------------------- SPInterfaceHeaderScrollView begin ----------------------------
 
 @interface SPInterfaceHeaderScrollView : UIScrollView
-@property (nonatomic, weak) UIView *contentView;
-@property (nonatomic, weak) UILabel *titleLabel;
-@property (nonatomic, weak) UILabel *messageLabel;
-@property (nonatomic, weak) UIImageView *imageView;
+@property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) UILabel *titleLabel;
+@property (nonatomic, strong) UILabel *messageLabel;
+@property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, assign) CGSize imageLimitSize;
-@property (nonatomic, weak) UIStackView *textFieldView;
+@property (nonatomic, strong) UIStackView *textFieldView;
 @property (nonatomic, strong) NSMutableArray *textFields;
 @property (nonatomic, assign) UIEdgeInsets contentEdgeInsets;
 @property (nonatomic, copy) void(^headerViewSfeAreaDidChangBlock)(void);
@@ -303,7 +314,7 @@
     [super traitCollectionDidChange:previousTraitCollection];
     if (@available(iOS 13.0, *)) {
         // 设置CGColor，不要传previousTraitCollection,previousTraitCollection指的是上一次的模式
-        UIColor *resolvedColor = [[SPColorStyle lineColor] resolvedColorWithTraitCollection:self.traitCollection];
+        UIColor *resolvedColor = [[_SPColorStyle lineColor] resolvedColorWithTraitCollection:self.traitCollection];
         for (UITextField *textField in self.textFields) {
             textField.layer.borderColor = resolvedColor.CGColor;
         }
@@ -437,7 +448,7 @@
         UILabel *titleLabel = [[UILabel alloc] init];
         titleLabel.font = [UIFont boldSystemFontOfSize:18];
         titleLabel.textAlignment = NSTextAlignmentCenter;
-        titleLabel.textColor = [SPColorStyle lightBlack_DarkWhiteColor];
+        titleLabel.textColor = [_SPColorStyle lightBlack_DarkWhiteColor];
         titleLabel.numberOfLines = 0;
         titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:titleLabel];
@@ -451,7 +462,7 @@
         UILabel *messageLabel = [[UILabel alloc] init];
         messageLabel.font = [UIFont systemFontOfSize:18];
         messageLabel.textAlignment = NSTextAlignmentCenter;
-        messageLabel.textColor = [SPColorStyle grayColor];
+        messageLabel.textColor = [_SPColorStyle grayColor];
         messageLabel.numberOfLines = 0;
         messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:messageLabel];
@@ -472,14 +483,14 @@
 
 - (UIStackView *)textFieldView {
     if (!_textFieldView) {
-        UIStackView *textFieldView = [[UIStackView alloc] init];
-        textFieldView.translatesAutoresizingMaskIntoConstraints = NO;
-        textFieldView.distribution = UIStackViewDistributionFillEqually;
-        textFieldView.axis = UILayoutConstraintAxisVertical;
         if (self.textFields.count) {
+            UIStackView *textFieldView = [[UIStackView alloc] init];
+            textFieldView.translatesAutoresizingMaskIntoConstraints = NO;
+            textFieldView.distribution = UIStackViewDistributionFillEqually;
+            textFieldView.axis = UILayoutConstraintAxisVertical;
             [self.contentView addSubview:textFieldView];
+            _textFieldView = textFieldView;
         }
-        _textFieldView = textFieldView;
     }
     return _textFieldView;
 }
@@ -494,7 +505,7 @@
 @property (nonatomic, weak) id target;
 @property (nonatomic, assign) SEL methodAction;
 @property (nonatomic, strong) SPAlertAction *action;
-@property (nonatomic, weak) UIButton *actionButton;
+@property (nonatomic, strong) UIButton *actionButton;
 @property (nonatomic, strong) NSMutableArray *actionButtonConstraints;
 @property (nonatomic, assign) CGFloat afterSpacing;
 - (void)addTarget:(id)target action:(SEL)action;
@@ -504,7 +515,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _afterSpacing = SP_LINE_WIDTH;
+        _afterSpacing = SPALERT_LINE_WIDTH;
     }
     return self;
 }
@@ -519,13 +530,18 @@
         [self.actionButton setTitleColor:[action.titleColor colorWithAlphaComponent:0.4] forState:UIControlStateNormal];
     }
     
+    // 设置背景色
+    if (action.backgroundColor) {
+        self.actionButton.backgroundColor = action.backgroundColor;
+    }
+    
     // 注意不能赋值给按钮的titleEdgeInsets，当只有文字时，按钮的titleEdgeInsets设置top和bottom值无效
     self.actionButton.contentEdgeInsets = action.titleEdgeInsets;
     self.actionButton.enabled = action.enabled;
     self.actionButton.tintColor = action.tintColor;
     if (action.attributedTitle) {
         // 这里之所以要设置按钮颜色为黑色，是因为如果外界在addAction:之后设置按钮的富文本，那么富文本的颜色在没有采用NSForegroundColorAttributeName的情况下会自动读取按钮上普通文本的颜色，在addAction:之前设置会保持默认色(黑色)，为了在addAction:前后设置富文本保持统一，这里先将按钮置为黑色，富文本就会是黑色
-        [self.actionButton setTitleColor:[SPColorStyle lightBlack_DarkWhiteColor] forState:UIControlStateNormal];
+        [self.actionButton setTitleColor:[_SPColorStyle lightBlack_DarkWhiteColor] forState:UIControlStateNormal];
         
         if ([action.attributedTitle.string containsString:@"\n"] || [action.attributedTitle.string containsString:@"\r"]) {
             self.actionButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -556,14 +572,19 @@
     IMP imp = [_target methodForSelector:selector];
     void (*func)(id, SEL,SPAlertControllerActionView *) = (void *)imp;
     func(_target, selector, self);
+    
+    // 加动画才能看到高亮颜色
+    [UIView animateWithDuration:0.2 animations:^{
+        sender.backgroundColor = self.action.backgroundColor;
+    }];
 }
 
 - (void)touchDown:(UIButton *)sender {
-    sender.backgroundColor = [SPColorStyle selectedColor];
+    sender.backgroundColor = [_SPColorStyle highlightedColor];
 }
 
 - (void)touchDragExit:(UIButton *)sender {
-    sender.backgroundColor = [SPColorStyle normalColor];
+    sender.backgroundColor = [_SPColorStyle normalColor];
 }
 
 - (SPAlertController *)findAlertController {
@@ -606,8 +627,8 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     CGFloat labelH = actionButton.titleLabel.intrinsicContentSize.height;
     // 按钮的上下内边距之和
     CGFloat topBottom_insetsSum = actionButton.contentEdgeInsets.top+actionButton.contentEdgeInsets.bottom;
-    // 文字的上下间距之和,等于SP_ACTION_HEIGHT-默认字体大小,这是为了保证文字上下有一个固定间距值，不至于使文字靠按钮太紧，,由于按钮内容默认垂直居中，所以最终的顶部或底部间距为topBottom_marginSum/2.0,这个间距，几乎等于18号字体时，最小高度为49时的上下间距
-    CGFloat topBottom_marginSum = SP_ACTION_HEIGHT-[UIFont systemFontOfSize:SP_ACTION_TITLE_FONTSIZE].lineHeight;
+    // 文字的上下间距之和,等于SPALERT_ACTION_HEIGHT-默认字体大小,这是为了保证文字上下有一个固定间距值，不至于使文字靠按钮太紧，,由于按钮内容默认垂直居中，所以最终的顶部或底部间距为topBottom_marginSum/2.0,这个间距，几乎等于18号字体时，最小高度为49时的上下间距
+    CGFloat topBottom_marginSum = SPALERT_ACTION_HEIGHT-[UIFont systemFontOfSize:SPALERT_ACTION_TITLE_FONTSIZE].lineHeight;
     // 按钮高度
     CGFloat buttonH = labelH+topBottom_insetsSum+topBottom_marginSum;
     UIStackView *stackView = (UIStackView *)self.superview;
@@ -615,12 +636,12 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if ([stackView isKindOfClass:[UIStackView class]] && stackView.axis == UILayoutConstraintAxisHorizontal) {
         relation = NSLayoutRelationGreaterThanOrEqual;
     }
-    // 如果字体保持默认18号，只有一行文字时最终结果约等于SP_ACTION_HEIGHT
+    // 如果字体保持默认18号，只有一行文字时最终结果约等于SPALERT_ACTION_HEIGHT
     NSLayoutConstraint *buttonHonstraint = [NSLayoutConstraint constraintWithItem:actionButton attribute:NSLayoutAttributeHeight relatedBy:relation toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:buttonH];
     buttonHonstraint.priority = 999;
     [actionButtonConstraints addObject:buttonHonstraint];
     // 给一个最小高度，当按钮字体很小时，如果还按照上面的高度计算，高度会比较小
-    NSLayoutConstraint *minHConstraint = [NSLayoutConstraint constraintWithItem:actionButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SP_ACTION_HEIGHT+topBottom_insetsSum];
+    NSLayoutConstraint *minHConstraint = [NSLayoutConstraint constraintWithItem:actionButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPALERT_ACTION_HEIGHT+topBottom_insetsSum];
     minHConstraint.priority = UILayoutPriorityRequired;
     [self addConstraints:actionButtonConstraints];
     self.actionButtonConstraints = actionButtonConstraints;
@@ -629,7 +650,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 - (UIButton *)actionButton {
     if (!_actionButton) {
         UIButton *actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        actionButton.backgroundColor = [SPColorStyle normalColor];
+        actionButton.backgroundColor = [_SPColorStyle normalColor];
         actionButton.translatesAutoresizingMaskIntoConstraints = NO;
         actionButton.titleLabel.textAlignment = NSTextAlignmentCenter;
         actionButton.titleLabel.adjustsFontSizeToFitWidth = YES;
@@ -650,11 +671,11 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 #pragma mark ---------------------------- SPInterfaceActionSequenceView begin --------------------------------
 
 @interface SPInterfaceActionSequenceView : UIView
-@property (nonatomic, weak) UIScrollView *scrollView;
-@property (nonatomic, weak) UIView *contentView;
-@property (nonatomic, weak) UIView *cancelView;
-@property (nonatomic, weak) SPInterfaceActionItemSeparatorView *cancelActionLine;
-@property (nonatomic, weak) UIStackView *stackView;
+@property (nonatomic, strong) UIScrollView *scrollView;
+@property (nonatomic, strong) UIView *contentView;
+@property (nonatomic, strong) UIView *cancelView;
+@property (nonatomic, strong) SPInterfaceActionItemSeparatorView *cancelActionLine;
+@property (nonatomic, strong) UIStackView *stackView;
 @property (nonatomic, strong) SPAlertAction *cancelAction;
 @property (nonatomic, strong) NSMutableArray *actionLineConstraints;
 @property (nonatomic, strong) NSMutableArray *actions;
@@ -667,6 +688,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (void)setAxis:(UILayoutConstraintAxis)axis {
     _axis = axis;
+    self.scrollView.scrollEnabled = axis == UILayoutConstraintAxisVertical;
     self.stackView.axis = axis;
     [self setNeedsUpdateConstraints];
 }
@@ -811,26 +833,26 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         [NSLayoutConstraint activateConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[contentView]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(contentView)]];
         [[NSLayoutConstraint constraintWithItem:contentView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:scrollView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0] setActive:YES];
         NSLayoutConstraint *equalHeightConstraint = [NSLayoutConstraint constraintWithItem:contentView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:scrollView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0];
-        // 计算scrolView的最小和最大高度，下面这个if语句是保证当actions的g总个数大于4时，scrollView的高度至少为4个半SP_ACTION_HEIGHT的高度，否则自适应内容
+        // 计算scrolView的最小和最大高度，下面这个if语句是保证当actions的g总个数大于4时，scrollView的高度至少为4个半SPALERT_ACTION_HEIGHT的高度，否则自适应内容
         CGFloat minHeight = 0.0;
         if (_axis == UILayoutConstraintAxisVertical) {
             if (self.cancelAction) {
-                if (self.actions.count > 4) { // 如果有取消按钮且action总个数大于4，则除去取消按钮之外的其余部分的高度至少为3个半SP_ACTION_HEIGHT的高度,即加上取消按钮就是总高度至少为4个半SP_ACTION_HEIGHT的高度
-                    minHeight = SP_ACTION_HEIGHT * 3.5;
+                if (self.actions.count > 4) { // 如果有取消按钮且action总个数大于4，则除去取消按钮之外的其余部分的高度至少为3个半SPALERT_ACTION_HEIGHT的高度,即加上取消按钮就是总高度至少为4个半SPALERT_ACTION_HEIGHT的高度
+                    minHeight = SPALERT_ACTION_HEIGHT * 3.5;
                     equalHeightConstraint.priority = 997.0f; // 优先级为997，必须小于998.0，因为头部如果内容过多时高度也会有限制，头部的优先级为998.0.这里定的规则是，当头部和action部分同时过多时，头部的优先级更高，但是它不能高到以至于action部分小于最小高度
                 } else { // 如果有取消按钮但action的个数大不于4，则该多高就显示多高
                     equalHeightConstraint.priority = 1000.0f; // 由子控件撑起
                 }
             } else {
                 if (self.actions.count > 4) {
-                    minHeight = SP_ACTION_HEIGHT * 4.5;
+                    minHeight = SPALERT_ACTION_HEIGHT * 4.5;
                     equalHeightConstraint.priority = 997.0f;
                 } else {
                     equalHeightConstraint.priority = 1000.0f;
                 }
             }
         } else {
-            minHeight = SP_ACTION_HEIGHT;
+            minHeight = SPALERT_ACTION_HEIGHT;
         }
         NSLayoutConstraint *minHeightConstraint = [NSLayoutConstraint constraintWithItem:scrollView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:minHeight];
         minHeightConstraint.priority = 999.0;// 优先级不能大于对话框的最小顶部间距的优先级(999.0)
@@ -869,16 +891,17 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (UIScrollView *)scrollView {
     if (!_scrollView) {
-        UIScrollView *scrollView = [[UIScrollView alloc] init];
-        scrollView.showsHorizontalScrollIndicator = NO;
-        scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-        if (@available(iOS 11.0, *)) {
-            scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        }
         if ((self.cancelAction && self.actions.count > 1) || (!self.cancelAction && self.actions.count > 0)) {
+            UIScrollView *scrollView = [[UIScrollView alloc] init];
+            scrollView.showsHorizontalScrollIndicator = NO;
+            scrollView.alwaysBounceVertical = NO;
+            scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+            if (@available(iOS 11.0, *)) {
+                scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+            }
             [self addSubview:scrollView];
+            _scrollView = scrollView;
         }
-        _scrollView = scrollView;
     }
     return _scrollView;
 }
@@ -898,7 +921,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         UIStackView *stackView = [[UIStackView alloc] init];
         stackView.translatesAutoresizingMaskIntoConstraints = NO;
         stackView.distribution = UIStackViewDistributionFillProportionally;
-        stackView.spacing = SP_LINE_WIDTH; // 该间距腾出来的空间显示分割线
+        stackView.spacing = SPALERT_LINE_WIDTH; // 该间距腾出来的空间显示分割线
         stackView.axis = UILayoutConstraintAxisVertical;
         [self.contentView addSubview:stackView];
         _stackView = stackView;
@@ -908,24 +931,24 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (UIView *)cancelView {
     if (!_cancelView) {
-        UIView *cancelView = [[UIView alloc] init];
-        cancelView.translatesAutoresizingMaskIntoConstraints = NO;
         if (self.cancelAction) {
+            UIView *cancelView = [[UIView alloc] init];
+            cancelView.translatesAutoresizingMaskIntoConstraints = NO;
             [self addSubview:cancelView];
+            _cancelView = cancelView;
         }
-        _cancelView = cancelView;
     }
     return _cancelView;
 }
 
 - (SPInterfaceActionItemSeparatorView *)cancelActionLine {
     if (!_cancelActionLine) {
-        SPInterfaceActionItemSeparatorView *cancelActionLine = [[SPInterfaceActionItemSeparatorView alloc] init];
-        cancelActionLine.translatesAutoresizingMaskIntoConstraints = NO;
         if (self.cancelView.superview && self.scrollView.superview) {
+            SPInterfaceActionItemSeparatorView *cancelActionLine = [[SPInterfaceActionItemSeparatorView alloc] init];
+            cancelActionLine.translatesAutoresizingMaskIntoConstraints = NO;
             [self addSubview:cancelActionLine];
+            _cancelActionLine = cancelActionLine;
         }
-        _cancelActionLine = cancelActionLine;
     }
     return _cancelActionLine;
 }
@@ -945,18 +968,18 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 @interface SPAlertController () <UIViewControllerTransitioningDelegate>
 @property (nonatomic, strong) UIView *alertControllerView;
-@property (nonatomic, weak) UIView *containerView;
-@property (nonatomic, weak) UIView *alertView;
+@property (nonatomic, strong) UIView *containerView;
+@property (nonatomic, strong) UIView *alertView;
 @property (nonatomic, strong) UIView *customAlertView;
-@property (nonatomic, weak) SPInterfaceHeaderScrollView *headerView;
+@property (nonatomic, strong) SPInterfaceHeaderScrollView *headerView;
 @property (nonatomic, strong) UIView *customHeaderView;
-@property (nonatomic, weak) SPInterfaceActionSequenceView *actionSequenceView;
+@property (nonatomic, strong) SPInterfaceActionSequenceView *actionSequenceView;
 @property (nonatomic, strong) UIView *customActionSequenceView;
 @property (nonatomic, strong) UIView *componentView;
 @property (nonatomic, assign) CGSize customViewSize;
-@property (nonatomic, weak) SPInterfaceActionItemSeparatorView *headerActionLine;
+@property (nonatomic, strong) SPInterfaceActionItemSeparatorView *headerActionLine;
 @property (nonatomic, strong) NSMutableArray *headerActionLineConstraints;
-@property (nonatomic, weak) SPInterfaceActionItemSeparatorView *componentActionLine;
+@property (nonatomic, strong) SPInterfaceActionItemSeparatorView *componentActionLine;
 @property (nonatomic, strong) NSMutableArray *componentViewConstraints;
 @property (nonatomic, strong) NSMutableArray *componentActionLineConstraints;
 @property (nonatomic, strong) UIView *dimmingKnockoutBackdropView;
@@ -976,6 +999,8 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 @property (nonatomic) NSMutableArray<SPAlertAction *> *otherActions;
 @property (nonatomic, assign) BOOL isForceLayout; // 是否强制排列，外界设置了actionAxis属性认为是强制
 @property (nonatomic, assign) BOOL isForceOffset; // 是否强制偏移，外界设置了offsetForAlert属性认为是强制
+@property (nonatomic, assign) BOOL isSyncingKeyboardAnimation;
+
 @end
 
 @implementation SPAlertController
@@ -1038,13 +1063,8 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     
     if (!self.isForceLayout) { // 如果为NO,说明外界没有设置actionAxis，此时按照默认方式排列
         if (self.preferredStyle == SPAlertControllerStyleAlert) {
-            if (self.actions.count > _maxNumberOfActionHorizontalArrangementForAlert) { // alert样式下，action的个数大于2时垂直排列,这里不等式右边写_maxNumberOfActionHorizontalArrangementForAlert是为了让被废弃的_maxNumberOfActionHorizontalArrangementForAlert依然生效
-                _actionAxis = UILayoutConstraintAxisVertical; // 本框架任何一处都不允许调用actionAxis的setter方法，如果调用了则无法判断是外界调用还是内部调用
-                [self updateActionAxis];
-            } else { // action的个数小于等于2，action水平排列
-                _actionAxis = UILayoutConstraintAxisHorizontal;
-                [self updateActionAxis];
-            }
+            _actionAxis = UILayoutConstraintAxisHorizontal;
+            [self updateActionAxis];
         } else { // actionSheet样式下默认垂直排列
             _actionAxis = UILayoutConstraintAxisVertical;
             [self updateActionAxis];
@@ -1096,11 +1116,11 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     NSAssert(self.preferredStyle == SPAlertControllerStyleAlert,@"SPAlertController does not allow 'addTextFieldWithConfigurationHandler:' to be called in the style of SPAlertControllerStyleActionSheet");
     UITextField *textField = [[UITextField alloc] init];
     textField.translatesAutoresizingMaskIntoConstraints = NO;
-    textField.backgroundColor = [SPColorStyle textViewBackgroundColor];
+    textField.backgroundColor = [_SPColorStyle textViewBackgroundColor];
     // 系统的UITextBorderStyleLine样式线条过于黑，所以自己设置
-    textField.layer.borderWidth = SP_LINE_WIDTH;
+    textField.layer.borderWidth = SPALERT_LINE_WIDTH;
     // 这里设置的颜色是静态的，动态设置CGColor,还需要监听深浅模式的切换
-    textField.layer.borderColor = [SPColorStyle colorPairsWithStaticLightColor:[SPColorStyle lineColor] darkColor:[SPColorStyle darkLineColor]].CGColor;
+    textField.layer.borderColor = [_SPColorStyle colorPairsWithStaticLightColor:[_SPColorStyle lineColor] darkColor:[_SPColorStyle darkLineColor]].CGColor;
     // 在左边设置一张view，充当光标左边的间距，否则光标紧贴textField不美观
     textField.leftView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 0)];
     textField.leftView.userInteractionEnabled = NO;
@@ -1175,14 +1195,11 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
     _animationType = animationType;
     if (preferredStyle == SPAlertControllerStyleAlert) {
-        _maxMarginForAlert = (MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) - 275) / 2.0;
-        _minDistanceToEdges = (MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) - 275) / 2.0;
-        _cornerRadius = 6.0;
+        _minDistanceToEdges = (MIN(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT) - 275) / 2.0;
     } else {
         _minDistanceToEdges = 70;
-        _maxTopMarginForActionSheet = 70;
-        _cornerRadius = 13.0;
     }
+    _cornerRadius = 13.0;
     if (preferredStyle == SPAlertControllerStyleAlert) {
         _actionAxis = UILayoutConstraintAxisHorizontal;
     } else {
@@ -1210,17 +1227,15 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     self.transitioningDelegate = self;
     
     _titleFont = [UIFont boldSystemFontOfSize:18];
-    _titleColor = [SPColorStyle lightBlack_DarkWhiteColor];
+    _titleColor = [_SPColorStyle lightBlack_DarkWhiteColor];
     _messageFont = [UIFont systemFontOfSize:16];
-    _messageColor = [SPColorStyle grayColor];
+    _messageColor = [_SPColorStyle grayColor];
     _textAlignment = NSTextAlignmentCenter;
     _imageLimitSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
-    _cornerRadiusForAlert = 6.0;
     _backgroundViewAppearanceStyle = -1;
     _backgroundViewAlpha = 0.5;
     _tapBackgroundViewDismiss = YES;
     _needDialogBlur = NO;
-    _maxNumberOfActionHorizontalArrangementForAlert = 2;
 }
 
 - (void)layoutAlertControllerView {
@@ -1241,10 +1256,10 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     NSMutableArray *alertControllerViewConstraints = [NSMutableArray array];
     CGFloat topValue = _minDistanceToEdges;
     CGFloat bottomValue = _minDistanceToEdges;
-    CGFloat maxWidth = MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT)-_minDistanceToEdges * 2;
-    CGFloat maxHeight = SP_SCREEN_HEIGHT-topValue-bottomValue;
+    CGFloat maxWidth = MIN(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT)-_minDistanceToEdges * 2;
+    CGFloat maxHeight = SPALERT_SCREEN_HEIGHT-topValue-bottomValue;
     if (!self.customAlertView) {
-        // 当屏幕旋转的时候，为了保持alert样式下的宽高不变，因此取MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT)
+        // 当屏幕旋转的时候，为了保持alert样式下的宽高不变，因此取MIN(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT)
         [alertControllerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertControllerView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:maxWidth]];
     } else {
         [alertControllerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertControllerView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:maxWidth]];
@@ -1274,7 +1289,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 - (void)layoutAlertControllerViewForActionSheetStyle {
     switch (self.animationType) {
         case SPAlertAnimationTypeFromBottom:
-        case SPAlertAnimationTypeRaiseUp:
         default:
             [self layoutAlertControllerViewForAnimationTypeWithHV:@"H"
                                                    equalAttribute:NSLayoutAttributeBottom
@@ -1282,7 +1296,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
                                             lessOrGreaterRelation:NSLayoutRelationGreaterThanOrEqual];
             break;
         case SPAlertAnimationTypeFromTop:
-        case SPAlertAnimationTypeDropDown:
             [self layoutAlertControllerViewForAnimationTypeWithHV:@"H"
                                                    equalAttribute:NSLayoutAttributeTop
                                                 notEqualAttribute:NSLayoutAttributeBottom
@@ -1317,18 +1330,18 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         if (_customViewSize.width) { // 如果宽度没有值，则会假定customAlertViewh水平方向能由子控件撑起
             CGFloat alertControllerViewWidth = 0.0;
             if ([hv isEqualToString:@"H"]) {
-                alertControllerViewWidth = MIN(_customViewSize.width, SP_SCREEN_WIDTH);
+                alertControllerViewWidth = MIN(_customViewSize.width, SPALERT_SCREEN_WIDTH);
             } else {
-                alertControllerViewWidth = MIN(_customViewSize.width, SP_SCREEN_WIDTH-_minDistanceToEdges);
+                alertControllerViewWidth = MIN(_customViewSize.width, SPALERT_SCREEN_WIDTH-_minDistanceToEdges);
             }
             [alertControllerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertControllerView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertControllerViewWidth]];
         }
         if (_customViewSize.height) { // 如果高度没有值，则会假定customAlertViewh垂直方向能由子控件撑起
             CGFloat alertControllerViewHeight = 0.0;
             if ([hv isEqualToString:@"H"]) {
-                alertControllerViewHeight = MIN(_customViewSize.height, SP_SCREEN_HEIGHT-_minDistanceToEdges);
+                alertControllerViewHeight = MIN(_customViewSize.height, SPALERT_SCREEN_HEIGHT-_minDistanceToEdges);
             } else {
-                alertControllerViewHeight = MIN(_customViewSize.height, SP_SCREEN_HEIGHT);
+                alertControllerViewHeight = MIN(_customViewSize.height, SPALERT_SCREEN_HEIGHT);
             }
             [alertControllerViewConstraints addObject:[NSLayoutConstraint constraintWithItem:alertControllerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:alertControllerViewHeight]];
         }
@@ -1407,7 +1420,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if (!self.componentView.superview) {
         [headerActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:headerActionLine attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:actionSequenceView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
     }
-    [headerActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:headerActionLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SP_LINE_WIDTH]];
+    [headerActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:headerActionLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPALERT_LINE_WIDTH]];
 
     [NSLayoutConstraint activateConstraints:headerActionLineConstraints];
     self.headerActionLineConstraints = headerActionLineConstraints;
@@ -1452,7 +1465,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
     [componentActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:componentActionLine attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.actionSequenceView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
     [componentActionLineConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[componentActionLine]-0-|" options:0 metrics:nil views:NSDictionaryOfVariableBindings(componentActionLine)]];
-    [componentActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:componentActionLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SP_LINE_WIDTH]];
+    [componentActionLineConstraints addObject:[NSLayoutConstraint constraintWithItem:componentActionLine attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:SPALERT_LINE_WIDTH]];
     [NSLayoutConstraint activateConstraints:componentActionLineConstraints];
     self.componentActionLineConstraints = componentActionLineConstraints;
 }
@@ -1496,9 +1509,9 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (CGFloat)maxWidth {
     if (self.preferredStyle == SPAlertControllerStyleAlert) {
-        return MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT)-_minDistanceToEdges * 2;
+        return MIN(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT)-_minDistanceToEdges * 2;
     } else {
-        return SP_SCREEN_WIDTH;
+        return SPALERT_SCREEN_WIDTH;
     }
 }
 
@@ -1509,47 +1522,23 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         if (self.preferredStyle == SPAlertControllerStyleAlert) {
             for (SPAlertAction *action in self.actions) {
                 // 预估按钮宽度
-                CGFloat preButtonWidth = (MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) - _minDistanceToEdges * 2 - SP_LINE_WIDTH * (self.actions.count - 1)) / self.actions.count - action.titleEdgeInsets.left - action.titleEdgeInsets.right;
+                CGFloat preButtonWidth = (MIN(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT) - _minDistanceToEdges * 2 - SPALERT_LINE_WIDTH * (self.actions.count - 1)) / self.actions.count - action.titleEdgeInsets.left - action.titleEdgeInsets.right;
                 // 如果action的标题文字总宽度，大于按钮的contentRect的宽度，则说明水平排列会导致文字显示不全，此时垂直排列
                 if (action.attributedTitle) {
-                    if (ceil([action.attributedTitle boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, SP_ACTION_HEIGHT) options:NSStringDrawingUsesLineFragmentOrigin context:nil].size.width) > preButtonWidth) {
+                    if (ceil([action.attributedTitle boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, SPALERT_ACTION_HEIGHT) options:NSStringDrawingUsesLineFragmentOrigin context:nil].size.width) > preButtonWidth) {
                         _actionAxis = UILayoutConstraintAxisVertical;
                         [self updateActionAxis];
                         [self.actionSequenceView setNeedsUpdateConstraints];
                         break; // 一定要break，只要有一个按钮文字过长就垂直排列
                     }
                 } else {
-                    if (ceil([action.title boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, SP_ACTION_HEIGHT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:action.titleFont} context:nil].size.width) > preButtonWidth) {
+                    if (ceil([action.title boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, SPALERT_ACTION_HEIGHT) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:action.titleFont} context:nil].size.width) > preButtonWidth) {
                         _actionAxis = UILayoutConstraintAxisVertical;
                         [self updateActionAxis];
                         [self.actionSequenceView setNeedsUpdateConstraints];
                         break;
                     }
                 }
-            }
-        }
-    }
-}
-
-// 专门处理第三方IQKeyboardManager,非自定义view时禁用IQKeyboardManager移动textView/textField效果，自定义view时取消禁用
-- (void)handleIQKeyboardManager {
-    SEL selector = NSSelectorFromString(@"sharedManager");
-    IMP imp = [NSClassFromString(@"IQKeyboardManager") methodForSelector:selector];
-    if (imp != NULL) {
-        NSObject *(*func)(id, SEL) = (void *)imp;
-        NSObject *mgr = func(NSClassFromString(@"IQKeyboardManager"), selector);
-        if ([mgr isKindOfClass:NSClassFromString(@"IQKeyboardManager")]) {
-            @try {
-                NSMutableSet *disabledDistanceHandlingClasses = [mgr valueForKey:@"_disabledDistanceHandlingClasses"];
-                NSMutableSet *disabledToolbarClasses = [mgr valueForKey:@"_disabledToolbarClasses"];
-                if (![disabledDistanceHandlingClasses containsObject:NSClassFromString(@"SPAlertController")]) {
-                    [disabledDistanceHandlingClasses addObject:NSClassFromString(@"SPAlertController")];
-                    [disabledToolbarClasses addObject:NSClassFromString(@"SPAlertController")];
-                }
-            } @catch (NSException *exception) {
-                NSLog(@"exception = %@",exception);
-            } @finally {
-                
             }
         }
     }
@@ -1586,9 +1575,9 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (void)setupPreferredMaxLayoutWidthForLabel:(UILabel *)textLabel {
     if (self.preferredStyle == SPAlertControllerStyleAlert) {
-        textLabel.preferredMaxLayoutWidth = MIN(SP_SCREEN_WIDTH, SP_SCREEN_HEIGHT) - self.minDistanceToEdges * 2 - self.headerView.contentEdgeInsets.left - self.headerView.contentEdgeInsets.right;
+        textLabel.preferredMaxLayoutWidth = MIN(SPALERT_SCREEN_WIDTH, SPALERT_SCREEN_HEIGHT) - self.minDistanceToEdges * 2 - self.headerView.contentEdgeInsets.left - self.headerView.contentEdgeInsets.right;
     } else {
-        textLabel.preferredMaxLayoutWidth  = SP_SCREEN_WIDTH - self.headerView.contentEdgeInsets.left - self.headerView.contentEdgeInsets.right;
+        textLabel.preferredMaxLayoutWidth  = SPALERT_SCREEN_WIDTH - self.headerView.contentEdgeInsets.left - self.headerView.contentEdgeInsets.right;
     }
 }
 
@@ -1612,28 +1601,28 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
 }
 
-// 该方法是保证被废弃的maxNumberOfActionHorizontalArrangementForAlert属性的有效性
-- (void)setupActionAxis {
-    if (self.preferredStyle == SPAlertControllerStyleAlert) {
-        if (self.actions.count > self.maxNumberOfActionHorizontalArrangementForAlert) {
-            _actionAxis = UILayoutConstraintAxisVertical;
-            [self updateActionAxis];
-        } else {
-            _actionAxis = UILayoutConstraintAxisHorizontal;
-            [self updateActionAxis];
-        }
+- (void)makeViewOffsetWithAnimated:(BOOL)animated {
+    [self layoutAlertControllerView];
+    if (animated) {
+        [UIView animateWithDuration:0.25 animations:^{
+            [self.view.superview layoutIfNeeded];
+        }];
     }
 }
 
-- (void)makeViewOffsetWithAnimated:(BOOL)animated {
-    if (!self.beingPresented && !self.beingDismissed) {
-        [self layoutAlertControllerView];
-        if (animated) {
-            [UIView animateWithDuration:0.25 animations:^{
-                [self.view.superview layoutIfNeeded];
-            }];
-        }
+- (void)makeViewOffsetWithDuration:(NSTimeInterval)duration curve:(UIViewAnimationCurve)curve {
+    [self layoutAlertControllerView];
+    if (self.isBeingPresented || self.isBeingDismissed) {
+        return;
     }
+    [UIView animateWithDuration:duration
+                          delay:0
+                        options:(curve << 16) | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+        [self.view.superview layoutIfNeeded];
+    } completion:^(BOOL finished) {
+        self.isSyncingKeyboardAnimation = NO;
+    }];
 }
 
 // 获取自定义view的大小
@@ -1664,9 +1653,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
-    [self handleIQKeyboardManager];
-    
+
     if (!_isForceOffset && !_customAlertView && !_customHeaderView && !_customActionSequenceView && !_componentView) {
         // 监听键盘改变frame，键盘frame改变需要移动对话框
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardFrameWillChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
@@ -1674,6 +1661,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if (self.textFields.count) {
         UITextField *firstTextfield = [self.textFields firstObject];
         if (!firstTextfield.isFirstResponder) {
+            self.isSyncingKeyboardAnimation = YES;
             [firstTextfield becomeFirstResponder];
         }
     }
@@ -1691,6 +1679,8 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if (self.preferredStyle == SPAlertControllerStyleActionSheet) {
         [self setCornerRadius:_cornerRadius];
     }
+    
+    NSLog(@"kkkkkkkkkk ----2");
 }
 
 - (void)viewDidLayoutSubviews {
@@ -1698,13 +1688,13 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     [self handleIncompleteTextDisplay];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    // 移除键盘通知
+    if (!_isForceOffset && !_customAlertView && !_customHeaderView && !_customActionSequenceView && !_componentView) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillChangeFrameNotification object:nil];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -1721,9 +1711,14 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if (!_isForceOffset && (_offsetForAlert.y == 0.0 || _textFields.lastObject.isFirstResponder)) {
         CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
         CGFloat keyboardEndY = keyboardEndFrame.origin.y;
-        CGFloat diff = fabs((SP_SCREEN_HEIGHT - keyboardEndY) * 0.5);
+        CGFloat diff = fabs((SPALERT_SCREEN_HEIGHT - keyboardEndY) * 0.5);
         _offsetForAlert.y = -diff;
-        [self makeViewOffsetWithAnimated:YES];
+        
+        // 使用键盘动画参数
+        NSTimeInterval duration = [notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+        UIViewAnimationCurve curve = [notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+        
+        [self makeViewOffsetWithDuration:duration curve:curve];
     }
 }
 
@@ -1837,18 +1832,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
 }
 
-// 该属性3.0版本开始被废弃
-- (void)setMaxMarginForAlert:(CGFloat)maxMarginForAlert {
-    _maxMarginForAlert = maxMarginForAlert;
-    self.minDistanceToEdges = _maxMarginForAlert;
-}
-
-// 该属性3.0版本开始被废弃
-- (void)setMaxTopMarginForActionSheet:(CGFloat)maxTopMarginForActionSheet {
-    _maxTopMarginForActionSheet = maxTopMarginForActionSheet;
-    self.minDistanceToEdges = _maxTopMarginForActionSheet;
-}
-
 - (void)setMinDistanceToEdges:(CGFloat)minDistanceToEdges {
     _minDistanceToEdges = minDistanceToEdges;
     if (self.isViewLoaded) {
@@ -1895,22 +1878,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
 }
 
-- (void)setCornerRadiusForAlert:(CGFloat)cornerRadiusForAlert {
-    _cornerRadiusForAlert = cornerRadiusForAlert;
-    _cornerRadius = cornerRadiusForAlert;
-    if (self.preferredStyle == SPAlertControllerStyleAlert) {
-        self.containerView.layer.cornerRadius = _cornerRadiusForAlert;
-        self.containerView.layer.masksToBounds = YES;
-    }
-}
-
-// 此属性3.0版本开始被废弃
-- (void)setMaxNumberOfActionHorizontalArrangementForAlert:(NSInteger)maxNumberOfActionHorizontalArrangementForAlert {
-    _maxNumberOfActionHorizontalArrangementForAlert = maxNumberOfActionHorizontalArrangementForAlert;
-    // 被废弃的maxNumberOfActionHorizontalArrangementForAlert属性需要的方法
-    [self setupActionAxis];
-}
-
 - (void)setActionAxis:(UILayoutConstraintAxis)actionAxis {
     _actionAxis = actionAxis;
     // 调用该setter方法则认为是强制布局，该setter方法只有外界能调，这样才能判断外界有没有调用actionAxis的setter方法，从而是否按照外界的指定布局方式进行布局
@@ -1925,37 +1892,21 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     [self makeViewOffsetWithAnimated:NO];
 }
 
-// 被废弃
-- (void)setOffsetYForAlert:(CGFloat)offsetYForAlert {
-    _offsetYForAlert = offsetYForAlert;
-    _offsetForAlert.y = _offsetYForAlert;
-    _isForceOffset = YES;
-}
-
 - (void)setNeedDialogBlur:(BOOL)needDialogBlur {
     _needDialogBlur = needDialogBlur;
     if (_needDialogBlur) {
         self.containerView.backgroundColor = [UIColor clearColor];
         if (!self.dimmingKnockoutBackdropView) {
-            self.dimmingKnockoutBackdropView = [NSClassFromString(@"_UIDimmingKnockoutBackdropView") alloc];
-            if (self.dimmingKnockoutBackdropView) {
-                // 下面4行相当于self.dimmingKnockoutBackdropView = [self.dimmingKnockoutBackdropView performSelector:NSSelectorFromString(@"initWithStyle:") withObject:@(UIBlurEffectStyleLight)];
-                SEL selector = NSSelectorFromString(@"initWithStyle:");
-                IMP imp = [self.dimmingKnockoutBackdropView methodForSelector:selector];
-                if (imp != NULL) {
-                    UIView *(*func)(id, SEL,UIBlurEffectStyle) = (void *)imp;
-                    self.dimmingKnockoutBackdropView = func(self.dimmingKnockoutBackdropView, selector, UIBlurEffectStyleLight);
-                    self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
-                    self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-                    [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
-                }
-            } else { // 这个else是防止假如_UIDimmingKnockoutBackdropView这个类不存在了的时候，做一个备案
-                UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleExtraLight];
+            if (@available(iOS 13.0, *)) {
+                UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
                 self.dimmingKnockoutBackdropView = [[UIVisualEffectView alloc] initWithEffect:blur];
-                self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
-                self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-                [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
+            } else {
+                UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+                self.dimmingKnockoutBackdropView = [[UIVisualEffectView alloc] initWithEffect:blur];
             }
+            self.dimmingKnockoutBackdropView.frame = self.containerView.bounds;
+            self.dimmingKnockoutBackdropView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+            [self.containerView insertSubview:self.dimmingKnockoutBackdropView atIndex:0];
         }
     } else {
         [self.dimmingKnockoutBackdropView removeFromSuperview];
@@ -1963,7 +1914,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
         if (_customAlertView) {
             self.containerView.backgroundColor = [UIColor clearColor];
         } else {
-            self.containerView.backgroundColor = [SPColorStyle lightWhite_DarkBlackColor];
+            self.containerView.backgroundColor = [_SPColorStyle lightWhite_DarkBlackColor];
         }
     }
 }
@@ -2002,13 +1953,13 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (UIView *)alertView {
     if (!_alertView) {
-        UIView *alertView = [[UIView alloc] init];
-        alertView.frame = self.alertControllerView.bounds;
-        alertView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         if (!self.customAlertView) {
+            UIView *alertView = [[UIView alloc] init];
+            alertView.frame = self.alertControllerView.bounds;
+            alertView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
             [self.containerView addSubview:alertView];
+            _alertView = alertView;
         }
-        _alertView = alertView;
     }
     return _alertView;
 }
@@ -2030,20 +1981,20 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (SPInterfaceHeaderScrollView *)headerView {
     if (!_headerView) {
-        SPInterfaceHeaderScrollView *headerView = [[SPInterfaceHeaderScrollView alloc] init];
-        headerView.backgroundColor = [SPColorStyle normalColor];
-        headerView.translatesAutoresizingMaskIntoConstraints = NO;
-        __weak typeof(self) weakSelf = self;
-        headerView.headerViewSfeAreaDidChangBlock = ^{
-            [weakSelf setupPreferredMaxLayoutWidthForLabel:weakSelf.headerView.titleLabel];
-            [weakSelf setupPreferredMaxLayoutWidthForLabel:weakSelf.headerView.messageLabel];
-        };
         if (!self.customHeaderView) {
             if ((self.title.length || self.attributedTitle.length || self.message.length || self.attributedMessage.length || self.textFields.count || self.image)) {
+                SPInterfaceHeaderScrollView *headerView = [[SPInterfaceHeaderScrollView alloc] init];
+                headerView.backgroundColor = [_SPColorStyle normalColor];
+                headerView.translatesAutoresizingMaskIntoConstraints = NO;
+                __weak typeof(self) weakSelf = self;
+                headerView.headerViewSfeAreaDidChangBlock = ^{
+                    [weakSelf setupPreferredMaxLayoutWidthForLabel:weakSelf.headerView.titleLabel];
+                    [weakSelf setupPreferredMaxLayoutWidthForLabel:weakSelf.headerView.messageLabel];
+                };
                 [self.alertView addSubview:headerView];
+                _headerView = headerView;
             }
         }
-        _headerView = headerView;
     }
     return _headerView;
 }
@@ -2064,20 +2015,27 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (SPInterfaceActionSequenceView *)actionSequenceView {
     if (!_actionSequenceView) {
-        SPInterfaceActionSequenceView *actionSequenceView = [[SPInterfaceActionSequenceView alloc] init];
-        actionSequenceView.translatesAutoresizingMaskIntoConstraints = NO;
-        __weak typeof(self) weakSelf = self;
-        actionSequenceView.buttonClickedInActionViewBlock = ^(NSInteger index) {
-            [weakSelf dismissViewControllerAnimated:YES completion:nil];
-            SPAlertAction *action = weakSelf.actions[index];
-            if (action.handler) {
-                action.handler(action);
-            }
-        };
         if (self.actions.count && !self.customActionSequenceView) {
+            SPInterfaceActionSequenceView *actionSequenceView = [[SPInterfaceActionSequenceView alloc] init];
+            actionSequenceView.translatesAutoresizingMaskIntoConstraints = NO;
+            __weak typeof(self) weakSelf = self;
+            actionSequenceView.buttonClickedInActionViewBlock = ^(NSInteger index) {
+                SPAlertAction *action = weakSelf.actions[index];
+                if (action.allowsAutoDismiss) {
+                    [weakSelf dismissViewControllerAnimated:YES completion:^{
+                        if (action.handler) {
+                            action.handler(action);
+                        }
+                    }];
+                } else {
+                    if (action.handler) {
+                        action.handler(action);
+                    }
+                }
+            };
             [self.alertView addSubview:actionSequenceView];
+            _actionSequenceView = actionSequenceView;
         }
-        _actionSequenceView = actionSequenceView;
     }
     return _actionSequenceView;
 }
@@ -2098,12 +2056,12 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (SPInterfaceActionItemSeparatorView *)headerActionLine {
     if (!_headerActionLine) {
-        SPInterfaceActionItemSeparatorView *headerActionLine = [[SPInterfaceActionItemSeparatorView alloc] init];
-        headerActionLine.translatesAutoresizingMaskIntoConstraints = NO;
         if ((self.headerView.superview || self.customHeaderView.superview) && (self.actionSequenceView.superview || self.customActionSequenceView.superview)) {
+            SPInterfaceActionItemSeparatorView *headerActionLine = [[SPInterfaceActionItemSeparatorView alloc] init];
+            headerActionLine.translatesAutoresizingMaskIntoConstraints = NO;
             [self.alertView addSubview:headerActionLine];
+            _headerActionLine = headerActionLine;
         }
-        _headerActionLine = headerActionLine;
     }
     return _headerActionLine;
 }
@@ -2124,13 +2082,13 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 
 - (SPInterfaceActionItemSeparatorView *)componentActionLine {
     if (!_componentActionLine) {
-        SPInterfaceActionItemSeparatorView *componentActionLine = [[SPInterfaceActionItemSeparatorView alloc] init];
-        componentActionLine.translatesAutoresizingMaskIntoConstraints = NO;
         // 必须组件view和action部分同时存在
         if (self.componentView.superview && (self.actionSequenceView.superview || self.customActionSequenceView.superview)) {
+            SPInterfaceActionItemSeparatorView *componentActionLine = [[SPInterfaceActionItemSeparatorView alloc] init];
+            componentActionLine.translatesAutoresizingMaskIntoConstraints = NO;
             [self.alertView addSubview:componentActionLine];
+            _componentActionLine = componentActionLine;
         }
-        _componentActionLine = componentActionLine;
     }
     return _componentActionLine;
 }
@@ -2194,7 +2152,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 #pragma mark ---------------------------- SPAlertController end --------------------------------
 
 @interface SPOverlayView: UIView
-@property (nonatomic, strong) UIView *presentedView;
 @property (nonatomic, strong) UIVisualEffectView *effectView;
 @end
 
@@ -2268,7 +2225,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
 
     [self.overlayView setAppearanceStyle:alertController.backgroundViewAppearanceStyle alpha:alertController.backgroundViewAlpha];
-    
+
     // 遮罩的alpha值从0～1变化，UIViewControllerTransitionCoordinator协是一个过渡协调器，当执行模态过渡或push过渡时，可以对视图中的其他部分做动画
     id <UIViewControllerTransitionCoordinator> coordinator = [self.presentedViewController transitionCoordinator];
     if (coordinator) {
@@ -2280,8 +2237,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     }
     if ([alertController.delegate respondsToSelector:@selector(willPresentAlertController:)]) {
         [alertController.delegate willPresentAlertController:alertController];
-    }  else if ([alertController.delegate respondsToSelector:@selector(sp_alertControllerWillShow:)]) { // 支持老版本
-        [alertController.delegate sp_alertControllerWillShow:alertController];
     }
 }
 
@@ -2291,8 +2246,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
     if ([alertController.delegate respondsToSelector:@selector(didPresentAlertController:)]) {
         [alertController.delegate didPresentAlertController:alertController];
-    } else if ([alertController.delegate respondsToSelector:@selector(sp_alertControllerDidShow:)]) { // 支持老版本
-        [alertController.delegate sp_alertControllerDidShow:alertController];
     }
 }
 
@@ -2310,8 +2263,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
     if ([alertController.delegate respondsToSelector:@selector(willDismissAlertController:)]) {
         [alertController.delegate willDismissAlertController:alertController];
-    } else if ([alertController.delegate respondsToSelector:@selector(sp_alertControllerWillHide:)]) { // 支持老版本
-        [alertController.delegate sp_alertControllerWillHide:alertController];
     }
 }
 
@@ -2324,8 +2275,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     SPAlertController *alertController = (SPAlertController *)self.presentedViewController;
     if ([alertController.delegate respondsToSelector:@selector(didDismissAlertController:)]) {
         [alertController.delegate didDismissAlertController:alertController];
-    } else if ([alertController.delegate respondsToSelector:@selector(sp_alertControllerDidHide:)]) { // 支持老版本
-        [alertController.delegate sp_alertControllerDidHide:alertController];
     }
 }
 
@@ -2396,21 +2345,18 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     SPAlertController *alertController = (SPAlertController *)[transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
 
     switch (alertController.animationType) {
-        case SPAlertAnimationTypeRaiseUp:
         case SPAlertAnimationTypeFromBottom:
             [self raiseUpWhenPresentForController:alertController transition:transitionContext];
             break;
         case SPAlertAnimationTypeFromRight:
             [self fromRightWhenPresentForController:alertController transition:transitionContext];
             break;
-        case SPAlertAnimationTypeDropDown:
         case SPAlertAnimationTypeFromTop:
             [self dropDownWhenPresentForController:alertController transition:transitionContext];
             break;
         case SPAlertAnimationTypeFromLeft:
             [self fromLeftWhenPresentForController:alertController transition:transitionContext];
             break;
-        case SPAlertAnimationTypeAlpha:
         case SPAlertAnimationTypeFade:
             [self alphaWhenPresentForController:alertController transition:transitionContext];
             break;
@@ -2432,7 +2378,6 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     SPAlertController *alertController = (SPAlertController *)[transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     if ([alertController isKindOfClass:[SPAlertController class]]) {
         switch (alertController.animationType) {
-            case SPAlertAnimationTypeRaiseUp:
             case SPAlertAnimationTypeFromBottom:
                 [self dismissCorrespondingRaiseUpForController:alertController transition:transitionContext];
                 break;
@@ -2442,11 +2387,9 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
             case SPAlertAnimationTypeFromLeft:
                 [self dismissCorrespondingFromLeftForController:alertController transition:transitionContext];
                 break;
-            case SPAlertAnimationTypeDropDown:
             case SPAlertAnimationTypeFromTop:
                 [self dismissCorrespondingDropDownForController:alertController transition:transitionContext];
                 break;
-            case SPAlertAnimationTypeAlpha:
             case SPAlertAnimationTypeFade:
                 [self dismissCorrespondingAlphaForController:alertController transition:transitionContext];
                 break;
@@ -2477,15 +2420,15 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     
     // 这3行代码不能放在[containerView layoutIfNeeded]之前，如果放在之前，[containerView layoutIfNeeded]强制布局后会将以下设置的frame覆盖
     CGRect controlViewFrame = alertController.view.frame;
-    controlViewFrame.origin.y = SP_SCREEN_HEIGHT;
+    controlViewFrame.origin.y = SPALERT_SCREEN_HEIGHT;
     alertController.view.frame = controlViewFrame;
 
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-            controlViewFrame.origin.y = SP_SCREEN_HEIGHT-controlViewFrame.size.height;
+            controlViewFrame.origin.y = SPALERT_SCREEN_HEIGHT-controlViewFrame.size.height;
         } else {
-            controlViewFrame.origin.y = (SP_SCREEN_HEIGHT-controlViewFrame.size.height) / 2.0;
+            controlViewFrame.origin.y = (SPALERT_SCREEN_HEIGHT-controlViewFrame.size.height) / 2.0;
             [self offSetCenter:alertController];
         }
         alertController.view.frame = controlViewFrame;
@@ -2500,7 +2443,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         CGRect controlViewFrame = alertController.view.frame;
-        controlViewFrame.origin.y = SP_SCREEN_HEIGHT;
+        controlViewFrame.origin.y = SPALERT_SCREEN_HEIGHT;
         alertController.view.frame = controlViewFrame;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];
@@ -2520,18 +2463,18 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     
     // 这3行代码不能放在[containerView layoutIfNeeded]之前，如果放在之前，[containerView layoutIfNeeded]强制布局后会将以下设置的frame覆盖
     CGRect controlViewFrame = alertController.view.frame;
-    controlViewFrame.origin.x = SP_SCREEN_WIDTH;
+    controlViewFrame.origin.x = SPALERT_SCREEN_WIDTH;
     alertController.view.frame = controlViewFrame;
     
     if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
         [self offSetCenter:alertController];
     }
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
-            controlViewFrame.origin.x = SP_SCREEN_WIDTH-controlViewFrame.size.width;
+            controlViewFrame.origin.x = SPALERT_SCREEN_WIDTH-controlViewFrame.size.width;
         } else {
-            controlViewFrame.origin.x = (SP_SCREEN_WIDTH-controlViewFrame.size.width) / 2.0;
+            controlViewFrame.origin.x = (SPALERT_SCREEN_WIDTH-controlViewFrame.size.width) / 2.0;
         }
         alertController.view.frame = controlViewFrame;
     } completion:^(BOOL finished) {
@@ -2545,7 +2488,7 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext] animations:^{
         CGRect controlViewFrame = alertController.view.frame;
-        controlViewFrame.origin.x = SP_SCREEN_WIDTH;
+        controlViewFrame.origin.x = SPALERT_SCREEN_WIDTH;
         alertController.view.frame = controlViewFrame;
     } completion:^(BOOL finished) {
         [transitionContext completeTransition:finished];
@@ -2571,12 +2514,12 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     if (alertController.preferredStyle == SPAlertControllerStyleAlert) {
         [self offSetCenter:alertController];
     }
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
             controlViewFrame.origin.x = 0;
         } else {
-            controlViewFrame.origin.x = (SP_SCREEN_WIDTH-controlViewFrame.size.width) / 2.0;
+            controlViewFrame.origin.x = (SPALERT_SCREEN_WIDTH-controlViewFrame.size.width) / 2.0;
         }
         alertController.view.frame = controlViewFrame;
     } completion:^(BOOL finished) {
@@ -2613,12 +2556,12 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     controlViewFrame.origin.y = -controlViewFrame.size.height;
     alertController.view.frame = controlViewFrame;
 
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         CGRect controlViewFrame = alertController.view.frame;
         if (alertController.preferredStyle == SPAlertControllerStyleActionSheet) {
             controlViewFrame.origin.y = 0;
         } else {
-            controlViewFrame.origin.y = (SP_SCREEN_HEIGHT-controlViewFrame.size.height) / 2.0;
+            controlViewFrame.origin.y = (SPALERT_SCREEN_HEIGHT-controlViewFrame.size.height) / 2.0;
             [self offSetCenter:alertController];
         }
         alertController.view.frame = controlViewFrame;
@@ -2646,20 +2589,24 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
-    // 标记需要刷新布局
-    [containerView setNeedsLayout];
-    // 在有标记刷新布局的情况下立即布局，这行代码很重要，第一：立即布局会立即调用SPAlertController的viewWillLayoutSubviews的方法，第二：立即布局后可以获取到alertController.view的frame,不仅如此，走了viewWillLayoutSubviews键盘就会弹出，此后可以获取到alertController.offset
-    [containerView layoutIfNeeded];
-    
-    alertController.view.alpha = 0;
-    
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        [self offSetCenter:alertController];
-        alertController.view.alpha = 1;
-    } completion:^(BOOL finished) {
-        [transitionContext completeTransition:finished];
-        [alertController layoutAlertControllerView];
-    }];
+    if (!alertController.isSyncingKeyboardAnimation) {
+        // 标记需要刷新布局
+        [containerView setNeedsLayout];
+        // 在有标记刷新布局的情况下立即布局，这行代码很重要，第一：立即布局会立即调用SPAlertController的viewWillLayoutSubviews的方法，第二：立即布局后可以获取到alertController.view的frame,不仅如此，走了viewWillLayoutSubviews键盘就会弹出，此后可以获取到alertController.offset
+        [containerView layoutIfNeeded];
+        
+        alertController.view.alpha = 0;
+        
+        [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+            [self offSetCenter:alertController];
+            alertController.view.alpha = 1;
+        } completion:^(BOOL finished) {
+            [transitionContext completeTransition:finished];
+            [alertController layoutAlertControllerView];
+        }];
+    } else {
+        [transitionContext completeTransition:YES];
+    }
 }
 
 // alpha值从0到1变化对应的的dismiss动画
@@ -2678,22 +2625,26 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
     
-    // 标记需要刷新布局
-    [containerView setNeedsLayout];
-    // 在有标记刷新布局的情况下立即布局，这行代码很重要，第一：立即布局会立即调用SPAlertController的viewWillLayoutSubviews的方法，第二：立即布局后可以获取到alertController.view的frame,不仅如此，走了viewWillLayoutSubviews键盘就会弹出，此后可以获取到alertController.offset
-    [containerView layoutIfNeeded];
-    
-    alertController.view.transform = CGAffineTransformMakeScale(0.9, 0.9);
-    alertController.view.alpha = 0.0;
+    if (!alertController.isSyncingKeyboardAnimation) {
+        // 标记需要刷新布局
+        [containerView setNeedsLayout];
+        // 在有标记刷新布局的情况下立即布局，这行代码很重要，第一：立即布局会立即调用SPAlertController的viewWillLayoutSubviews的方法，第二：立即布局后可以获取到alertController.view的frame,不仅如此，走了viewWillLayoutSubviews键盘就会弹出，此后可以获取到alertController.offset
+        [containerView layoutIfNeeded];
+        
+        alertController.view.transform = CGAffineTransformMakeScale(0.9, 0.9);
+        alertController.view.alpha = 0.0;
 
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        [self offSetCenter:alertController];
-        alertController.view.transform = CGAffineTransformIdentity;
-        alertController.view.alpha = 1.0;
-    } completion:^(BOOL finished) {
-        [transitionContext completeTransition:finished];
-        [alertController layoutAlertControllerView];
-    }];
+        [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+            [self offSetCenter:alertController];
+            alertController.view.transform = CGAffineTransformIdentity;
+            alertController.view.alpha = 1.0;
+        } completion:^(BOOL finished) {
+            [transitionContext completeTransition:finished];
+            [alertController layoutAlertControllerView];
+        }];
+    } else {
+        [transitionContext completeTransition:YES];
+    }
 }
 
 // 发散对应的dismiss动画
@@ -2711,23 +2662,24 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
     
     UIView *containerView = [transitionContext containerView];
     [containerView addSubview:alertController.view];
-    
-    // 标记需要刷新布局
-    [containerView setNeedsLayout];
-    // 在有标记刷新布局的情况下立即布局，这行代码很重要，第一：立即布局会立即调用SPAlertController的viewWillLayoutSubviews的方法，第二：立即布局后可以获取到alertController.view的frame,不仅如此，走了viewWillLayoutSubviews键盘就会弹出，此后可以获取到alertController.offset
-    [containerView layoutIfNeeded];
-    
-    alertController.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
-    alertController.view.alpha = 0;
-
-    [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        [self offSetCenter:alertController];
-        alertController.view.transform = CGAffineTransformIdentity;
-        alertController.view.alpha = 1.0;
-    } completion:^(BOOL finished) {
-        [transitionContext completeTransition:finished];
-        [alertController layoutAlertControllerView];
-    }];
+        
+    if (!alertController.isSyncingKeyboardAnimation) {
+        // 标记需要刷新布局
+        [containerView setNeedsLayout];
+        // 在有标记刷新布局的情况下立即布局，这行代码很重要，第一：立即布局会立即调用SPAlertController的viewWillLayoutSubviews的方法，第二：立即布局后可以获取到alertController.view的frame,不仅如此，走了viewWillLayoutSubviews键盘就会弹出，此后可以获取到alertController.offset
+        [containerView layoutIfNeeded];
+        
+        alertController.view.transform = CGAffineTransformMakeScale(1.1, 1.1);
+        [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+            [self offSetCenter:alertController];
+            alertController.view.transform = CGAffineTransformIdentity;
+        } completion:^(BOOL finished) {
+            [transitionContext completeTransition:finished];
+            [alertController layoutAlertControllerView];
+        }];
+    } else {
+        [transitionContext completeTransition:YES];
+    }
 }
 
 // 收缩对应的的dismiss动画
@@ -2751,8 +2703,8 @@ UIEdgeInsets UIEdgeInsetsAddEdgeInsets(UIEdgeInsets i1,UIEdgeInsets i2) {
 - (void)offSetCenter:(SPAlertController *)alertController {
     if (!CGPointEqualToPoint(alertController.offsetForAlert, CGPointZero)) {
         CGPoint controlViewCenter = alertController.view.center;
-        controlViewCenter.x = SP_SCREEN_WIDTH / 2.0 + alertController.offsetForAlert.x;
-        controlViewCenter.y = SP_SCREEN_HEIGHT / 2.0 + alertController.offsetForAlert.y;
+        controlViewCenter.x = SPALERT_SCREEN_WIDTH / 2.0 + alertController.offsetForAlert.x;
+        controlViewCenter.y = SPALERT_SCREEN_HEIGHT / 2.0 + alertController.offsetForAlert.y;
         alertController.view.center = controlViewCenter;
     }
 }

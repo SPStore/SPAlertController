@@ -13,8 +13,8 @@
 @interface ScoreView()
 
 @property (nonatomic, weak) HCSStarRatingView *starRatingView;
-@property (nonatomic, weak) UIView *line;
-@property (nonatomic, weak) UIButton *finishButton;
+//@property (nonatomic, weak) UIView *line;
+//@property (nonatomic, weak) UIButton *finishButton;
 @property (nonatomic, strong) NSMutableArray *subViewContraints;
 @end
 
@@ -37,21 +37,6 @@
         [starRatingView addTarget:self action:@selector(starRatingViewDidChangeValue:) forControlEvents:UIControlEventValueChanged];
         [self addSubview:starRatingView];
         _starRatingView = starRatingView;
-        
-        UIView *line = [UIView new];
-        line.translatesAutoresizingMaskIntoConstraints = NO;
-        line.backgroundColor = [[UIColor grayColor] colorWithAlphaComponent:0.3];
-        [self addSubview:line];
-        _line = line;
-        
-        UIButton *finishButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        finishButton.translatesAutoresizingMaskIntoConstraints = NO;
-        finishButton.backgroundColor = [UIColor alertBackgroundColor];
-        [finishButton setTitle:@"完成" forState:UIControlStateNormal];
-        [finishButton setTitleColor:[UIColor colorWithRed:0.0 green:0.48 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
-        [finishButton addTarget:self action:@selector(finishButtonAction) forControlEvents:UIControlEventTouchUpInside];
-        [self addSubview:finishButton];
-        _finishButton = finishButton;
     }
     return self;
 }
@@ -71,8 +56,8 @@
     CGFloat lineH = 1.0/[UIScreen mainScreen].scale;
     
     HCSStarRatingView *starRatingView = self.starRatingView;
-    UIView *line = self.line;
-    UIButton *finishButton = self.finishButton;
+//    UIView *line = self.line;
+//    UIButton *finishButton = self.finishButton;
     
     NSMutableArray *subViewContraints = [NSMutableArray array];
     if (self.subViewContraints) {
@@ -82,18 +67,18 @@
     [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:starRatingView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0f constant:40]];
     [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:starRatingView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0f constant:-40]];
     [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:starRatingView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:starRatingView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:line attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
+    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:starRatingView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0]];
     [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:starRatingView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:50]];
 
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:finishButton attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:lineH]];
-
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0]];
-    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:50]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0f constant:0]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:finishButton attribute:NSLayoutAttributeTop multiplier:1.0f constant:0]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:line attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:lineH]];
+//
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0f constant:0]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0f constant:0]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0f constant:0]];
+//    [subViewContraints addObject:[NSLayoutConstraint constraintWithItem:finishButton attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0f constant:50]];
     [NSLayoutConstraint activateConstraints:subViewContraints];
     self.subViewContraints = subViewContraints;
 }
